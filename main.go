@@ -8,10 +8,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	check "simple/checkers"
-	wasmHelper "simple/extism-runtime"
-	"simple/function"
-	httpHelper "simple/http-helper"
+	check "simplism/checkers"
+	wasmHelper "simplism/extism-runtime"
+	"simplism/function"
+	httpHelper "simplism/http-helper"
 )
 
 func main() {
