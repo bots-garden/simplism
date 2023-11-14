@@ -1,4 +1,6 @@
-FROM gitpod/workspace-full
+#FROM gitpod/workspace-full
+FROM gitpod/workspace-base
+
 
 LABEL maintainer="@k33g_org"
 
@@ -8,8 +10,9 @@ ARG TINYGO_ARCH=amd64
 ARG TINYGO_VERSION=0.30.0
 ARG EXTISM_ARCH=amd64
 ARG EXTISM_VERSION=0.3.0
+
 ARG NODE_VERSION=v21.1.0
-ARG NODE_DISTRO=linux-amd64
+ARG NODE_DISTRO=linux-x64
 
 USER root
 
@@ -72,8 +75,6 @@ curl https://wasmtime.dev/install.sh -sSf | bash
 curl https://wazero.io/install.sh | sh
 mv ./bin/wazero /usr/bin/wazero
 
-curl https://get.wasmer.io -sSfL | sh
-
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash
 EOF
 
@@ -135,6 +136,33 @@ curl -L -O "https://github.com/extism/js-pdk/releases/download/$TAG/extism-js-$A
 gunzip extism-js*.gz
 chmod +x extism-js-*
 mv extism-js-* /usr/local/bin/extism-js
+EOF
+
+# ------------------------------------
+# Install Spin
+# ------------------------------------
+RUN <<EOF
+mkdir spin-framework
+cd spin-framework
+curl -fsSL https://developer.fermyon.com/downloads/install.sh | bash
+mv spin /usr/local/bin/
+cd ..
+rm -rf spin-framework
+spin templates install --git https://github.com/fermyon/spin --upgrade
+
+spin templates list
+spin plugins update
+EOF
+
+# ------------------------------------
+# Install Wasm Workers Server
+# ------------------------------------
+RUN <<EOF
+curl -fsSL https://workers.wasmlabs.dev/install -o install.sh
+chmod +x install.sh
+./install.sh --local
+mv wws /usr/bin
+rm install.sh
 EOF
 
 USER gitpod

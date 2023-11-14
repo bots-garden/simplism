@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "hello-spin"
+version = "0.1.0"
+authors = ["Philippe Charrière <ph.charriere@gmail.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "hello-spin"
+
+[component.hello-spin]
+source = "main.wasm"
+allowed_outbound_hosts = []
+[component.hello-spin.build]
+command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
+watch = ["**/*.go", "go.mod"]

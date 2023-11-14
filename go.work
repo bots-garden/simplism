@@ -4,4 +4,6 @@ use (
   .
   ./samples/go-plugin
   ./samples/hello-plugin
+  ./benchmarks/hello-spin
+  ./benchmarks/hello-wws
 )

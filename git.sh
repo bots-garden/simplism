@@ -70,6 +70,12 @@ case $1 in
     emoji="🐳"
     ;;
 
+  # 🍊: tangerine
+  gitpod|gitpodify)
+    message="Gitpodify"
+    emoji="🍊"
+    ;;
+
   # 🧪: test tube
   alembic|experiments|experiment|xp)
     message="Perform experiments"
