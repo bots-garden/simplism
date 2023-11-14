@@ -1,3 +1,4 @@
+// main package
 package main
 
 import (
@@ -5,11 +6,13 @@ import (
 	"github.com/extism/go-pdk"
 )
 
+// Human structure
 type Human struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
 
+// MainArgument structure (from the request)
 type MainArgument struct {
 	Body   string              `json:"body"`
 	Header map[string][]string `json:"header"`
@@ -17,6 +20,7 @@ type MainArgument struct {
 	Uri    string              `json:"uri"`
 }
 
+// ReturnValue structure (for the response)
 type ReturnValue struct {
 	Body   string              `json:"body"`
 	Header map[string][]string `json:"header"`
