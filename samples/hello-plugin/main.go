@@ -60,11 +60,11 @@ func say_hello() {
 		message = "👋 Hello " 
 	}
 
-	/*
-		pdk.Log(pdk.LogInfo, "📝 method: "+method)
-		pdk.Log(pdk.LogInfo, "📝 uri:"+uri)
-		pdk.Log(pdk.LogInfo, "📝 content type:"+contentType)
-	*/
+	
+		//pdk.Log(pdk.LogInfo, "📝 method: "+argument.Method)
+		//pdk.Log(pdk.LogInfo, "📝 uri:"+argument.Uri)
+		//pdk.Log(pdk.LogInfo, "📝 content type:"+contentType)
+	
 
 	/* Expected response
 	type ReturnValue struct {
