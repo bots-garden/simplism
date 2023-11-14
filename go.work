@@ -1,0 +1,7 @@
+go 1.21.3
+
+use (
+  .
+  ./samples/go-plugin
+  ./samples/hello-plugin
+)
