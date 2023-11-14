@@ -48,10 +48,12 @@ func say_hello() {
 		var human Human
 		errHuman := json.Unmarshal([]byte(argument.Body), &human)
 		if errHuman != nil {
-			// handle error
+			// handle error😉
 		}
 
 		message = "🤗 Hello " + human.FirstName + " " + human.LastName
+	} else {
+		message = "👋 Hello " 
 	}
 
 	/*
@@ -85,7 +87,3 @@ func say_hello() {
 }
 
 func main() {}
-
-/*
-👋 don't forget the encoded string like with slingshot
-*/
