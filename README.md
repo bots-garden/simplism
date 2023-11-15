@@ -7,7 +7,7 @@
 Simplism is developed in Go with **[Wazero](https://wazero.io/)**[^1] as the Wasm runtime and **[Extism](https://extism.org/)**[^2], which offers a Wazero-based Go SDK and a Wasm plugin system.
 
 - 🍊 Open it with Gitpod: [https://gitpod.io/#https://github.com/bots-garden/simplism](https://gitpod.io/#https://github.com/bots-garden/simplism)
-- 🐳 Open it with Docker Dev Environment (arm version): 🚧 WIP
+- 🐳 Open it with Docker Dev Environment (arm version): [https://open.docker.com/dashboard/dev-envs?url=https://github.com/bots-garden/simplism/tree/main](https://open.docker.com/dashboard/dev-envs?url=https://github.com/bots-garden/simplism/tree/main)
 
 [^1]: Wazero is a project from **[Tetrate](https://tetrate.io/)**
 [^2]: Extism is a project from **[Dylibso](https://dylibso.com/)**
