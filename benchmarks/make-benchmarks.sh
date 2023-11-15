@@ -17,7 +17,7 @@ cd ..
 cd hello-wws
 tinygo build -o worker.wasm -target wasi main.go
 wws --host 0.0.0.0 --port 8081 . &
-sleep 5
+sleep 10
 hey -n 3000 -c 1000 -m GET http://0.0.0.0:8081/worker > ../wws-report.txt
 pkill -f wws
 cd ..
