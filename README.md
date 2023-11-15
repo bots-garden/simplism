@@ -14,7 +14,17 @@ Simplism is developed in Go with **[Wazero](https://wazero.io/)**[^1] as the Was
 
 ### Write an Extism plug-in
 
-Look at the official Extism documentation https://extism.org/docs/category/write-a-plug-in (and into the `samples` directory of this repository).
+- Let's have a look at the official Extism documentation https://extism.org/docs/category/write-a-plug-in 
+- Look into the `samples` directory of this repository:
+  ```bash
+  samples
+  ├── golang
+  │  ├── hello-plugin
+  │  └── simple-plugin
+  └── rustlang
+    ├── hello-plugin
+    └── simple-plugin
+  ```
 
 > ✋ **important**: you can write Extism plug-ins with Go, Rust, AssemblyScript, Zig, C, Haskell and JavaScript
 

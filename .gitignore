@@ -1,4 +1,6 @@
 *.wasm
 simplism
 my-projects
+target
+simplism.code-workspace
 

@@ -1,47 +1,47 @@
 
 Summary:
-  Total:	11.7455 secs
-  Slowest:	9.5845 secs
-  Fastest:	0.1051 secs
-  Average:	3.1405 secs
-  Requests/sec:	255.4174
+  Total:	10.8546 secs
+  Slowest:	8.3592 secs
+  Fastest:	0.0307 secs
+  Average:	2.9019 secs
+  Requests/sec:	276.3809
   
-  Total data:	77922 bytes
+  Total data:	77844 bytes
   Size/request:	25 bytes
 
 Response time histogram:
-  0.105 [1]	|
-  1.053 [314]	|■■■■■■■■■■■■■■■■■■■■
-  2.001 [534]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  2.949 [543]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  3.897 [604]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  4.845 [630]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  5.793 [208]	|■■■■■■■■■■■■■
-  6.741 [89]	|■■■■■■
-  7.689 [71]	|■■■■■
-  8.637 [4]	|
-  9.584 [2]	|
+  0.031 [1]	|
+  0.864 [227]	|■■■■■■■■■■■■■
+  1.696 [323]	|■■■■■■■■■■■■■■■■■■■
+  2.529 [648]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.362 [686]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  4.195 [559]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  5.028 [269]	|■■■■■■■■■■■■■■■■
+  5.861 [196]	|■■■■■■■■■■■
+  6.694 [87]	|■■■■■
+  7.526 [2]	|
+  8.359 [2]	|
 
 
 Latency distribution:
-  10% in 1.0002 secs
-  25% in 1.9301 secs
-  50% in 3.0698 secs
-  75% in 4.0667 secs
-  90% in 5.0848 secs
-  95% in 6.0176 secs
-  99% in 7.3166 secs
+  10% in 1.0887 secs
+  25% in 1.8310 secs
+  50% in 2.7468 secs
+  75% in 3.6334 secs
+  90% in 4.9830 secs
+  95% in 5.5299 secs
+  99% in 6.1436 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:	0.0255 secs, 0.1051 secs, 9.5845 secs
+  DNS+dialup:	0.0156 secs, 0.0307 secs, 8.3592 secs
   DNS-lookup:	0.0000 secs, 0.0000 secs, 0.0000 secs
-  req write:	0.0047 secs, 0.0000 secs, 0.0941 secs
-  resp wait:	2.2390 secs, 0.0159 secs, 4.9327 secs
-  resp read:	0.0002 secs, 0.0000 secs, 0.0543 secs
+  req write:	0.0044 secs, 0.0000 secs, 0.1081 secs
+  resp wait:	2.4080 secs, 0.0306 secs, 6.4176 secs
+  resp read:	0.0002 secs, 0.0000 secs, 0.0738 secs
 
 Status code distribution:
-  [200]	2997 responses
-  [408]	3 responses
+  [200]	2994 responses
+  [408]	6 responses
 
 
 
