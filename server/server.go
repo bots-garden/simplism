@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	functionTypes "simplism/function-types"
-	httpHelper "simplism/http-helper"
+	functiontypes "simplism/functiontypes"
+	httphelper "simplism/httphelper"
 	"simplism/wasmhelper"
 
 	"github.com/go-resty/resty/v2"
@@ -141,9 +141,9 @@ func Listen(wasmArgs WasmArguments) {
 			err    error
 		)
 
-		body := httpHelper.GetBody(request) // is the body the same with fiber ?
+		body := httphelper.GetBody(request) // is the body the same with fiber ?
 
-		mainFunctionArgument := functionTypes.Argument{
+		mainFunctionArgument := functiontypes.Argument{
 			Header: request.Header,
 			Body:   string(body),
 			Method: request.Method,
@@ -159,7 +159,7 @@ func Listen(wasmArgs WasmArguments) {
 			Header map[string][]string `json:"header"`
 		}
 		*/
-		returnValue := functionTypes.ReturnValue{}
+		returnValue := functiontypes.ReturnValue{}
 		errJSONUnmarshal := json.Unmarshal(result, &returnValue)
 
 		if errJSONUnmarshal != nil {

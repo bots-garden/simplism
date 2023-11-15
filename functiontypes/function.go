@@ -1,4 +1,4 @@
-package functionTypes
+package functiontypes
 
 import (
 	"encoding/base64"
@@ -35,10 +35,6 @@ func (m *Argument) ToJSONBuffer() []byte {
 func (m *Argument) ToEncodedJSONString() string {
 
 	return base64.StdEncoding.EncodeToString([]byte(m.ToJSONString()))
-}
-
-// ResponseResult of the remote function
-type ResponseResult struct {
 }
 
 // ReturnValue of the remote function
