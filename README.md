@@ -80,7 +80,7 @@ Flags for listen command:
 
 ## Generate Extism plug-ins for Simplism
 
-You can use **Simplism** to generate a project skeleton of an **Extism** plugin:
+You can use **Simplism** to generate a project skeleton of an **Extism** plug-in:
 
 > Generate a Golang project
 ```bash
