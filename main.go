@@ -8,15 +8,11 @@ import (
 	"simplism/cmds"
 )
 
-/*
-go run main.go \
-listen ./samples/hello-plugin/simple.wasm \
-say_hello \
-  --http-port 8080 \
-  --log-level info
-*/
-
-
+// main is the entry point of the Go program.
+//
+// It parses the command line flags and checks if a command is provided.
+// If a command is provided, it calls the corresponding command function.
+// Otherwise, it prints an error message and exits.
 func main() {
 	flag.Parse()
 

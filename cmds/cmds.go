@@ -11,7 +11,13 @@ import (
 //go:embed version.txt
 var version []byte
 
-// Parse the command arguments
+// Parse parses the command and arguments to perform a specific action.
+//
+// The function takes in a command string and an array of arguments.
+// The command string specifies the action to be performed.
+// The args array contains additional arguments for the command.
+//
+// The function returns an error if there is an issue during parsing.
 func Parse(command string, args []string) error {
 
 	switch command {
