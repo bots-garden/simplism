@@ -1,0 +1,25 @@
+services:
+  app:
+    entrypoint:
+      - sleep
+      - infinity
+    build:         
+      args:
+        # 👋 arm version
+        - GO_ARCH=arm64
+        - GO_VERSION=1.21.3
+        - TINYGO_ARCH=arm64
+        - TINYGO_VERSION=0.30.0
+        - EXTISM_ARCH=arm64
+        - EXTISM_VERSION=0.3.0
+        - NODE_DISTRO=linux-arm64
+        - NODE_VERSION=v21.1.0
+      context: ./docker-dev-environment
+      dockerfile: Dockerfile
+    init: true
+    volumes:
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+
+
