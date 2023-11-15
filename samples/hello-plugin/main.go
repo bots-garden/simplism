@@ -12,12 +12,12 @@ type Human struct {
 	LastName  string `json:"lastName"`
 }
 
-// MainArgument structure (from the request)
-type MainArgument struct {
+// Argument structure (from the request)
+type Argument struct {
 	Body   string              `json:"body"`
 	Header map[string][]string `json:"header"`
 	Method string              `json:"method"`
-	Uri    string              `json:"uri"`
+	URI    string              `json:"uri"`
 }
 
 // ReturnValue structure (for the response)
@@ -35,14 +35,14 @@ func say_hello() {
 	//pdk.Log(pdk.LogInfo, "📙 input: "+string(input))
 
 	/* Expected
-	type MainArgument struct {
+	type Argument struct {
 		Body   string              `json:"body"`
 		Header map[string][]string `json:"header"`
 		Method string              `json:"method"`
-		Uri    string              `json:"uri"`
+		URI    string              `json:"uri"`
 	}
 	*/
-	var argument MainArgument
+	var argument Argument
 	errArg := json.Unmarshal(input, &argument)
 	if errArg != nil {
 		// handle error
@@ -62,9 +62,10 @@ func say_hello() {
 		message = "👋 Hello " 
 	}
 
+	// ✋ displaying messages slows down the plugin execution
 	pdk.Log(pdk.LogInfo, "📙 content type: "+argument.Header["Content-Type"][0])
 	pdk.Log(pdk.LogInfo, "📝 method: "+argument.Method)
-	pdk.Log(pdk.LogInfo, "📝 uri:"+argument.Uri)
+	pdk.Log(pdk.LogInfo, "📝 uri:"+argument.URI)
 	
 
 	/* Expected response

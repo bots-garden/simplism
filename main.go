@@ -10,7 +10,7 @@ import (
 	"os"
 	check "simplism/checkers"
 	wasmHelper "simplism/extism-runtime"
-	"simplism/function"
+	functionTypes "simplism/function-types"
 	httpHelper "simplism/http-helper"
 )
 
@@ -40,11 +40,11 @@ func main() {
 
 		body := httpHelper.GetBody(request) // is the body the same with fiber ?
 
-		mainFunctionArgument := function.MainArgument{
+		mainFunctionArgument := functionTypes.Argument{
 			Header: request.Header,
 			Body:   string(body),
 			Method: request.Method,
-			Uri:    request.RequestURI,
+			URI:    request.RequestURI,
 		}
 
 		//result, err = wasmHelper.CallWasmFunction(wasmFunctionName, []byte(mainFunctionArgument.ToEncodedJSONString()))
@@ -56,29 +56,27 @@ func main() {
 			Header map[string][]string `json:"header"`
 		}
 		*/
-		returnValue := function.ReturnValue{}
-		errJsonUnmarshal := json.Unmarshal(result, &returnValue)
+		returnValue := functionTypes.ReturnValue{}
+		errJSONUnmarshal := json.Unmarshal(result, &returnValue)
 
-		// TODO: add response code
-		if errJsonUnmarshal != nil {
+		if errJSONUnmarshal != nil {
 			// send response http code error
 			response.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintln(response, errJsonUnmarshal.Error())
+			fmt.Fprintln(response, errJSONUnmarshal.Error())
 		} else {
 			for key, value := range returnValue.Header {
 				response.Header().Set(key, value[0])
 			}
-	
+
 			if err != nil {
 				response.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintln(response, err.Error())
 			} else {
+				// TODO: add default response code if empty?
 				response.WriteHeader(returnValue.Code)
 				fmt.Fprintln(response, string(returnValue.Body))
 			}
 		}
-
-
 
 	})
 

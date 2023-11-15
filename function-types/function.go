@@ -1,18 +1,20 @@
-package function
+package functionTypes
 
 import (
 	"encoding/base64"
 	"encoding/json"
 )
 
-type MainArgument struct {
+// Argument of the remote function
+type Argument struct {
 	Body   string              `json:"body"`
 	Header map[string][]string `json:"header"`
 	Method string              `json:"method"`
-	Uri    string              `json:"uri"`
+	URI    string              `json:"uri"`
 }
 
-func (m *MainArgument) ToJSONString() string {
+// ToJSONString convert the argument to a JSON string
+func (m *Argument) ToJSONString() string {
 	jsonBytes, err := json.Marshal(m)
 	if err != nil {
 		return "error" // 🤔
@@ -20,7 +22,8 @@ func (m *MainArgument) ToJSONString() string {
 	return string(jsonBytes)
 }
 
-func (m *MainArgument) ToJSONBuffer() []byte {
+// ToJSONBuffer convert the argument to a JSON buffer
+func (m *Argument) ToJSONBuffer() []byte {
 	jsonBytes, err := json.Marshal(m)
 	if err != nil {
 		return []byte("error") // 🤔
@@ -28,14 +31,17 @@ func (m *MainArgument) ToJSONBuffer() []byte {
 	return jsonBytes
 }
 
-func (m *MainArgument) ToEncodedJSONString() string {
+// ToEncodedJSONString convert the argument to a base64 encoded JSON string
+func (m *Argument) ToEncodedJSONString() string {
 
 	return base64.StdEncoding.EncodeToString([]byte(m.ToJSONString()))
 }
 
+// ResponseResult of the remote function
 type ResponseResult struct {
 }
 
+// ReturnValue of the remote function
 type ReturnValue struct {
 	Body   string              `json:"body"`
 	Header map[string][]string `json:"header"`
