@@ -78,7 +78,7 @@ Flags for listen command:
   --allow-paths '{"data":"/mnt"}'
 ```
 
-## Write Extism plug-ins for Simplism
+## Generate Extism plug-ins for Simplism
 
 You can use **Simplism** to generate a project skeleton of an **Extism** plugin:
 
