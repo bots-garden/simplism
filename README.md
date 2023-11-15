@@ -1,4 +1,4 @@
-# Simplism: a tiny HTTP server for Extism
+# Simplism: a tiny HTTP server for Extism Plug-ins
 
 ![image](imgs/simplism-small-logo.jpeg)
 
