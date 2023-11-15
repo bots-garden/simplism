@@ -40,12 +40,14 @@ Usage:
   simplism [command] [arguments]
 
 Available Commands:
-  listen      Serve an Extism plugin function
+  listen      Serve an Extism plug-in function
               Arguments: [wasm file path] [function name]
   version     Display the Minism version
               Arguments: nothing
-
-Flags:
+  generate    Generate a source code project of an Extism plug-in
+              Arguments: [plug-in language] [project name] [project path]
+              
+Flags for listen command:
   --http-port         string   HTTP port of the Simplism server (default: 8080)
   --log-level         string   Log level to print message
                                Possible values: error, warn, info, debug, trace
@@ -76,6 +78,26 @@ Flags:
   --allow-paths '{"data":"/mnt"}'
 ```
 
+## Write Extism plug-ins for Simplism
+
+You can use **Simplism** to generate a project skeleton of an **Extism** plugin:
+
+> Generate a Golang project
+```bash
+./simplism generate golang hey my-projects/hey
+```
+This command will create this tree structure:
+```bash
+├── my-projects
+│  ├── hey
+│  │  ├── go.mod
+│  │  ├── main.go
+│  │  └── README.md
+```
+
+✋ more languages to come very soon
+
 
 [^1]: Wazero is a project from **[Tetrate](https://tetrate.io/)**
 [^2]: Extism is a project from **[Dylibso](https://dylibso.com/)**
+

@@ -68,22 +68,17 @@ func Parse(command string, args []string) error {
 	
 	case "generate":
 		/*
-			./simplism generate golang hello --path=./projects
+			./simplism generate golang hello projects
 		*/
 		language := flag.Args()[1]     // language of the project
 		projectName := flag.Args()[2] // name of the project
+		projectPath := flag.Args()[3] // path of the project
 
-		flagSet := flag.NewFlagSet("generate", flag.ExitOnError)
-		projectPath := flagSet.String("path", "", "Project path")
-
-		flagSet.Parse(args[2:])
-
-		generators.Generate(language, projectName, *projectPath)
-
+		generators.Generate(language, projectName, projectPath)
 
 		return nil
 
-	// TODO: add help, about, generators, ...
+	// TODO: add help, about
 	default:
 		return fmt.Errorf("🔴 invalid command")
 	}
