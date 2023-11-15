@@ -32,8 +32,6 @@ func say_hello() {
 	// read function argument from the memory
 	input := pdk.Input()
 
-	//pdk.Log(pdk.LogInfo, "📙 input: "+string(input))
-
 	/* Expected
 	type Argument struct {
 		Body   string              `json:"body"`
@@ -43,31 +41,25 @@ func say_hello() {
 	}
 	*/
 	var argument Argument
-	errArg := json.Unmarshal(input, &argument)
-	if errArg != nil {
-		// handle error
-	}
-
-	var message = ""
-	if argument.Method == "POST" {
-
-		var human Human
-		errHuman := json.Unmarshal([]byte(argument.Body), &human)
-		if errHuman != nil {
-			// handle error😉
-		}
-
-		message = "🤗 Hello " + human.FirstName + " " + human.LastName
-	} else {
-		message = "👋 Hello " 
-	}
+	json.Unmarshal(input, &argument)
 
 	// ✋ displaying messages slows down the plugin execution
 	pdk.Log(pdk.LogInfo, "📙 content type: "+argument.Header["Content-Type"][0])
 	pdk.Log(pdk.LogInfo, "📝 method: "+argument.Method)
 	pdk.Log(pdk.LogInfo, "📝 uri:"+argument.URI)
 	
+	var message string
+	var code = 200
+	var human Human
+	errHuman := json.Unmarshal([]byte(argument.Body), &human)
+	if errHuman != nil {
+		message = "😡 Hello John Doe"
+		code = 500
+	} else {
+		message = "🤗 Hello " + human.FirstName + " " + human.LastName
+	}
 
+	
 	/* Expected response
 	type ReturnValue struct {
 		Body   string              `json:"body"`
@@ -78,13 +70,10 @@ func say_hello() {
 	response := ReturnValue{
 		Body:   message,
 		Header: map[string][]string{"Content-Type": {"text/plain; charset=utf-8"}},
-		Code:   200,
+		Code:   code,
 	}
 	// response to Json string
-	jsonResponse, errResponse := json.Marshal(response)
-	if errResponse != nil {
-		// handle error
-	}
+	jsonResponse, _ := json.Marshal(response)
 
 	// copy output to host memory
 	mem := pdk.AllocateBytes(jsonResponse)

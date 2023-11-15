@@ -5,5 +5,5 @@ echo ""
 curl -v -X POST \
 http://localhost:8080/hello/world \
 -H 'content-type: application/json; charset=utf-8' \
--d '{"firstName":"Jane","lastName":"Doe"}'
+-d '{"firstName":"Bob","lastName":"Morane"}'
 

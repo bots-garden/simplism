@@ -64,11 +64,11 @@ Flags:
 > **Examples**:
 
 ```bash
-./simplism listen ./samples/hello-plugin/simple.wasm say_hello
+./simplism listen ./samples/golang/simple-plugin/simple.wasm say_hello
 ```
 
 ```bash
-./simplism listen ./samples/hello-plugin/simple.wasm say_hello \
+./simplism listen ./samples/golang/hello-plugin/simple.wasm say_hello \
   --http-port 9090 \
   --log-level info \
   --allow-hosts '["*","*.google.com"]' \
