@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"simplism/generators"
 	"simplism/server"
 )
 
@@ -27,7 +28,7 @@ func Parse(command string, args []string) error {
 		wasmFilePath := flag.Args()[1]     // path of the wasm file
 		wasmFunctionName := flag.Args()[2] // function name
 
-		flagSet := flag.NewFlagSet("call", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("listen", flag.ExitOnError)
 
 		httpPort := flagSet.String("http-port", "8080", "http port")
 
@@ -63,8 +64,26 @@ func Parse(command string, args []string) error {
 	case "version":
 		fmt.Println(string(version))
 		//os.Exit(0)
+		return nil 
+	
+	case "generate":
+		/*
+			./simplism generate golang hello --path=./projects
+		*/
+		language := flag.Args()[1]     // language of the project
+		projectName := flag.Args()[2] // name of the project
+
+		flagSet := flag.NewFlagSet("generate", flag.ExitOnError)
+		projectPath := flagSet.String("path", "", "Project path")
+
+		flagSet.Parse(args[2:])
+
+		generators.Generate(language, projectName, *projectPath)
+
+
 		return nil
-	// TODO: add help
+
+	// TODO: add help, about, generators, ...
 	default:
 		return fmt.Errorf("🔴 invalid command")
 	}
