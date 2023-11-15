@@ -23,7 +23,7 @@ var (
 	prefixPluginKey = "plugin"
 )
 
-func getLevel(logLevel string) extism.LogLevel {
+func GetLevel(logLevel string) extism.LogLevel {
 	level := extism.Off
 	switch logLevel {
 	case "error":
@@ -40,8 +40,8 @@ func getLevel(logLevel string) extism.LogLevel {
 	return level
 }
 
-func GetConfigAndManifest(wasmFilePath string) (extism.PluginConfig, extism.Manifest) {
-	logLevel := getLevel("info") // tmp
+func GetConfigAndManifest(wasmFilePath string, hosts []string, paths map[string]string, manifestConfig map[string]string, logLevel extism.LogLevel) (extism.PluginConfig, extism.Manifest) {
+	//logLevel := GetLevel("info") // tmp
 
 	//fmt.Println(logLevel)
 
@@ -50,10 +50,6 @@ func GetConfigAndManifest(wasmFilePath string) (extism.PluginConfig, extism.Mani
 		EnableWasi:   true,
 		LogLevel:     &logLevel,
 	}
-
-	hosts := []string{"*"}                // tmp
-	paths := map[string]string{}          // tmp
-	manifestConfig := map[string]string{} // tmp
 
 	manifest := extism.Manifest{
 		Wasm: []extism.Wasm{
