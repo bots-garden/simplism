@@ -32,6 +32,8 @@ func say_hello() {
 	// read function argument from the memory
 	input := pdk.Input()
 
+	//pdk.Log(pdk.LogInfo, "📙 input: "+string(input))
+
 	/* Expected
 	type MainArgument struct {
 		Body   string              `json:"body"`
@@ -60,10 +62,9 @@ func say_hello() {
 		message = "👋 Hello " 
 	}
 
-	
-		//pdk.Log(pdk.LogInfo, "📝 method: "+argument.Method)
-		//pdk.Log(pdk.LogInfo, "📝 uri:"+argument.Uri)
-		//pdk.Log(pdk.LogInfo, "📝 content type:"+contentType)
+	pdk.Log(pdk.LogInfo, "📙 content type: "+argument.Header["Content-Type"][0])
+	pdk.Log(pdk.LogInfo, "📝 method: "+argument.Method)
+	pdk.Log(pdk.LogInfo, "📝 uri:"+argument.Uri)
 	
 
 	/* Expected response
