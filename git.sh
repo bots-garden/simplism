@@ -56,6 +56,12 @@ case $1 in
     emoji="📦️"
     ;;
 
+  # 📦️: package
+  release)
+    message="Create a release"
+    emoji="📦️"
+    ;;
+
   # 👽️: alien
   alien|api)
     message="Update code due to external API changes"

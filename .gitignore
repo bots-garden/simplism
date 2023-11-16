@@ -6,6 +6,6 @@ target
 
 dist/
 .env
-.release.env
+.github.env
 
 set-git-user.sh
