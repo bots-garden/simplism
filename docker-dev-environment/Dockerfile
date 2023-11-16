@@ -162,9 +162,7 @@ EOF
 # Install GoReleaser
 # ------------------------------------
 RUN <<EOF
-echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-apt update
-apt install goreleaser
+curl -sfL https://goreleaser.com/static/run | bash
 EOF
 
 
