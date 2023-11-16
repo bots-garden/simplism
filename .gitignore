@@ -1,5 +1,6 @@
 *.wasm
 simplism
+simplism.tar.gz
 my-projects
 target
 *.code-workspace
