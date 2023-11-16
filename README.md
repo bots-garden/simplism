@@ -8,6 +8,10 @@
 
 > It's like the official [Extism CLI](https://github.com/extism/cli), but **Simplism** is "serving" the Extism WebAssembly plugin instead of running it, and call a function at every HTPP request.
 
+## 🚀 Getting started
+
+> 🚧 work in progress
+
 ## How is Simplism developed?
 
 Simplism is developed in Go with **[Wazero](https://wazero.io/)**[^1] as the Wasm runtime and **[Extism](https://extism.org/)**[^2], which offers a Wazero-based Go SDK and a Wasm plugin system.
@@ -42,6 +46,10 @@ Simplism is developed in Go with **[Wazero](https://wazero.io/)**[^1] as the Was
 go build
 ./simplism version
 ```
+
+### Prerquisites
+
+> 🚧 work in progress
 
 ## Run Simplism
 
