@@ -1,19 +1,19 @@
 # <name>
 
-> Build the wasm plugin:
+> Build the wasm plug-in:
 ```bash
 tinygo build -scheduler=none --no-debug \
-  -o <name>.wasm \
-  -target wasi main.go
+-o <name>.wasm \
+-target wasi main.go
 ```
 
-> Serve the wasm plugin with Simplism:
+> Serve the wasm plug-in with Simplism:
 ```bash
-./simplism listen \
+simplism listen \
 <name>.wasm handle --http-port 8080 --log-level info
 ```
 
-> Query the wasm plugin:
+> Query the wasm plug-in:
 ```bash
 curl http://localhost:8080/hello/world \
 -H 'content-type: application/json; charset=utf-8' \
