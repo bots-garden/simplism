@@ -16,14 +16,6 @@ cat > ./simplism-project.code-workspace <<- EOM
       "path": "$(pwd)/samples/golang"
     },
     {
-      "name": "my-projects-golang",
-      "path": "$(pwd)/my-projects/golang"
-    },
-    {
-      "name": "my-projects-rustlang",
-      "path": "$(pwd)/my-projects/rustlang"
-    },
-    {
       "name": "simplism",
       "path": "$(pwd)"
     },

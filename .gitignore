@@ -4,3 +4,8 @@ my-projects
 target
 *.code-workspace
 
+dist/
+.env
+.release.env
+
+set-git-user.sh
