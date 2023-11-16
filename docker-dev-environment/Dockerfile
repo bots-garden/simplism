@@ -162,7 +162,7 @@ EOF
 # Install GoReleaser
 # ------------------------------------
 RUN <<EOF
-curl -sfL https://goreleaser.com/static/run | bash
+go install github.com/goreleaser/goreleaser@latest
 EOF
 
 
