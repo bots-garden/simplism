@@ -19,6 +19,15 @@ var goModule []byte
 //go:embed go-readme.txt
 var goReadMe []byte
 
+//go:embed go-build.txt
+var goBuild []byte
+
+//go:embed go-run.txt
+var goRun []byte
+
+//go:embed go-query.txt
+var goQuery []byte
+
 //go:embed rust-template.txt
 var rustTemplate []byte
 
@@ -27,6 +36,15 @@ var rustCargo []byte
 
 //go:embed rust-readme.txt
 var rustReadMe []byte
+
+//go:embed rust-build.txt
+var rustBuild []byte
+
+//go:embed rust-run.txt
+var rustRun []byte
+
+//go:embed rust-query.txt
+var rustQuery []byte
 
 // makeDirectoryStructure creates a directory with the given projectPath and projectName.
 //
@@ -70,6 +88,14 @@ func createFileFromTemplate(projectPath, projectName, filePath string, template 
 	}
 }
 
+func createBashFileFromTemplate(projectPath, projectName, filePath string, template []byte) {
+	err := os.WriteFile(projectPath+"/"+projectName+"/"+filePath, template, 0777)
+	if err != nil {
+		fmt.Println("😡 failed to write file:", err)
+		os.Exit(1)
+	}
+}
+
 // Generate generates a project in the specified language, with the given project name and path.
 //
 // Parameters:
@@ -107,12 +133,20 @@ func Generate(language string, projectName string, projectPath string) {
 		createFileFromTemplate(projectPath, projectName, "main.go", goTemplate)
 
 		var strGoModule = strings.Replace(string(goModule), "<name>", projectName, 1)
-		strGoModule = strings.Replace(strGoModule, "<version>", runtime.Version(), 1)
+		strGoModule = strings.Replace(strGoModule, "<version>", strings.ReplaceAll(runtime.Version(), "go", ""), 1)
 
 		createFileFromTemplate(projectPath, projectName, "go.mod", []byte(strGoModule))
 
 		var strGoReadMe = strings.Replace(string(goReadMe), "<name>", projectName, 3)
 		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strGoReadMe))
+
+		var strGoBuild = strings.Replace(string(goBuild), "<name>", projectName, 1)
+		createBashFileFromTemplate(projectPath, projectName, "build.sh", []byte(strGoBuild))
+
+		var strGoRun = strings.Replace(string(goRun), "<name>", projectName, 1)
+		createBashFileFromTemplate(projectPath, projectName, "run.sh", []byte(strGoRun))
+
+		createBashFileFromTemplate(projectPath, projectName, "query.sh", goQuery)
 
 		fmt.Println("🎉", "project generated in", projectPath+"/"+projectName)
 
@@ -132,6 +166,13 @@ func Generate(language string, projectName string, projectPath string) {
 
 		var strRustReadMe = strings.Replace(string(rustReadMe), "<name>", projectName, 3)
 		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strRustReadMe))
+
+		createBashFileFromTemplate(projectPath, projectName, "build.sh", rustBuild)
+
+		var strRustRun = strings.Replace(string(rustRun), "<name>", projectName, 1)
+		createBashFileFromTemplate(projectPath, projectName, "run.sh", []byte(strRustRun))
+
+		createBashFileFromTemplate(projectPath, projectName, "query.sh", rustQuery)
 
 		fmt.Println("🎉", "project generated in", projectPath+"/"+projectName)
 

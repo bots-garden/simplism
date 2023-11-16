@@ -6,6 +6,9 @@ set -o allexport; source .release.env; set +o allexport
 echo "$TAG $MESSAGE"
 echo -n $MESSAGE > cmds/version.txt
 
+git add .
+git commit -m "📦 ${MESSAGE}"
+
 git tag -a ${TAG} -m "${MESSAGE}"
 git push origin ${TAG}
 

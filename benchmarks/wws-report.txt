@@ -1,47 +1,47 @@
 
 Summary:
-  Total:	10.8546 secs
-  Slowest:	8.3592 secs
-  Fastest:	0.0307 secs
-  Average:	2.9019 secs
-  Requests/sec:	276.3809
+  Total:	12.1403 secs
+  Slowest:	8.7164 secs
+  Fastest:	0.1970 secs
+  Average:	3.1766 secs
+  Requests/sec:	247.1112
   
-  Total data:	77844 bytes
+  Total data:	77766 bytes
   Size/request:	25 bytes
 
 Response time histogram:
-  0.031 [1]	|
-  0.864 [227]	|■■■■■■■■■■■■■
-  1.696 [323]	|■■■■■■■■■■■■■■■■■■■
-  2.529 [648]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  3.362 [686]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  4.195 [559]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  5.028 [269]	|■■■■■■■■■■■■■■■■
-  5.861 [196]	|■■■■■■■■■■■
-  6.694 [87]	|■■■■■
-  7.526 [2]	|
-  8.359 [2]	|
+  0.197 [1]	|
+  1.049 [320]	|■■■■■■■■■■■■■■■■■■
+  1.901 [312]	|■■■■■■■■■■■■■■■■■
+  2.753 [466]	|■■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.605 [729]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  4.457 [710]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  5.309 [209]	|■■■■■■■■■■■
+  6.161 [123]	|■■■■■■■
+  7.013 [63]	|■■■
+  7.864 [50]	|■■■
+  8.716 [17]	|■
 
 
 Latency distribution:
-  10% in 1.0887 secs
-  25% in 1.8310 secs
-  50% in 2.7468 secs
-  75% in 3.6334 secs
-  90% in 4.9830 secs
-  95% in 5.5299 secs
-  99% in 6.1436 secs
+  10% in 1.0164 secs
+  25% in 2.3304 secs
+  50% in 3.0563 secs
+  75% in 4.0136 secs
+  90% in 5.1160 secs
+  95% in 5.8863 secs
+  99% in 7.6335 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:	0.0156 secs, 0.0307 secs, 8.3592 secs
+  DNS+dialup:	0.0364 secs, 0.1970 secs, 8.7164 secs
   DNS-lookup:	0.0000 secs, 0.0000 secs, 0.0000 secs
-  req write:	0.0044 secs, 0.0000 secs, 0.1081 secs
-  resp wait:	2.4080 secs, 0.0306 secs, 6.4176 secs
-  resp read:	0.0002 secs, 0.0000 secs, 0.0738 secs
+  req write:	0.0064 secs, 0.0000 secs, 0.1333 secs
+  resp wait:	2.4324 secs, 0.0475 secs, 5.7831 secs
+  resp read:	0.0003 secs, 0.0000 secs, 0.0828 secs
 
 Status code distribution:
-  [200]	2994 responses
-  [408]	6 responses
+  [200]	2991 responses
+  [408]	9 responses
 
 
 
