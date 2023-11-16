@@ -4,5 +4,12 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
     "editor.detectIndentation": true,
-    "go.lintTool": "golint"
+    "go.lintTool": "golint",
+    "[go]": {
+      "editor.insertSpaces": true,
+      "editor.tabSize": 4,
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "golang.go"
+
   }
+}

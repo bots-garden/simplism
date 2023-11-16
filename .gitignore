@@ -2,5 +2,5 @@
 simplism
 my-projects
 target
-simplism.code-workspace
+*.code-workspace
 

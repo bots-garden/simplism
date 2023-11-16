@@ -19,6 +19,57 @@ var goModule []byte
 //go:embed go-readme.txt
 var goReadMe []byte
 
+//go:embed rust-template.txt
+var rustTemplate []byte
+
+//go:embed rust-cargo.txt
+var rustCargo []byte
+
+//go:embed rust-readme.txt
+var rustReadMe []byte
+
+// makeDirectoryStructure creates a directory with the given projectPath and projectName.
+//
+// Parameters:
+// - projectPath: the path where the directory should be created.
+// - projectName: the name of the directory to be created.
+//
+// Return type: none.
+func makeDirectoryStructure(projectPath, projectName string, otherDirectories ...string) {
+
+	if len(otherDirectories) > 0 {
+		for _, directory := range otherDirectories {
+			err := os.MkdirAll(projectPath+"/"+projectName+"/"+directory, os.ModePerm)
+			if err != nil {
+				fmt.Println("😡 failed to create directory:", err)
+				os.Exit(1)
+			}
+		}
+	}
+
+	// Create a directory with projectPath + projectName
+	err := os.MkdirAll(projectPath+"/"+projectName, os.ModePerm)
+	if err != nil {
+		fmt.Println("😡 failed to create directory:", err)
+		os.Exit(1)
+	}
+}
+
+// createFileFromTemplate writes a file to the specified path using the provided template.
+//
+// Parameters:
+// - projectPath: the path to the project directory.
+// - projectName: the name of the project.
+// - filePath: the relative path to the file.
+// - template: the content of the template file.
+func createFileFromTemplate(projectPath, projectName, filePath string, template []byte) {
+	err := os.WriteFile(projectPath+"/"+projectName+"/"+filePath, template, 0644)
+	if err != nil {
+		fmt.Println("😡 failed to write file:", err)
+		os.Exit(1)
+	}
+}
+
 // Generate generates a project in the specified language, with the given project name and path.
 //
 // Parameters:
@@ -42,48 +93,49 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("😡 project language cannot be empty")
 		os.Exit(1)
 	}
-	// test the value of language, the possible values are golang, ruslang or javascript, then use switch case
+
 	switch language {
 	case "golang", "go":
 		/*
-			./simplism generate golang yo --path=my-projects
+            Generating a Golang project:
+            ./simplism generate golang hello my-projects/golang
 		*/
-		// Code for generating a Go project
-		fmt.Println("🚧 Generating Go project...")
-		// Create a directory with projectPath + projectName
-		err := os.MkdirAll(projectPath+"/"+projectName, os.ModePerm)
-		if err != nil {
-			fmt.Println("😡 failed to create directory:", err)
-			os.Exit(1)
-		}
-		// Generate a file main.go into the path with string(goTemplate) as content
-		err = os.WriteFile(projectPath+"/"+projectName+"/main.go", []byte(goTemplate), 0644)
-		if err != nil {
-			fmt.Println("😡 failed to write file:", err)
-			os.Exit(1)
-		}
-		// Generate a file go.mod into the path with string(goModule) as content and replace <name> with projectName and <version> with the version of the go compiler
+		fmt.Println("🔵 Generating Go project...")
+
+		makeDirectoryStructure(projectPath, projectName)
+
+		createFileFromTemplate(projectPath, projectName, "main.go", goTemplate)
+
 		var strGoModule = strings.Replace(string(goModule), "<name>", projectName, 1)
 		strGoModule = strings.Replace(strGoModule, "<version>", runtime.Version(), 1)
 
-		err = os.WriteFile(projectPath+"/"+projectName+"/go.mod", []byte(strGoModule), 0644)
-		if err != nil {
-			fmt.Println("😡 failed to write file:", err)
-			os.Exit(1)
-		}
+		createFileFromTemplate(projectPath, projectName, "go.mod", []byte(strGoModule))
 
 		var strGoReadMe = strings.Replace(string(goReadMe), "<name>", projectName, 3)
-		err = os.WriteFile(projectPath+"/"+projectName+"/README.md", []byte(strGoReadMe), 0644)
-		if err != nil {
-			fmt.Println("😡 failed to write file:", err)
-			os.Exit(1)
-		}
+		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strGoReadMe))
 
-	case "ruslang", "rust":
-		// Code for generating a Ruslang project
-		fmt.Println("Generating Ruslang project...")
+		fmt.Println("🎉", "project generated in", projectPath+"/"+projectName)
+
+	case "rustlang", "rust":
+		/*
+            Generating a Ruslang project:
+
+            ./simplism generate rustlang hello my-projects/rustlang
+		*/
+		fmt.Println("🦀 Generating Ruslang project...")
+
+		makeDirectoryStructure(projectPath, projectName, "src")
+		createFileFromTemplate(projectPath, projectName, "src/lib.rs", rustTemplate)
+
+		var strRustCargo = strings.Replace(string(rustCargo), "<name>", projectName, 1)
+		createFileFromTemplate(projectPath, projectName, "Cargo.toml", []byte(strRustCargo))
+
+		var strRustReadMe = strings.Replace(string(rustReadMe), "<name>", projectName, 3)
+		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strRustReadMe))
+
+		fmt.Println("🎉", "project generated in", projectPath+"/"+projectName)
+
 	case "javascript", "js":
-		// Code for generating a JavaScript project
 		fmt.Println("Generating JavaScript project...")
 	default:
 		fmt.Println("Invalid language specified.")

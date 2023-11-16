@@ -92,16 +92,30 @@ Flags for listen command:
 
 You can use **Simplism** to generate a project skeleton of an **Extism** plug-in:
 
-> Generate a Golang project
+> Generate a **Golang** project
 ```bash
-./simplism generate golang hey my-projects/hey
+./simplism generate golang hello my-projects
 ```
 This command will create this tree structure:
 ```bash
 ├── my-projects
-│  ├── hey
+│  ├── hello
 │  │  ├── go.mod
 │  │  ├── main.go
+│  │  └── README.md
+```
+
+> Generate a **Rustlang** project
+```bash
+./simplism generate rustlang hello my-projects
+```
+This command will create this tree structure:
+```bash
+├── my-projects
+│  ├── hello
+│  │  ├── src
+│  │  │  └── lib.rs
+│  │  ├── Cargo.toml
 │  │  └── README.md
 ```
 

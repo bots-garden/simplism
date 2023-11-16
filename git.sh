@@ -15,7 +15,7 @@ case $1 in
     ;;
 
   # ✨: sparkles
-  sparkles)
+  sparkles|feature)
     message="Introduce new features"
     emoji="✨"
     ;;
@@ -32,13 +32,11 @@ case $1 in
     emoji="🌸"
     ;;
 
-
   # 🚀: rocket
   rocket|deploy)
     message="Deploy stuff"
     emoji="🚀"
     ;;
-
 
   # 🎉: tada
   tada|first)
@@ -81,7 +79,6 @@ case $1 in
     message="Perform experiments"
     emoji="🧪"
     ;;
-
 
   # 💾: floppy-disk
   save)
