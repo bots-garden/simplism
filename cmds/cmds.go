@@ -43,6 +43,9 @@ func Parse(command string, args []string) error {
 		authHeaderName := flagSet.String("auth-header-name", "", "Authentication header name, ex: PRIVATE-TOKEN")
 		authHeaderValue := flagSet.String("auth-header-value", "", "Value of the authentication header, ex: IlovePandas")
 
+		certFile := flagSet.String("cert-file", "", "Certificate file")
+		keyFile := flagSet.String("key-file", "", "Key file")
+
 		flagSet.Parse(args[2:])
 
 		server.Listen(server.WasmArguments{
@@ -58,6 +61,9 @@ func Parse(command string, args []string) error {
 			URL:             *wasmURL,
 			AuthHeaderName:  *authHeaderName,
 			AuthHeaderValue: *authHeaderValue,
+			CertFile: *certFile,
+			KeyFile: *keyFile,
+
 		})
 		return nil
 

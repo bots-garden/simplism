@@ -29,6 +29,8 @@ type WasmArguments struct {
 	URL             string
 	AuthHeaderName  string
 	AuthHeaderValue string
+	CertFile string
+	KeyFile string
 }
 
 // getHostsFromString gets a string representing a JSON array of hosts and returns a slice of strings containing the hosts.
@@ -183,10 +185,40 @@ func Listen(wasmArgs WasmArguments) {
 
 	})
 
+	// listen on https with TLS certificates with Go
+	/*
+	// Path to the TLS certificate and key files
+	certFile := "path/to/cert.pem"
+	keyFile := "path/to/key.pem"
+
+	// Start the HTTPS server
+	err := http.ListenAndServeTLS(":443", certFile, keyFile, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	*/
+	
+
 	go func() {
-		// certificate - https ?
-		fmt.Println("🌍 http server is listening on:", wasmArgs.HTTPPort)
-		log.Fatal(http.ListenAndServe(":"+wasmArgs.HTTPPort, nil))
+
+		if wasmArgs.CertFile != "" && wasmArgs.KeyFile != "" {
+			fmt.Println("🌍 http(s) server is listening on:", wasmArgs.HTTPPort)
+			// Path to the TLS certificate and key files
+			certFile := wasmArgs.CertFile
+			keyFile := wasmArgs.KeyFile
+
+			err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, nil)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			fmt.Println("🌍 http server is listening on:", wasmArgs.HTTPPort)
+			err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		
 	}()
 
 	// Listen for the interrupt signal.

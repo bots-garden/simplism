@@ -85,6 +85,8 @@ Flags for listen command:
   --wasm-url          string   Url to download the wasm file
   --auth-header-name  string   Authentication header name, ex: PRIVATE-TOKEN
   --auth-header-value string   Value of the authentication header, ex: IlovePandas  
+  --cert-file         string   Path to certificate file (https)
+  --key-file          string   Path to key file (https)
 ```
 
 > **Examples**:
