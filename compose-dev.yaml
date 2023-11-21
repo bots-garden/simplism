@@ -18,6 +18,7 @@ services:
       dockerfile: Dockerfile
     init: true
     volumes:
+    - ~/.ssh:/root/.ssh
     - type: bind
       source: /var/run/docker.sock
       target: /var/run/docker.sock
