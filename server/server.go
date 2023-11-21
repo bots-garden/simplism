@@ -185,20 +185,6 @@ func Listen(wasmArgs WasmArguments) {
 
 	})
 
-	// listen on https with TLS certificates with Go
-	/*
-	// Path to the TLS certificate and key files
-	certFile := "path/to/cert.pem"
-	keyFile := "path/to/key.pem"
-
-	// Start the HTTPS server
-	err := http.ListenAndServeTLS(":443", certFile, keyFile, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	*/
-	
-
 	go func() {
 
 		if wasmArgs.CertFile != "" && wasmArgs.KeyFile != "" {
