@@ -12,3 +12,4 @@ dist/
 .github.env
 
 set-git-user.sh
+notes.md
