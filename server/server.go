@@ -17,20 +17,20 @@ import (
 
 // WasmArguments type
 type WasmArguments struct {
-	FilePath        string
-	FunctionName    string
-	HTTPPort        string
-	Input           string
-	LogLevel        string
-	AllowHosts      string
-	AllowPaths      string
-	Config          string
-	Wasi            bool
-	URL             string
-	AuthHeaderName  string
-	AuthHeaderValue string
-	CertFile string
-	KeyFile string
+	FilePath        string `yaml:"wasm-file,omitempty"`
+	FunctionName    string `yaml:"wasm-function,omitempty"`
+	HTTPPort        string `yaml:"http-port,omitempty"`
+	Input           string `yaml:"input,omitempty"`
+	LogLevel        string `yaml:"log-level,omitempty"`
+	AllowHosts      string `yaml:"allow-hosts,omitempty"`
+	AllowPaths      string `yaml:"allow-paths,omitempty"`
+	Config          string `yaml:"config,omitempty"`
+	Wasi            bool   `yaml:"wasi,omitempty"`
+	URL             string `yaml:"wasm-url,omitempty"`
+	AuthHeaderName  string `yaml:"auth-header-name,omitempty"`
+	AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
+	CertFile        string `yaml:"cert-file,omitempty"`
+	KeyFile         string `yaml:"key-file,omitempty"`
 }
 
 // getHostsFromString gets a string representing a JSON array of hosts and returns a slice of strings containing the hosts.
@@ -41,7 +41,7 @@ func getHostsFromString(allowHosts string) []string {
 	var hosts []string
 	unmarshallError := json.Unmarshal([]byte(allowHosts), &hosts)
 	if unmarshallError != nil {
-		fmt.Println(unmarshallError)
+		fmt.Println("🔴 getHostsFromString:",unmarshallError)
 		os.Exit(1)
 	}
 	return hosts
@@ -56,7 +56,7 @@ func getPathsFromJSONString(allowPaths string) map[string]string {
 	var paths map[string]string
 	unmarshallError := json.Unmarshal([]byte(allowPaths), &paths)
 	if unmarshallError != nil {
-		fmt.Println(unmarshallError)
+		fmt.Println("🔴 getPathsFromJSONString:", unmarshallError)
 		os.Exit(1)
 	}
 	return paths
@@ -70,7 +70,7 @@ func getConfigFromJSONString(config string) map[string]string {
 	var manifestConfig map[string]string
 	unmarshallError := json.Unmarshal([]byte(config), &manifestConfig)
 	if unmarshallError != nil {
-		fmt.Println(unmarshallError)
+		fmt.Println("🔴 getConfigFromJSONString:", unmarshallError)
 		os.Exit(1)
 	}
 	return manifestConfig
@@ -101,7 +101,7 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 		Get(wasmArgs.URL)
 
 	if resp.IsError() {
-		return errors.New("error while downloading the wasm file")
+		return errors.New("🔴 error while downloading the wasm file")
 	}
 
 	if err != nil {
@@ -115,6 +115,8 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 // It takes a `wasmArgs` parameter of type `WasmArguments` which contains the necessary arguments for configuring the WebAssembly environment.
 // The function does not return anything.
 func Listen(wasmArgs WasmArguments) {
+
+	// fmt.Println("🤖", wasmArgs)
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
 		fmt.Println("🌍 downloading...", wasmArgs.URL)
@@ -204,7 +206,7 @@ func Listen(wasmArgs WasmArguments) {
 				log.Fatal(err)
 			}
 		}
-		
+
 	}()
 
 	// Listen for the interrupt signal.

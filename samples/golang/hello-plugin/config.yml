@@ -1,0 +1,9 @@
+hello-plugin:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8080
+  log-level: info
+  #allow-hosts: '["localhost", "127.0.0.1"]'
+  #allow-paths: '{"path":"/"}'
+  #config: '{"name":"hello"}'
+

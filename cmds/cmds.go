@@ -5,12 +5,58 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"os"
 	"simplism/generators"
 	"simplism/server"
+
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed version.txt
 var version []byte
+
+// readYamlFile reads a YAML file and returns a map of server.WasmArguments and an error.
+//
+// It takes a string parameter called yamlFilePath, which represents the path to the YAML file.
+// The function returns a map[string]server.WasmArguments, which is a map of server.WasmArguments objects, and an error.
+func readYamlFile(yamlFilePath string) (map[string]server.WasmArguments, error) {
+
+	yamlFile, err := os.ReadFile(yamlFilePath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	data := make(map[string]server.WasmArguments)
+
+	err = yaml.Unmarshal(yamlFile, &data)
+
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.WasmArguments {
+	// default values:
+	if wasmArguments.AllowHosts == "" {
+		wasmArguments.AllowHosts = `["*"]`
+	}
+
+	if wasmArguments.AllowPaths == "" {
+		wasmArguments.AllowPaths = "{}"
+	}
+
+	if wasmArguments.Config == "" {
+		wasmArguments.Config = "{}"
+	}
+
+	if wasmArguments.HTTPPort == "" {
+		wasmArguments.HTTPPort = "8080"
+	}
+	return wasmArguments
+
+}
 
 // Parse parses the command and arguments to perform a specific action.
 //
@@ -22,6 +68,31 @@ var version []byte
 func Parse(command string, args []string) error {
 
 	switch command {
+
+	case "config":
+		configFilepath := flag.Args()[1] // path of the config file
+
+		wasmArgumentsMap, err := readYamlFile(configFilepath)
+		if err != nil {
+			fmt.Println("🔴 reading the yaml config file:", err)
+			os.Exit(1)
+		}
+
+		if len(flag.Args()) <= 2 {
+			fmt.Println("🔴 you must provide a configuration key")
+			os.Exit(1)
+
+		} else {
+			configKey := flag.Args()[2]
+
+			// Start the server with the specified wasm plugin in the config
+			wasmArguments := wasmArgumentsMap[configKey]
+			wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
+			server.Listen(wasmArguments)
+		}
+
+		//os.Exit(0)
+		return nil
 
 	case "listen":
 
@@ -61,22 +132,21 @@ func Parse(command string, args []string) error {
 			URL:             *wasmURL,
 			AuthHeaderName:  *authHeaderName,
 			AuthHeaderValue: *authHeaderValue,
-			CertFile: *certFile,
-			KeyFile: *keyFile,
-
+			CertFile:        *certFile,
+			KeyFile:         *keyFile,
 		})
 		return nil
 
 	case "version":
 		fmt.Println(string(version))
 		//os.Exit(0)
-		return nil 
-	
+		return nil
+
 	case "generate":
 		/*
 			./simplism generate golang hello projects
 		*/
-		language := flag.Args()[1]     // language of the project
+		language := flag.Args()[1]    // language of the project
 		projectName := flag.Args()[2] // name of the project
 		projectPath := flag.Args()[3] // path of the project
 

@@ -14,7 +14,7 @@
 
 ```bash
 SIMPLISM_DISTRO="Linux_arm64.tar" # 👀 https://github.com/bots-garden/simplism/releases
-VERSION="0.0.1"
+VERSION="0.0.2"
 wget https://github.com/bots-garden/simplism/releases/download/v${VERSION}/simplism_${SIMPLISM_DISTRO}.tar.gz -O simplism.tar.gz 
 tar -xf simplism.tar.gz -C /usr/bin
 rm simplism.tar.gz
@@ -70,6 +70,8 @@ Available Commands:
               Arguments: nothing
   generate    Generate a source code project of an Extism plug-in
               Arguments: [plug-in language] [project name] [project path]
+  config      Serve an Extism plug-in function using a yaml configuration file
+              Arguments: [yaml file path] [config key]
               
 Flags for listen command:
   --http-port         string   HTTP port of the Simplism server (default: 8080)
@@ -103,6 +105,19 @@ simplism listen ./samples/golang/hello-plugin/simple.wasm say_hello \
 --config '{"message":"👋 hello world 🌍"}' \
 --allow-paths '{"data":"/mnt"}'
 ```
+
+> **Configuration example**:
+
+```yaml
+# config.yml
+hello-plugin:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8080
+  log-level: info
+```
+
+Run the server like this: `simplism config ./config.yml hello-plugin`
 
 ## Generate Extism plug-in projects for Simplism
 
