@@ -69,6 +69,7 @@ func startFlockMode(configFilepath string) {
 				} else {
 					protection.Lock()
 					defer protection.Unlock()
+					//TODO: test if certificate to determine if https or not
 					wasmServices[configKey] = []string{wasmArguments.HTTPPort, wasmArguments.FunctionName}
 				}
 
