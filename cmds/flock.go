@@ -2,6 +2,7 @@ package cmds
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,7 +35,7 @@ func startFlockMode(configFilepath string) {
 	// get the executable path of simplism
 	simplismExecutablePath := getExecutablePath("simplism")
 
-	var adminWasmArguments server.WasmArguments
+	var serviceDiscoveryWasmArguments server.WasmArguments
 
 	var wasmServices = map[string]string{}
 
@@ -45,8 +46,8 @@ func startFlockMode(configFilepath string) {
 	for configKey, wasmArguments := range wasmArgumentsMap {
 		wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
 
-		if configKey == "admin" {
-			adminWasmArguments = wasmArguments
+		if configKey == "service-discovery" {
+			serviceDiscoveryWasmArguments = wasmArguments
 		} else {
 			// Start a new server process with the specified wasm plugin in the config
 			go func(configKey string, wasmArguments server.WasmArguments) {
@@ -67,30 +68,38 @@ func startFlockMode(configFilepath string) {
 		}
 
 	}
-	// create a small admin http server
-	if adminWasmArguments.HTTPPort != "" {
+	// create a small service-discovery http server
+	if serviceDiscoveryWasmArguments.HTTPPort != "" {
 		go func() {
 
 			http.HandleFunc("/", func(response http.ResponseWriter, request *http.Request) {
 				// TODO: add the list of the wasm plugins
-                // TODO: return json list of the wasm plugins + headers
-				fmt.Fprintln(response, "🐏 flock mode activated")
-				fmt.Fprintln(response, wasmServices)
+				// TODO: return json list of the wasm plugins + headers
+				// return a json list of the wasm plugins
+				response.Header().Set("Content-Type", "application/json")
+				// transform the map to json
+				wasmServicesJSON, err := json.Marshal(wasmServices)
+				if err != nil {
+					response.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprintln(response, "🔴 Error when transforming the wasmServices map to json:", err)
+				}
+				response.WriteHeader(http.StatusOK)
+				fmt.Fprintln(response, string(wasmServicesJSON))
 			})
 
-			if adminWasmArguments.CertFile != "" && adminWasmArguments.KeyFile != "" {
-				fmt.Println("🔐 http(s) admin flock server is listening on:", adminWasmArguments.HTTPPort)
+			if serviceDiscoveryWasmArguments.CertFile != "" && serviceDiscoveryWasmArguments.KeyFile != "" {
+				fmt.Println("🔎 http(s) service-discovery flock server is listening on:", serviceDiscoveryWasmArguments.HTTPPort)
 				// Path to the TLS certificate and key files
-				certFile := adminWasmArguments.CertFile
-				keyFile := adminWasmArguments.KeyFile
+				certFile := serviceDiscoveryWasmArguments.CertFile
+				keyFile := serviceDiscoveryWasmArguments.KeyFile
 
-				err := http.ListenAndServeTLS(":"+adminWasmArguments.HTTPPort, certFile, keyFile, nil)
+				err := http.ListenAndServeTLS(":"+serviceDiscoveryWasmArguments.HTTPPort, certFile, keyFile, nil)
 				if err != nil {
 					log.Fatal(err)
 				}
 			} else {
-				fmt.Println("🔐 http admin flock server is listening on:", adminWasmArguments.HTTPPort)
-				err := http.ListenAndServe(":"+adminWasmArguments.HTTPPort, nil)
+				fmt.Println("🔎 http service-discovery flock server is listening on:", serviceDiscoveryWasmArguments.HTTPPort)
+				err := http.ListenAndServe(":"+serviceDiscoveryWasmArguments.HTTPPort, nil)
 				if err != nil {
 					log.Fatal(err)
 				}

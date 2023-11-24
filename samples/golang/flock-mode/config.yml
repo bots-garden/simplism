@@ -24,5 +24,5 @@ hello-rust-plugin:
 
 
 # This is 🚧 work in progress
-admin:
+service-discovery:
   http-port: 8888
