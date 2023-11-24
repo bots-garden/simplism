@@ -1,7 +1,7 @@
 hello-plugin:
   wasm-file: ../hello-plugin/hello.wasm
   wasm-function: say_hello
-  http-port: 8081
+  http-port: 8085
   log-level: info
   #allow-hosts: '["localhost", "127.0.0.1"]'
   #allow-paths: '{"path":"/"}'
@@ -10,17 +10,18 @@ hello-plugin:
 simple-plugin:
   wasm-file: ../simple-plugin/simple.wasm
   wasm-function: say_hello
-  http-port: 8082
+  http-port: 8086
 
 simple-rust-plugin:
   wasm-file: ../../rustlang/simple-plugin/target/wasm32-wasi/release/simple_plugin.wasm
   wasm-function: hello
-  http-port: 8083
+  http-port: 8087
+
 
 hello-rust-plugin:
   wasm-file: ../../rustlang/hello-plugin/target/wasm32-wasi/release/hello_plugin.wasm
   wasm-function: hello
-  http-port: 8084
+  http-port: 8088
 
 
 # This is 🚧 work in progress

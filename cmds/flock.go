@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"simplism/server"
+	"sync"
 )
 
 // getExecutablePath returns the path of the executable file for the given program name.
@@ -37,11 +38,16 @@ func startFlockMode(configFilepath string) {
 
 	var serviceDiscoveryWasmArguments server.WasmArguments
 
-	var wasmServices = map[string]string{}
+	var protection = sync.Mutex{}
+	var wasmServices = make(map[string][]string)
 
 	fmt.Println("🐑 flock mode activated")
 
 	ctx := context.Background()
+
+	//ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	//defer stop()
+
 	// loop through the map
 	for configKey, wasmArguments := range wasmArgumentsMap {
 		wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
@@ -61,7 +67,9 @@ func startFlockMode(configFilepath string) {
 				if err != nil {
 					fmt.Println("🔴 Error when starting a new simplism process:", configKey, err)
 				} else {
-					wasmServices[configKey] = wasmArguments.HTTPPort
+					protection.Lock()
+					defer protection.Unlock()
+					wasmServices[configKey] = []string{wasmArguments.HTTPPort, wasmArguments.FunctionName}
 				}
 
 			}(configKey, wasmArguments)
@@ -73,8 +81,7 @@ func startFlockMode(configFilepath string) {
 		go func() {
 
 			http.HandleFunc("/", func(response http.ResponseWriter, request *http.Request) {
-				// TODO: add the list of the wasm plugins
-				// TODO: return json list of the wasm plugins + headers
+
 				// return a json list of the wasm plugins
 				response.Header().Set("Content-Type", "application/json")
 				// transform the map to json

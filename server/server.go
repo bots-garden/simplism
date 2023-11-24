@@ -41,7 +41,7 @@ func getHostsFromString(allowHosts string) []string {
 	var hosts []string
 	unmarshallError := json.Unmarshal([]byte(allowHosts), &hosts)
 	if unmarshallError != nil {
-		fmt.Println("🔴 getHostsFromString:",unmarshallError)
+		fmt.Println("🔴 getHostsFromString:", unmarshallError)
 		os.Exit(1)
 	}
 	return hosts
@@ -206,7 +206,6 @@ func Listen(wasmArgs WasmArguments) {
 				log.Fatal(err)
 			}
 		}
-
 	}()
 
 	// Listen for the interrupt signal.
