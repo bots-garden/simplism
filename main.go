@@ -14,6 +14,7 @@ import (
 // If a command is provided, it calls the corresponding command function.
 // Otherwise, it prints an error message and exits.
 func main() {
+
 	flag.Parse()
 
 	if len(flag.Args()) < 1 {

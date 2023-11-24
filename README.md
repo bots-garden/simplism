@@ -72,7 +72,9 @@ Available Commands:
               Arguments: [plug-in language] [project name] [project path]
   config      Serve an Extism plug-in function using a yaml configuration file
               Arguments: [yaml file path] [config key]
-              
+  flock       Serve several Extism plug-in functions using a yaml configuration file
+              Arguments: [yaml file path] [config key]
+
 Flags for listen command:
   --http-port         string   HTTP port of the Simplism server (default: 8080)
   --log-level         string   Log level to print message
