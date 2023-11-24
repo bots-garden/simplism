@@ -3,6 +3,7 @@ package wasmhelper
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -29,18 +30,18 @@ var (
 //
 // It takes in a logLevel string and returns an extism.LogLevel.
 func GetLevel(logLevel string) extism.LogLevel {
-    level := extism.Off
+    level := extism.LogLevelOff
     switch logLevel {
     case "error":
-        level = extism.Error
+        level = extism.LogLevelError
     case "warn":
-        level = extism.Warn
+        level = extism.LogLevelWarn
     case "info":
-        level = extism.Info
+        level = extism.LogLevelInfo
     case "debug":
-        level = extism.Debug
+        level = extism.LogLevelDebug
     case "trace":
-        level = extism.Trace
+        level = extism.LogLevelTrace
     }
     return level
 }
@@ -62,8 +63,19 @@ func GetConfigAndManifest(wasmFilePath string, hosts []string, paths map[string]
     config := extism.PluginConfig{
         ModuleConfig: wazero.NewModuleConfig().WithSysWalltime(),
         EnableWasi:   true,
-        LogLevel:     &logLevel,
+        LogLevel:     logLevel,
+        RuntimeConfig: wazero.NewRuntimeConfig().WithCloseOnContextDone(true),
     }
+
+    /*
+	config := PluginConfig{
+		ModuleConfig:  wazero.NewModuleConfig().WithSysWalltime(),
+		EnableWasi:    true,
+		RuntimeConfig: wazero.NewRuntimeConfig().WithCloseOnContextDone(true),
+	}
+
+    */
+
 
     manifest := extism.Manifest{
         Wasm: []extism.Wasm{
@@ -108,11 +120,15 @@ func getPlugin(key string) *WasmPlugin {
 // Returns:
 //   - *WasmPlugin: The newly created instance of WasmPlugin.
 func getPluginInstance(ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) *WasmPlugin {
-    pluginInst, err := extism.NewPlugin(ctx, manifest, config, nil) // new
+    fmt.Println(manifest)
+    fmt.Println(config)
+
+    pluginInst, err := extism.NewPlugin(ctx, manifest, config, []extism.HostFunction{}) // new
     if err != nil {
-        log.Println("😡 Error when creating the wasm plugin instance", err)
+        log.Println("😡 Error when creating the wasm plugin instance:", err)
         os.Exit(1)
     }
+    defer pluginInst.Close()
 
     wasmPlugin := WasmPlugin{
         ExtismPlugin: pluginInst,
