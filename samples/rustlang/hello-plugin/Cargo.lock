@@ -27,6 +27,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
+name = "bytes"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2bd12c1caf447e69cd4528f47f94d203fd2582878ecb9e9465484c4148a8223"
+
+[[package]]
+name = "either"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
+
+[[package]]
+name = "extism-convert"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74ab6cd70509e6d74b7c3587f823a2061cfb65b111b4173bd882858eaa87e4a3"
+dependencies = [
+ "anyhow",
+ "base64",
+ "prost",
+ "rmp-serde",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "extism-manifest"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -38,24 +64,24 @@ dependencies = [
 
 [[package]]
 name = "extism-pdk"
-version = "0.3.4"
+version = "1.0.0-rc1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09c20fe9cafa572607e22192bf2040849e7456664895bdc589c89387876e2067"
+checksum = "4ef5a26316dcd0a963eb9904675417c39a1fcf25d4630385a5a1099f7f123458"
 dependencies = [
  "anyhow",
  "base64",
+ "extism-convert",
  "extism-manifest",
  "extism-pdk-derive",
- "rmp-serde",
  "serde",
  "serde_json",
 ]
 
 [[package]]
 name = "extism-pdk-derive"
-version = "0.3.1"
+version = "1.0.0-rc1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2be216330f7304de051e0faf1578880e9e0dc1ecbd2c0fea5765c63a079d0ba"
+checksum = "5640b8d57f1900efc413c8c608c1ec86dbb623df73de0b151e7debc5c9aaccfd"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -69,6 +95,15 @@ dependencies = [
  "extism-pdk",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "itertools"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
+dependencies = [
+ "either",
 ]
 
 [[package]]
@@ -99,6 +134,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "134c189feb4956b20f6f547d2cf727d4c0fe06722b20a0eec87ed445a97f92da"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "prost"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
+dependencies = [
+ "bytes",
+ "prost-derive",
+]
+
+[[package]]
+name = "prost-derive"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efb6c9a1dd1def8e2124d17e83a20af56f1570d6c2d2bd9e266ccb768df3840e"
+dependencies = [
+ "anyhow",
+ "itertools",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

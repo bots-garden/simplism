@@ -7,6 +7,6 @@ edition = "2021"
 crate_type = ["cdylib"]
 
 [dependencies]
-extism-pdk = "0.3.3"
+extism-pdk = "1.0.0-rc1"
 serde = "1.0.171"
 serde_json = "1.0.103"
