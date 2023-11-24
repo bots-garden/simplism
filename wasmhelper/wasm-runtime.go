@@ -3,7 +3,6 @@ package wasmhelper
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -15,35 +14,35 @@ import (
 
 // WasmPlugin type
 type WasmPlugin struct {
-    ExtismPlugin *extism.Plugin
-    Protection   sync.Mutex
+	ExtismPlugin *extism.Plugin
+	Protection   sync.Mutex
 }
 
 var (
-    wasmPlugins     = make(map[string]*WasmPlugin)
-    counter         = 0
-    poolSize        = 4
-    prefixPluginKey = "plugin"
+	wasmPlugins     = make(map[string]*WasmPlugin)
+	counter         = 0
+	poolSize        = 4
+	prefixPluginKey = "plugin"
 )
 
 // GetLevel returns the corresponding extism.LogLevel based on the given log level string.
 //
 // It takes in a logLevel string and returns an extism.LogLevel.
 func GetLevel(logLevel string) extism.LogLevel {
-    level := extism.LogLevelOff
-    switch logLevel {
-    case "error":
-        level = extism.LogLevelError
-    case "warn":
-        level = extism.LogLevelWarn
-    case "info":
-        level = extism.LogLevelInfo
-    case "debug":
-        level = extism.LogLevelDebug
-    case "trace":
-        level = extism.LogLevelTrace
-    }
-    return level
+	level := extism.LogLevelOff
+	switch logLevel {
+	case "error":
+		level = extism.LogLevelError
+	case "warn":
+		level = extism.LogLevelWarn
+	case "info":
+		level = extism.LogLevelInfo
+	case "debug":
+		level = extism.LogLevelDebug
+	case "trace":
+		level = extism.LogLevelTrace
+	}
+	return level
 }
 
 // GetConfigAndManifest returns the plugin configuration and manifest.
@@ -60,35 +59,27 @@ func GetLevel(logLevel string) extism.LogLevel {
 // - manifest: the plugin manifest.
 func GetConfigAndManifest(wasmFilePath string, hosts []string, paths map[string]string, manifestConfig map[string]string, logLevel extism.LogLevel) (extism.PluginConfig, extism.Manifest) {
 
-    config := extism.PluginConfig{
-        ModuleConfig: wazero.NewModuleConfig().WithSysWalltime(),
-        EnableWasi:   true,
-        LogLevel:     logLevel,
-        RuntimeConfig: wazero.NewRuntimeConfig().WithCloseOnContextDone(true),
-    }
-
-    /*
-	config := PluginConfig{
-		ModuleConfig:  wazero.NewModuleConfig().WithSysWalltime(),
-		EnableWasi:    true,
-		RuntimeConfig: wazero.NewRuntimeConfig().WithCloseOnContextDone(true),
+	config := extism.PluginConfig{
+		ModuleConfig: wazero.NewModuleConfig().WithSysWalltime(),
+		EnableWasi:   true,
+		LogLevel:     logLevel,
 	}
 
-    */
+	manifest := extism.Manifest{
+		Wasm: []extism.Wasm{
+			extism.WasmFile{
+				Path: wasmFilePath,
+				//Hash: "",
+				//Name: "main",
+			},
+		},
+		AllowedHosts: hosts,
+		AllowedPaths: paths,
+		Config:       manifestConfig,
+	}
 
-
-    manifest := extism.Manifest{
-        Wasm: []extism.Wasm{
-            extism.WasmFile{
-                Path: wasmFilePath},
-        },
-        AllowedHosts: hosts,
-        AllowedPaths: paths,
-        Config:       manifestConfig,
-    }
-    return config, manifest
+	return config, manifest
 }
-
 
 // storePlugin stores a WasmPlugin in the wasmPlugins map with the given key.
 //
@@ -96,7 +87,7 @@ func GetConfigAndManifest(wasmFilePath string, hosts []string, paths map[string]
 // - key: the key used to store the WasmPlugin in the map.
 // - wasmPlugin: the WasmPlugin to be stored.
 func storePlugin(key string, wasmPlugin *WasmPlugin) {
-    wasmPlugins[key] = wasmPlugin
+	wasmPlugins[key] = wasmPlugin
 }
 
 // getPlugin retrieves a WasmPlugin based on the given key.
@@ -107,7 +98,7 @@ func storePlugin(key string, wasmPlugin *WasmPlugin) {
 // Return:
 // - *WasmPlugin: a pointer to the WasmPlugin that matches the given key.
 func getPlugin(key string) *WasmPlugin {
-    return wasmPlugins[key]
+	return wasmPlugins[key]
 }
 
 // getPluginInstance creates a new instance of WasmPlugin based on the given context, PluginConfig, and Manifest.
@@ -120,20 +111,19 @@ func getPlugin(key string) *WasmPlugin {
 // Returns:
 //   - *WasmPlugin: The newly created instance of WasmPlugin.
 func getPluginInstance(ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) *WasmPlugin {
-    fmt.Println(manifest)
-    fmt.Println(config)
 
-    pluginInst, err := extism.NewPlugin(ctx, manifest, config, []extism.HostFunction{}) // new
-    if err != nil {
-        log.Println("😡 Error when creating the wasm plugin instance:", err)
-        os.Exit(1)
-    }
-    defer pluginInst.Close()
+	pluginInst, err := extism.NewPlugin(ctx, manifest, config, []extism.HostFunction{}) // new
 
-    wasmPlugin := WasmPlugin{
-        ExtismPlugin: pluginInst,
-    }
-    return &wasmPlugin
+	if err != nil {
+		log.Println("😡 Error when creating the wasm plugin instance:", err)
+		os.Exit(1)
+	}
+	//defer pluginInst.Close()
+
+	wasmPlugin := WasmPlugin{
+		ExtismPlugin: pluginInst,
+	}
+	return &wasmPlugin
 }
 
 // GeneratePluginsPool generates a pool of plugins.
@@ -145,11 +135,12 @@ func getPluginInstance(ctx context.Context, config extism.PluginConfig, manifest
 //
 // This function does not return any value.
 func GeneratePluginsPool(ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) {
-    for i := 0; i <= poolSize; i++ {
-        wasmPlugin := getPluginInstance(ctx, config, manifest)
-        key := prefixPluginKey + strconv.Itoa(i)
-        storePlugin(key, wasmPlugin)
-    }
+	for i := 0; i <= poolSize; i++ {
+		wasmPlugin := getPluginInstance(ctx, config, manifest)
+
+		key := prefixPluginKey + strconv.Itoa(i)
+		storePlugin(key, wasmPlugin)
+	}
 }
 
 // CallWasmFunction executes a WebAssembly function.
@@ -159,22 +150,22 @@ func GeneratePluginsPool(ctx context.Context, config extism.PluginConfig, manife
 // It returns the output of the function as a byte slice and any error
 // encountered during the execution of the function.
 func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
-    key := prefixPluginKey + strconv.Itoa(counter)
-    wasmPlugin := getPlugin(key)
-    counter ++
-    if counter == poolSize {
-        counter = 0
-    }
-    wasmPlugin.Protection.Lock()
+	key := prefixPluginKey + strconv.Itoa(counter)
+	wasmPlugin := getPlugin(key)
+	counter++
+	if counter == poolSize {
+		counter = 0
+	}
+	wasmPlugin.Protection.Lock()
 
-    defer wasmPlugin.Protection.Unlock()
+	defer wasmPlugin.Protection.Unlock()
 
-    _, out, err := wasmPlugin.ExtismPlugin.Call(wasmFunctionName, params)
+	_, out, err := wasmPlugin.ExtismPlugin.Call(wasmFunctionName, params)
 
-    if err != nil {
-        return nil, err
-    } else {
-        return out, nil
-    }
+	if err != nil {
+		return nil, err
+	} else {
+		return out, nil
+	}
 
 }

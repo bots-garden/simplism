@@ -1,5 +1,10 @@
 # <name>
 
+> Add Extism dependency
+```bash
+go get github.com/extism/go-pdk
+```
+
 > Build the wasm plug-in:
 ```bash
 tinygo build -scheduler=none --no-debug \

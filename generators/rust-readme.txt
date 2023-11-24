@@ -1,5 +1,10 @@
 # <name>
 
+> Add Extism dependency
+```bash
+cargo add extism-pdk@1.0.0-rc1
+```
+
 > Build the wasm plug-in:
 ```bash
 cargo clean

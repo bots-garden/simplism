@@ -1,0 +1,13 @@
+{
+    "configurations": [
+
+    {
+        "name": "Launch file",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "program": "main.go",
+        "args": ["listen", "./hola/hola.wasm", "handle", "--http-port", "8080", "--log-level", "info"],
+    }
+    ]
+}
