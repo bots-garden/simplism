@@ -3,7 +3,7 @@ raider-1:
   wasm-function: handle
   http-port: 8001
   log-level: info
-  config: '{"basestar":"9000","name":"raider-1"}'
+  config: '{"basestar":"http://localhost:9000","name":"raider-1","http-port":"8001"}'
   #allow-hosts: '["localhost", "127.0.0.1"]'
   #allow-paths: '{"path":"/"}'
   #config: '{"name":"hello"}'
@@ -13,9 +13,12 @@ raider-2:
   wasm-function: handle
   http-port: 8002
   log-level: info
-  config: '{"basestar":"9000","name":"raider-2"}'
+  config: '{"basestar":"http://localhost:9000","name":"raider-2","http-port":"8002"}'
+  #allow-hosts: '["localhost", "127.0.0.1"]'
+  #allow-paths: '{"path":"/"}'
+  #config: '{"name":"hello"}'
 
-basestar:
+basestar-mother:
   wasm-file: ./basestar/basestar.wasm
   wasm-function: handle
   http-port: 9000

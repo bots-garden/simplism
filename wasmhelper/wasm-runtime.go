@@ -21,7 +21,9 @@ type WasmPlugin struct {
 var (
 	wasmPlugins     = make(map[string]*WasmPlugin)
 	counter         = 0
-	poolSize        = 4
+	poolSize        = 1 //4 (this should be a parameter) 
+	// if several wasm plugins are needed,
+	// you never know which memory you are using (eg: counters)
 	prefixPluginKey = "plugin"
 )
 
