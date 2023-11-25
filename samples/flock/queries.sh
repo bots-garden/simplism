@@ -1,17 +1,15 @@
 #!/bin/bash
 
-curl http://localhost:8001
-curl http://localhost:8002
+for i in {1..100}
+do
+    curl http://localhost:8001/move
+    curl http://localhost:8002/move
+    curl http://localhost:8003/move
 
-#curl http://localhost:8001 \
-#-H 'content-type: application/json; charset=utf-8' \
-#-d '{"message":"hello"}'
-
-#curl http://localhost:8002 \
-#-H 'content-type: application/json; charset=utf-8' \
-#-d '{"message":"hello"}'
+    curl http://localhost:9000/raiders
+done
 
 
-#curl http://localhost:9000 \
-#-H 'content-type: application/json; charset=utf-8' \
-#-d '{"message":"hello"}'
+#hey -n 3000 -c 1000 -m GET http://localhost:8001/move &
+#hey -n 3000 -c 1000 -m GET http://localhost:8002/move &
+#hey -n 3000 -c 1000 -m GET http://localhost:8003/move &

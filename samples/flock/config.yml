@@ -3,7 +3,16 @@ raider-1:
   wasm-function: handle
   http-port: 8001
   log-level: info
-  config: '{"basestar":"http://localhost:9000","name":"raider-1","http-port":"8001"}'
+  config: |
+    {
+      "basestar-url":"http://localhost:9000",
+      "raider-name":"raider-1",
+      "raider-url":"http://localhost:8001",
+      "y-start":"10",
+      "x-start":"10"
+    }
+
+  #config: '{"basestar-url":"http://localhost:9000","raider-name":"raider-1","raider-url":"http://localhost:8001"}'
   #allow-hosts: '["localhost", "127.0.0.1"]'
   #allow-paths: '{"path":"/"}'
   #config: '{"name":"hello"}'
@@ -13,18 +22,46 @@ raider-2:
   wasm-function: handle
   http-port: 8002
   log-level: info
-  config: '{"basestar":"http://localhost:9000","name":"raider-2","http-port":"8002"}'
+  config: |
+    {
+      "basestar-url":"http://localhost:9000",
+      "raider-name":"raider-2",
+      "raider-url":"http://localhost:8002",
+      "y-start":"5",
+      "x-start":"5"
+    }
+
   #allow-hosts: '["localhost", "127.0.0.1"]'
   #allow-paths: '{"path":"/"}'
   #config: '{"name":"hello"}'
+
+raider-3:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8003
+  log-level: info
+  config: |
+    {
+      "basestar-url":"http://localhost:9000",
+      "raider-name":"raider-3",
+      "raider-url":"http://localhost:8003",
+      "y-start":"30",
+      "x-start":"20"
+    }
+
 
 basestar-mother:
   wasm-file: ./basestar/basestar.wasm
   wasm-function: handle
   http-port: 9000
   log-level: info
-  config: '{"name":"basestar"}'
-
+  config: |
+    {
+      "basestar-name":"basestar-mummy",
+      "x-max":"100",
+      "y-max":"100",
+      "raiders": "raider-1,raider-2,raider-3"
+    }
 
 # This is 🚧 work in progress
 service-discovery:
