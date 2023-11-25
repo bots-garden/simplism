@@ -8,10 +8,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require (
-	github.com/extism/go-pdk v1.0.0-rc2 // indirect
-	golang.org/x/net v0.18.0 // indirect
-)
+require golang.org/x/net v0.18.0 // indirect
 
 require (
 	github.com/go-resty/resty/v2 v2.10.0

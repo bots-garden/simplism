@@ -143,6 +143,7 @@ hello-3:
 ```
 
 Run the server**s** like this: `simplism flock ./config.yml`. It will start **3** instances of Simplism.
+
 > See `samples/flock` repository for a more complex example.
 
 ## Generate Extism plug-in projects for Simplism
