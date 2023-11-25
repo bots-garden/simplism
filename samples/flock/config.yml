@@ -15,6 +15,13 @@ raider-2:
   log-level: info
   config: '{"basestar":"9000","name":"raider-2"}'
 
+basestar:
+  wasm-file: ./basestar/basestar.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  config: '{"name":"basestar"}'
+
 
 # This is 🚧 work in progress
 service-discovery:

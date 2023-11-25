@@ -114,7 +114,7 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 //
 // It takes a `wasmArgs` parameter of type `WasmArguments` which contains the necessary arguments for configuring the WebAssembly environment.
 // The function does not return anything.
-func Listen(wasmArgs WasmArguments) {
+func Listen(wasmArgs WasmArguments, configKey string) {
 
 	// fmt.Println("🤖", wasmArgs)
 
@@ -187,10 +187,16 @@ func Listen(wasmArgs WasmArguments) {
 
 	})
 
-	go func() {
+	go func(configKey string) {
 
 		if wasmArgs.CertFile != "" && wasmArgs.KeyFile != "" {
-			fmt.Println("🌍 http(s) server is listening on:", wasmArgs.HTTPPort)
+			var message string
+			if configKey == "" {
+				message = "🌍 http(s) server is listening on: " + wasmArgs.HTTPPort
+			} else {
+				message = "🌍 [" + configKey + "] http(s) server is listening on: " + wasmArgs.HTTPPort
+			}
+			fmt.Println(message)
 			// Path to the TLS certificate and key files
 			certFile := wasmArgs.CertFile
 			keyFile := wasmArgs.KeyFile
@@ -200,13 +206,19 @@ func Listen(wasmArgs WasmArguments) {
 				log.Fatal(err)
 			}
 		} else {
-			fmt.Println("🌍 http server is listening on:", wasmArgs.HTTPPort)
+			var message string
+			if configKey == "" {
+				message = "🌍 http server is listening on: " + wasmArgs.HTTPPort
+			} else {
+				message = "🌍 [" + configKey + "] http(s) server is listening on: " + wasmArgs.HTTPPort
+			}
+			fmt.Println(message)
 			err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-	}()
+	}(configKey)
 
 	// Listen for the interrupt signal.
 	<-ctx.Done()

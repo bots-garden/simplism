@@ -25,6 +25,6 @@ func startConfigMode(configFilepath string) {
 		// Start the server with the specified wasm plugin in the config
 		wasmArguments := wasmArgumentsMap[configKey]
 		wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
-		server.Listen(wasmArguments)
+		server.Listen(wasmArguments, configKey)
 	}
 }

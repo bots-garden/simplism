@@ -47,5 +47,5 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AuthHeaderValue: *authHeaderValue,
 		CertFile:        *certFile,
 		KeyFile:         *keyFile,
-	})
+	},"") // no config key
 }

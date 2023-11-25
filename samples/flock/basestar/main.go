@@ -26,6 +26,10 @@ func handle() {
     // read function argument from the memory
     input := pdk.Input()
 
+    configName, _ := pdk.GetConfig("name")
+
+    pdk.Log(pdk.LogInfo, "⭐️ config name: "+configName)
+
     /* Expected argument
     type Argument struct {
         Body   string              `json:"body"`
