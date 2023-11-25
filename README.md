@@ -14,7 +14,7 @@
 
 ```bash
 SIMPLISM_DISTRO="Linux_arm64.tar" # 👀 https://github.com/bots-garden/simplism/releases
-VERSION="0.0.2"
+VERSION="0.0.3"
 wget https://github.com/bots-garden/simplism/releases/download/v${VERSION}/simplism_${SIMPLISM_DISTRO}.tar.gz -O simplism.tar.gz 
 tar -xf simplism.tar.gz -C /usr/bin
 rm simplism.tar.gz
@@ -120,6 +120,30 @@ hello-plugin:
 ```
 
 Run the server like this: `simplism config ./config.yml hello-plugin`
+
+> **Run Simplism in "flock" mode**:
+
+```yaml
+# config.yml
+hello-1:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8081
+  log-level: info
+hello-2:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8082
+  log-level: info
+hello-3:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8083
+  log-level: info
+```
+
+Run the server**s** like this: `simplism flock ./config.yml`. It will start **3** instances of Simplism.
+> See `samples/flock` repository for a more complex example.
 
 ## Generate Extism plug-in projects for Simplism
 
