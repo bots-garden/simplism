@@ -1,47 +1,47 @@
 
 Summary:
-  Total:	11.4207 secs
-  Slowest:	7.1923 secs
-  Fastest:	0.0532 secs
-  Average:	3.0086 secs
-  Requests/sec:	262.6801
+  Total:	12.6338 secs
+  Slowest:	7.6904 secs
+  Fastest:	0.1548 secs
+  Average:	3.2973 secs
+  Requests/sec:	237.4578
   
-  Total data:	77922 bytes
+  Total data:	77792 bytes
   Size/request:	25 bytes
 
 Response time histogram:
-  0.053 [1]	|
-  0.767 [158]	|■■■■■■■■■■
-  1.481 [309]	|■■■■■■■■■■■■■■■■■■■
-  2.195 [357]	|■■■■■■■■■■■■■■■■■■■■■■
-  2.909 [574]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  3.623 [544]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  4.337 [663]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  5.051 [107]	|■■■■■■
-  5.764 [141]	|■■■■■■■■■
-  6.478 [88]	|■■■■■
-  7.192 [58]	|■■■
+  0.155 [1]	|
+  0.908 [198]	|■■■■■■■■■■■■
+  1.662 [217]	|■■■■■■■■■■■■■
+  2.415 [582]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.169 [412]	|■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.923 [457]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  4.676 [660]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  5.430 [163]	|■■■■■■■■■■
+  6.183 [169]	|■■■■■■■■■■
+  6.937 [92]	|■■■■■■
+  7.690 [49]	|■■■
 
 
 Latency distribution:
-  10% in 1.0119 secs
-  25% in 1.9853 secs
-  50% in 3.0920 secs
-  75% in 3.7240 secs
-  90% in 4.9328 secs
-  95% in 5.7394 secs
-  99% in 6.6841 secs
+  10% in 1.2461 secs
+  25% in 2.1071 secs
+  50% in 3.3821 secs
+  75% in 4.1872 secs
+  90% in 5.4737 secs
+  95% in 6.1414 secs
+  99% in 7.2106 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:	0.0197 secs, 0.0532 secs, 7.1923 secs
+  DNS+dialup:	0.0293 secs, 0.1548 secs, 7.6904 secs
   DNS-lookup:	0.0000 secs, 0.0000 secs, 0.0000 secs
-  req write:	0.0081 secs, 0.0000 secs, 0.1280 secs
-  resp wait:	2.4281 secs, 0.0398 secs, 6.3663 secs
-  resp read:	0.0002 secs, 0.0000 secs, 0.0666 secs
+  req write:	0.0040 secs, 0.0000 secs, 0.0624 secs
+  resp wait:	2.4266 secs, 0.0088 secs, 5.0698 secs
+  resp read:	0.0001 secs, 0.0000 secs, 0.0326 secs
 
 Status code distribution:
-  [200]	2997 responses
-  [408]	3 responses
+  [200]	2992 responses
+  [408]	8 responses
 
 
 

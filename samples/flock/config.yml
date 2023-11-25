@@ -1,0 +1,21 @@
+raider-1:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8001
+  log-level: info
+  config: '{"basestar":"9000","name":"raider-1"}'
+  #allow-hosts: '["localhost", "127.0.0.1"]'
+  #allow-paths: '{"path":"/"}'
+  #config: '{"name":"hello"}'
+
+raider-2:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8002
+  log-level: info
+  config: '{"basestar":"9000","name":"raider-2"}'
+
+
+# This is 🚧 work in progress
+service-discovery:
+  http-port: 8888

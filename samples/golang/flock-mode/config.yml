@@ -23,6 +23,15 @@ hello-rust-plugin:
   wasm-function: hello
   http-port: 8088
 
+hello-rust-plugin-2:
+  wasm-file: ../../rustlang/hello-plugin/target/wasm32-wasi/release/hello_plugin.wasm
+  wasm-function: hello
+  http-port: 8089
+
+hello-rust-plugin-3:
+  wasm-file: ../../rustlang/hello-plugin/target/wasm32-wasi/release/hello_plugin.wasm
+  wasm-function: hello
+  http-port: 8090
 
 # This is 🚧 work in progress
 service-discovery:
