@@ -12,14 +12,14 @@ fn headers_map() ->     std::collections::HashMap<String, Vec<String>> {
 }
 
 #[derive(Serialize)]
-struct ReturnValue {
+struct ResponseData {
     pub body: String,
     pub header: std::collections::HashMap<String, Vec<String>>,
     pub code: i32,
 }
 
 #[derive(Serialize, Deserialize)]
-struct Argument {
+struct RequestData {
     pub body: String,
     pub header: std::collections::HashMap<String, Vec<String>>,
     pub method: String,
@@ -29,15 +29,15 @@ struct Argument {
 #[plugin_fn]
 pub fn handle(input: String) -> FnResult<Json<ReturnValue>> {
 
-    let arg: Argument = serde_json::from_str(&input).unwrap();
+    let req: RequestData = serde_json::from_str(&input).unwrap();
 
-    let message: String = "👋 Hello ".to_string() + &arg.body;
+    let message: String = "👋 Hello ".to_string() + &req.body;
 
-    let output = ReturnValue { 
+    let resp = ResponseData { 
         body: message , 
         code: 200, 
         header: headers_map()
     };
     
-    Ok(Json(output))
+    Ok(Json(resp))
 }

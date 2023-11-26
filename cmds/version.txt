@@ -1,1 +1,1 @@
-simplism v0.0.3 🦑 [squid]
+simplism v0.0.4 🐙 [octopus]
