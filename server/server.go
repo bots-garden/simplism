@@ -41,7 +41,7 @@ func getHostsFromString(allowHosts string) []string {
 	var hosts []string
 	unmarshallError := json.Unmarshal([]byte(allowHosts), &hosts)
 	if unmarshallError != nil {
-		fmt.Println("🔴 getHostsFromString:", unmarshallError)
+		fmt.Println("😡 getHostsFromString:", unmarshallError)
 		os.Exit(1)
 	}
 	return hosts
@@ -56,7 +56,7 @@ func getPathsFromJSONString(allowPaths string) map[string]string {
 	var paths map[string]string
 	unmarshallError := json.Unmarshal([]byte(allowPaths), &paths)
 	if unmarshallError != nil {
-		fmt.Println("🔴 getPathsFromJSONString:", unmarshallError)
+		fmt.Println("😡 getPathsFromJSONString:", unmarshallError)
 		os.Exit(1)
 	}
 	return paths
@@ -70,7 +70,7 @@ func getConfigFromJSONString(config string) map[string]string {
 	var manifestConfig map[string]string
 	unmarshallError := json.Unmarshal([]byte(config), &manifestConfig)
 	if unmarshallError != nil {
-		fmt.Println("🔴 getConfigFromJSONString:", unmarshallError)
+		fmt.Println("😡 getConfigFromJSONString:", unmarshallError)
 		os.Exit(1)
 	}
 	return manifestConfig
@@ -101,7 +101,7 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 		Get(wasmArgs.URL)
 
 	if resp.IsError() {
-		return errors.New("🔴 error while downloading the wasm file")
+		return errors.New("😡 error while downloading the wasm file")
 	}
 
 	if err != nil {
@@ -196,15 +196,17 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			} else {
 				message = "🌍 [" + configKey + "] http(s) server is listening on: " + wasmArgs.HTTPPort
 			}
-			fmt.Println(message)
+
 			// Path to the TLS certificate and key files
 			certFile := wasmArgs.CertFile
 			keyFile := wasmArgs.KeyFile
 
+			fmt.Println(message)
 			err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, nil)
 			if err != nil {
-				log.Fatal(err)
-			}
+				log.Fatal("😡", err)
+				os.Exit(1)
+			} 
 		} else {
 			var message string
 			if configKey == "" {
@@ -215,8 +217,9 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			fmt.Println(message)
 			err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
 			if err != nil {
-				log.Fatal(err)
-			}
+				log.Fatal("😡", err)
+				os.Exit(1)
+			} 
 		}
 	}(configKey)
 

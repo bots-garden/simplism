@@ -18,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) < 1 {
-		fmt.Println("🔴 invalid command")
+		fmt.Println("😡 invalid command")
 		os.Exit(0)
 	}
 
@@ -27,7 +27,7 @@ func main() {
 	errCmd := cmds.Parse(command, flag.Args()[1:])
 
 	if errCmd != nil {
-		fmt.Println(errCmd)
+		fmt.Println("😡", errCmd)
 		os.Exit(1)
 	}
 }

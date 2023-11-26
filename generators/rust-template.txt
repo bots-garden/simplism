@@ -27,7 +27,7 @@ struct RequestData {
 }
 
 #[plugin_fn]
-pub fn handle(input: String) -> FnResult<Json<ReturnValue>> {
+pub fn handle(input: String) -> FnResult<Json<ResponseData>> {
 
     let req: RequestData = serde_json::from_str(&input).unwrap();
 

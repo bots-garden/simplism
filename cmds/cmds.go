@@ -67,6 +67,6 @@ func Parse(command string, args []string) error {
 
 	// TODO: add help, about
 	default:
-		return fmt.Errorf("🔴 invalid command")
+		return fmt.Errorf("😡 invalid command")
 	}
 }

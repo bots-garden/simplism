@@ -19,7 +19,7 @@ import (
 func getExecutablePath(progName string) string {
 	executablePath, err := exec.LookPath("simplism")
 	if err != nil {
-		fmt.Println("🔴 Error finding executable:", err)
+		fmt.Println("😡 Error finding executable:", err)
 		os.Exit(1)
 	}
 	return executablePath
@@ -65,7 +65,7 @@ func startFlockMode(configFilepath string) {
 				}
 				err := cmd.Start()
 				if err != nil {
-					fmt.Println("🔴 Error when starting a new simplism process:", configKey, err)
+					fmt.Println("😡 Error when starting a new simplism process:", configKey, err)
 				} else {
 					protection.Lock()
 					defer protection.Unlock()
@@ -89,28 +89,32 @@ func startFlockMode(configFilepath string) {
 				wasmServicesJSON, err := json.Marshal(wasmServices)
 				if err != nil {
 					response.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprintln(response, "🔴 Error when transforming the wasmServices map to json:", err)
+					fmt.Fprintln(response, "😡 Error when transforming the wasmServices map to json:", err)
 				}
 				response.WriteHeader(http.StatusOK)
 				fmt.Fprintln(response, string(wasmServicesJSON))
 			})
 
 			if serviceDiscoveryWasmArguments.CertFile != "" && serviceDiscoveryWasmArguments.KeyFile != "" {
-				fmt.Println("🔎 http(s) service-discovery flock server is listening on:", serviceDiscoveryWasmArguments.HTTPPort)
 				// Path to the TLS certificate and key files
 				certFile := serviceDiscoveryWasmArguments.CertFile
 				keyFile := serviceDiscoveryWasmArguments.KeyFile
 
+				fmt.Println("🔎 http(s) service-discovery flock server is listening on:", serviceDiscoveryWasmArguments.HTTPPort)
+
 				err := http.ListenAndServeTLS(":"+serviceDiscoveryWasmArguments.HTTPPort, certFile, keyFile, nil)
 				if err != nil {
-					log.Fatal(err)
-				}
+					log.Fatal("😡", err)
+					os.Exit(1) // 🤔
+				} 
 			} else {
 				fmt.Println("🔎 http service-discovery flock server is listening on:", serviceDiscoveryWasmArguments.HTTPPort)
+
 				err := http.ListenAndServe(":"+serviceDiscoveryWasmArguments.HTTPPort, nil)
 				if err != nil {
-					log.Fatal(err)
-				}
+					log.Fatal("😡", err)
+					os.Exit(1) // 🤔
+				} 
 			}
 
 		}()

@@ -66,7 +66,7 @@ func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.Wasm
 func getWasmArgumentsMap(configFilepath string) map[string]server.WasmArguments {
 	wasmArgumentsMap, err := readYamlFile(configFilepath)
 	if err != nil {
-		fmt.Println("🔴 (getWasmArgumentsMap) reading the yaml config file:", err)
+		fmt.Println("😡 (getWasmArgumentsMap) reading the yaml config file:", err)
 		os.Exit(1)
 	}
     return wasmArgumentsMap

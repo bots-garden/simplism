@@ -16,7 +16,7 @@ func startConfigMode(configFilepath string) {
 	wasmArgumentsMap := getWasmArgumentsMap(configFilepath)
 
 	if len(flag.Args()) <= 2 {
-		fmt.Println("🔴 you must provide a configuration key")
+		fmt.Println("😡 you must provide a configuration key")
 		os.Exit(1)
 
 	} else {

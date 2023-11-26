@@ -11,6 +11,7 @@ simple-plugin:
   wasm-file: ../simple-plugin/simple.wasm
   wasm-function: say_hello
   http-port: 8086
+  #http-port: 8085
 
 simple-rust-plugin:
   wasm-file: ../../rustlang/simple-plugin/target/wasm32-wasi/release/simple_plugin.wasm
