@@ -11,8 +11,7 @@ ARG TINYGO_VERSION=0.30.0
 ARG EXTISM_ARCH=amd64
 ARG EXTISM_VERSION=0.3.3
 
-ARG NODE_VERSION=v21.1.0
-ARG NODE_DISTRO=linux-x64
+ARG NODE_MAJOR=20
 
 USER root
 
@@ -69,7 +68,8 @@ EOF
 # Install Extism CLI
 # ------------------------------------
 RUN <<EOF
-EXTISM_ARCH="${WORKSPACE_ARCH}"
+EXTISM_ARCH="${EXTISM_ARCH}"
+EXTISM_VERSION="${EXTISM_VERSION}"
 
 wget https://github.com/extism/cli/releases/download/v${EXTISM_VERSION}/extism-v${EXTISM_VERSION}-linux-${EXTISM_ARCH}.tar.gz
 
@@ -96,6 +96,7 @@ EOF
 # Install NodeJS
 # ------------------------------------
 RUN <<EOF
+NODE_MAJOR="${NODE_MAJOR}"
 apt-get update && apt-get install -y ca-certificates curl gnupg
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
