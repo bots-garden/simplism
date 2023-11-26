@@ -12,11 +12,6 @@ raider-1:
       "x-start":"10"
     }
 
-  #config: '{"basestar-url":"http://localhost:9000","raider-name":"raider-1","raider-url":"http://localhost:8001"}'
-  #allow-hosts: '["localhost", "127.0.0.1"]'
-  #allow-paths: '{"path":"/"}'
-  #config: '{"name":"hello"}'
-
 raider-2:
   wasm-file: ./raider/raider.wasm
   wasm-function: handle
@@ -31,10 +26,6 @@ raider-2:
       "x-start":"5"
     }
 
-  #allow-hosts: '["localhost", "127.0.0.1"]'
-  #allow-paths: '{"path":"/"}'
-  #config: '{"name":"hello"}'
-
 raider-3:
   wasm-file: ./raider/raider.wasm
   wasm-function: handle
@@ -48,7 +39,6 @@ raider-3:
       "y-start":"30",
       "x-start":"20"
     }
-
 
 basestar-mother:
   wasm-file: ./basestar/basestar.wasm
