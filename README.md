@@ -144,6 +144,17 @@ hello-3:
 
 Run the server**s** like this: `simplism flock ./config.yml`. It will start **3** instances of Simplism.
 
+If you add this section to the yaml file:
+
+```yaml
+service-discovery:
+  http-port: 8888
+```
+Then this endpoint: `http://localhost:8888` will return a JSON payload with the list of the wasm services:
+```bash
+{"hello-1":["8081","say_hello"],"hello-2":["8082","hello"],"hello-3":["8083","hello"]}
+```
+
 > See `samples/flock` repository for a more complex example.
 
 ## Generate Extism plug-in projects for Simplism

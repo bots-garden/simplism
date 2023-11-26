@@ -17,7 +17,6 @@ simple-rust-plugin:
   wasm-function: hello
   http-port: 8087
 
-
 hello-rust-plugin:
   wasm-file: ../../rustlang/hello-plugin/target/wasm32-wasi/release/hello_plugin.wasm
   wasm-function: hello
