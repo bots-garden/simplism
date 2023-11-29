@@ -24,6 +24,7 @@ type WasmArguments struct {
 	LogLevel        string `yaml:"log-level,omitempty"`
 	AllowHosts      string `yaml:"allow-hosts,omitempty"`
 	AllowPaths      string `yaml:"allow-paths,omitempty"`
+	EnvVars         string `yaml:"env,omitempty"`
 	Config          string `yaml:"config,omitempty"`
 	Wasi            bool   `yaml:"wasi,omitempty"`
 	URL             string `yaml:"wasm-url,omitempty"`
@@ -31,6 +32,16 @@ type WasmArguments struct {
 	AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
 	CertFile        string `yaml:"cert-file,omitempty"`
 	KeyFile         string `yaml:"key-file,omitempty"`
+}
+
+func getEnvVarsFromString(envars string) []string {
+	var vars []string
+	unmarshallError := json.Unmarshal([]byte(envars), &vars)
+	if unmarshallError != nil {
+		fmt.Println("😡 getEnvVarsFromString:", unmarshallError)
+		os.Exit(1)
+	}
+	return vars
 }
 
 // getHostsFromString gets a string representing a JSON array of hosts and returns a slice of strings containing the hosts.
@@ -130,6 +141,15 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	paths := getPathsFromJSONString(wasmArgs.AllowPaths)
 	manifestConfig := getConfigFromJSONString(wasmArgs.Config)
 
+	// Add environment variable to the manifest config
+	envVars := getEnvVarsFromString(wasmArgs.EnvVars)
+	// loop throw envVars and add it to the manifest config
+	for _, envVar := range envVars {
+		manifestConfig[envVar] = os.Getenv(envVar)
+	}
+	// now we can use `pdk.GetConfig()` to get the value of the environment variables
+
+
 	level := wasmhelper.GetLevel(wasmArgs.LogLevel)
 
 	ctx := context.Background()
@@ -206,7 +226,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			if err != nil {
 				log.Fatal("😡", err)
 				os.Exit(1)
-			} 
+			}
 		} else {
 			var message string
 			if configKey == "" {
@@ -219,7 +239,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			if err != nil {
 				log.Fatal("😡", err)
 				os.Exit(1)
-			} 
+			}
 		}
 	}(configKey)
 
