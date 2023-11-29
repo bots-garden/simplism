@@ -85,6 +85,8 @@ Flags for listen command:
                                Default: {}
   --config            string   Configuration data (json string)
                                Default: {}
+  --env               string   Environment variables to forward to the wasm plug-in
+                               Default: []
   --wasi              bool     Default: true
   --wasm-url          string   Url to download the wasm file
   --auth-header-name  string   Authentication header name, ex: PRIVATE-TOKEN
@@ -92,6 +94,7 @@ Flags for listen command:
   --cert-file         string   Path to certificate file (https)
   --key-file          string   Path to key file (https)
 ```
+> *Remarks: look at the `./samples` directory*
 
 > **Examples**:
 

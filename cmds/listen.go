@@ -20,7 +20,11 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	logLevel := flagSet.String("log-level", "", "Log level to print message")
 	allowHosts := flagSet.String("allow-hosts", `["*"]`, "Hosts for HTTP request (json array)")
 	allowPaths := flagSet.String("allow-paths", "{}", "Allowed paths to write and read files (json string)")
+
+	envVars := flagSet.String("env", `[]`, "Environment variables to forward to the wasm plug-in")
+
 	config := flagSet.String("config", "{}", "Configuration data (json string)")
+
 	wasi := flagSet.Bool("wasi", true, "")
 
 	wasmURL := flagSet.String("wasm-url", "", "Url to download the wasm file")
@@ -40,6 +44,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		LogLevel:        *logLevel,
 		AllowHosts:      *allowHosts,
 		AllowPaths:      *allowPaths,
+		EnvVars:         *envVars,
 		Config:          *config,
 		Wasi:            *wasi,
 		URL:             *wasmURL,
@@ -47,5 +52,5 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AuthHeaderValue: *authHeaderValue,
 		CertFile:        *certFile,
 		KeyFile:         *keyFile,
-	},"") // no config key
+	}, "") // no config key
 }

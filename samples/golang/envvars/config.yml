@@ -1,0 +1,6 @@
+envvars-plugin:
+  wasm-file: ./envvars.wasm
+  wasm-function: handle
+  http-port: 8080
+  log-level: info
+  env: '["MESSAGE","ABOUT"]'
