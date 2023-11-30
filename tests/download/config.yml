@@ -1,0 +1,8 @@
+simple-plugin:
+  wasm-file: ./simple.wasm
+  wasm-function: say_hello
+  http-port: 8080
+  wasm-url: http://0.0.0.0:3333/simple.wasm
+  wasm-url-auth-header: 'DOWNLOAD-TOKEN=ilovepandas'
+  # or use export WASM_URL_AUTH_HEADER='DOWNLOAD-TOKEN=ilovepandas'
+

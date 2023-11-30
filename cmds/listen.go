@@ -28,8 +28,11 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	wasi := flagSet.Bool("wasi", true, "")
 
 	wasmURL := flagSet.String("wasm-url", "", "Url to download the wasm file")
-	authHeaderName := flagSet.String("auth-header-name", "", "Authentication header name, ex: PRIVATE-TOKEN")
-	authHeaderValue := flagSet.String("auth-header-value", "", "Value of the authentication header, ex: IlovePandas")
+
+	wasmURLAuthHeader := flagSet.String("wasm-url-auth-header", "", "Authentication header ex: `PRIVATE-TOKEN=IlovePandas`")
+
+	//authHeaderName := flagSet.String("auth-header-name", "", "Authentication header name, ex: PRIVATE-TOKEN")
+	//authHeaderValue := flagSet.String("auth-header-value", "", "Value of the authentication header, ex: IlovePandas")
 
 	certFile := flagSet.String("cert-file", "", "Certificate file")
 	keyFile := flagSet.String("key-file", "", "Key file")
@@ -37,20 +40,21 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	flagSet.Parse(args[2:])
 
 	server.Listen(server.WasmArguments{
-		FilePath:        wasmFilePath,
-		FunctionName:    wasmFunctionName,
-		HTTPPort:        *httpPort,
-		Input:           *input,
-		LogLevel:        *logLevel,
-		AllowHosts:      *allowHosts,
-		AllowPaths:      *allowPaths,
-		EnvVars:         *envVars,
-		Config:          *config,
-		Wasi:            *wasi,
-		URL:             *wasmURL,
-		AuthHeaderName:  *authHeaderName,
-		AuthHeaderValue: *authHeaderValue,
-		CertFile:        *certFile,
-		KeyFile:         *keyFile,
+		FilePath:     wasmFilePath,
+		FunctionName: wasmFunctionName,
+		HTTPPort:     *httpPort,
+		Input:        *input,
+		LogLevel:     *logLevel,
+		AllowHosts:   *allowHosts,
+		AllowPaths:   *allowPaths,
+		EnvVars:      *envVars,
+		Config:       *config,
+		Wasi:         *wasi,
+		URL:          *wasmURL,
+		WasmURLAuthHeader: *wasmURLAuthHeader,
+		//AuthHeaderName:  *authHeaderName,
+		//AuthHeaderValue: *authHeaderValue,
+		CertFile: *certFile,
+		KeyFile:  *keyFile,
 	}, "") // no config key
 }

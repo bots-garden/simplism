@@ -2,4 +2,4 @@ simple-plugin:
   wasm-file: ./simple.wasm
   wasm-function: say_hello
   http-port: 8080
-
+  #env: "[]"

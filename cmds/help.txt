@@ -14,20 +14,20 @@ Available Commands:
               Arguments: [yaml file path] [config key]
 
 Flags for listen command:
-  --http-port         string   HTTP port of the Simplism server (default: 8080)
-  --log-level         string   Log level to print message
-                               Possible values: error, warn, info, debug, trace
-  --allow-hosts       string   Hosts for HTTP request (json array) 
-                               Default: ["*"]
-  --allow-paths       string   Allowed paths to write and read files (json string) 
-                               Default: {}
-  --config            string   Configuration data (json string)
-                               Default: {}
-  --env               string   Environment variables to forward to the wasm plug-in
-                               Default: []
-  --wasi              bool     Default: true
-  --wasm-url          string   Url to download the wasm file
-  --auth-header-name  string   Authentication header name, ex: PRIVATE-TOKEN
-  --auth-header-value string   Value of the authentication header, ex: IlovePandas  
-  --cert-file         string   Path to certificate file (https)
-  --key-file          string   Path to key file (https)
+  --http-port            string   HTTP port of the Simplism server (default: 8080)
+  --log-level            string   Log level to print message
+                                  Possible values: error, warn, info, debug, trace
+  --allow-hosts          string   Hosts for HTTP request (json array) 
+                                  Default: ["*"]
+  --allow-paths          string   Allowed paths to write and read files (json string) 
+                                  Default: {}
+  --config               string   Configuration data (json string)
+                                  Default: {}
+  --env                  string   Environment variables to forward to the wasm plug-in
+                                  Default: []
+  --wasi                 bool     Default: true
+  --wasm-url             string   Url to download the wasm file
+  --wasm-url-auth-header string   Authentication header to download the wasm file, ex: "PRIVATE-TOKEN=IlovePandas"
+                                  Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
+  --cert-file            string   Path to certificate file (https)
+  --key-file             string   Path to key file (https)

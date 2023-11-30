@@ -54,6 +54,11 @@ func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.Wasm
 	if wasmArguments.HTTPPort == "" {
 		wasmArguments.HTTPPort = "8080"
 	}
+
+	if wasmArguments.EnvVars == "" {
+		wasmArguments.EnvVars = "[]"
+	}
+
     //TODO: add log level
 	return wasmArguments
 
