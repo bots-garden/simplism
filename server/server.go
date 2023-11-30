@@ -129,8 +129,6 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 		}
 	}
 
-
-
 	resp, err := client.R().
 		SetOutput(wasmArgs.FilePath).
 		Get(wasmArgs.URL)
@@ -161,6 +159,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			os.Exit(1)
 		}
 	}
+
 	hosts := getHostsFromString(wasmArgs.AllowHosts)
 	paths := getPathsFromJSONString(wasmArgs.AllowPaths)
 	manifestConfig := getConfigFromJSONString(wasmArgs.Config)
@@ -228,6 +227,74 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			}
 		}
 
+	})
+
+	http.HandleFunc("/reload", func(response http.ResponseWriter, request *http.Request) {
+		// wait for:
+		// - POST request
+		// - url for the wasm file
+		// - admin-reload-token and ADMIN_RELOAD_TOKEN env variable
+
+		// Test if it's a POST request
+		if request.Method == "POST" {
+			body := httphelper.GetBody(request)
+			// body is a JSON string, extract the url field value of the JSON string
+			bodyMap := map[string]string{}
+			err := json.Unmarshal([]byte(body), &bodyMap)
+
+			if err != nil {
+				// send response http code error
+				response.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintln(response, "😡 " + err.Error())
+			} else {
+
+				// TODO test token
+
+				wasmArgs.URL = bodyMap["wasm-url"]
+				wasmArgs.FilePath = bodyMap["wasm-file"]
+				wasmArgs.FunctionName = bodyMap["wasm-function"]
+
+				fmt.Println("🚀 downloading", wasmArgs.URL, "...")
+				err := downloadWasmFile(wasmArgs)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1) // TODO: do something else
+				}
+
+				hosts := getHostsFromString(wasmArgs.AllowHosts)
+				paths := getPathsFromJSONString(wasmArgs.AllowPaths)
+				manifestConfig := getConfigFromJSONString(wasmArgs.Config)
+			
+				// Add environment variable to the manifest config
+				envVars := getEnvVarsFromString(wasmArgs.EnvVars)
+				// loop throw envVars and add it to the manifest config
+				for _, envVar := range envVars {
+					manifestConfig[envVar] = os.Getenv(envVar)
+				}
+				// now we can use `pdk.GetConfig()` to get the value of the environment variables
+			
+				level := wasmhelper.GetLevel(wasmArgs.LogLevel)
+			
+				//ctx := context.Background()
+			
+				config, manifest := wasmhelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
+			
+				wasmhelper.ReplacePluginInPool(0, ctx, config, manifest)
+				fmt.Println("🙂 new wasm plug-in reloaded")
+
+				response.WriteHeader(http.StatusOK)
+				fmt.Fprintln(response, string("🙂 new wasm plug-in reloaded"))
+
+			}
+
+			
+		} else {
+			// response that it's not allowed
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			fmt.Fprintln(response, "😡 Method not allowed")
+		}
+		
+		
 	})
 
 	go func(configKey string) {

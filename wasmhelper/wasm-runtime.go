@@ -145,6 +145,27 @@ func GeneratePluginsPool(ctx context.Context, config extism.PluginConfig, manife
 	}
 }
 
+// ResetPluginsPool resets the plugins pool.
+//
+// No parameters.
+// No return types.
+func ResetPluginsPool() {
+	wasmPlugins = make(map[string]*WasmPlugin)
+}
+
+// ReplacePluginInPool replaces a plugin in the pool at the specified index.
+//
+// Parameters:
+// - index: the index of the plugin in the pool.
+// - ctx: the context for the function execution.
+// - config: the plugin configuration.
+// - manifest: the plugin manifest.
+func ReplacePluginInPool(index int, ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) {
+	wasmPlugin := getPluginInstance(ctx, config, manifest)
+	key := prefixPluginKey + strconv.Itoa(index)
+	storePlugin(key, wasmPlugin)
+}
+
 // CallWasmFunction executes a WebAssembly function.
 //
 // CallWasmFunction takes in the name of the WebAssembly function as a
