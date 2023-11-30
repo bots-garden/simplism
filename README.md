@@ -93,6 +93,8 @@ Flags for listen command:
                                   Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
   --cert-file            string   Path to certificate file (https)
   --key-file             string   Path to key file (https)
+  --admin-reload-token.  string   Admin token to be authorized to reload the wasm-plugin
+                                  Or use this environment variable: ADMIN_RELOAD_TOKEN
 ```
 > *Remarks: look at the `./samples` directory*
 
@@ -239,6 +241,30 @@ go build
 
 > ✋ **important**: you can write Extism plug-ins with Go, Rust, AssemblyScript, Zig, C, Haskell and JavaScript
 
+## Reload remotely a wasm plug-in without stopping the Simplism server
+
+### Start the Simplism server
+
+```bash
+simplism listen ./hey-one.wasm handle --http-port 8080  --admin-reload-token "1234567890"
+```
+
+or
+
+```bash
+export ADMIN_RELOAD_TOKEN="1234567890"
+simplism listen ./hey-one.wasm handle --http-port 8080
+```
+
+### Reload the wasm plug-in with the /reload api
+
+```bash
+curl -v -X POST \
+http://localhost:8080/reload \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-reload-token:1234567890' \
+-d '{"wasm-url":"http://0.0.0.0:3333/hey-two/hey-two.wasm", "wasm-file": "./hey-two.wasm", "wasm-function": "handle"}'
+```
+
 [^1]: Wazero is a project from **[Tetrate](https://tetrate.io/)**
 [^2]: Extism is a project from **[Dylibso](https://dylibso.com/)**
-

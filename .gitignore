@@ -1,5 +1,5 @@
 *.wasm
-!tests/download/wasm-files/*.wasm
+!tests/download/wasm-files/hey-*/*.wasm
 simplism
 simplism.tar.gz
 my-projects

@@ -1,4 +1,4 @@
 #!/bin/bash
-rm ./simple.wasm
-simplism config ./config.yml simple-plugin
+rm ./hey-one.wasm
+simplism config ./config.yml hey-one-plugin
 
