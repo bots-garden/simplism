@@ -15,6 +15,9 @@ var version []byte
 //go:embed about.txt
 var about []byte
 
+//go:embed help.txt
+var help []byte
+
 // Parse parses the command and arguments to perform a specific action.
 //
 // The function takes in a command string and an array of arguments.
@@ -72,7 +75,10 @@ func Parse(command string, args []string) error {
 		fmt.Println(string(about))
 		return nil
 
-	// TODO: add help
+	case "help":
+		fmt.Println(string(help))
+		return nil
+
 	default:
 		return fmt.Errorf("😡 invalid command")
 	}
