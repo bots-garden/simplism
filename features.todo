@@ -1,4 +1,7 @@
-- wasm file hot reload
+- wasm file hot reload:
+  - add a route to trigger the wasm file reload
+  - it's a POST request with a token (reload-token)
+  - into the map: load a new instance of plugin, remove the previous one
 - health check
 - orchestrator (choose another name): but kiss, an API to:
   - spawn a simplism process
