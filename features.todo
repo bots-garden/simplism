@@ -1,2 +1,7 @@
 - wasm file hot reload
 - health check
+- orchestrator (choose another name): but kiss, an API to:
+  - spawn a simplism process
+  - get the list of the processes
+  - kill a simplism process
+  - reload the wasm file of a process
