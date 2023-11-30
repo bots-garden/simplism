@@ -1,1 +1,4 @@
-Run `serve.sh` in `./wasm-file-server`
+- Run `serve.sh` 
+- Run `run-with-config.sh`
+- Then, run `query.sh`
+
