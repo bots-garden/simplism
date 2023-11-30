@@ -12,6 +12,7 @@ import (
 	httphelper "simplism/httphelper"
 	"simplism/wasmhelper"
 	"strings"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -32,10 +33,18 @@ type WasmArguments struct {
 	WasmURLAuthHeader string `yaml:"wasm-url-auth-header,omitempty"`
 	//AuthHeaderName  string `yaml:"auth-header-name,omitempty"`
 	//AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
-	CertFile string `yaml:"cert-file,omitempty"`
-	KeyFile  string `yaml:"key-file,omitempty"`
+	CertFile         string `yaml:"cert-file,omitempty"`
+	KeyFile          string `yaml:"key-file,omitempty"`
 	AdminReloadToken string `yaml:"admin-reload-token,omitempty"`
 }
+
+type SimplismProcess struct {
+	PID          int
+	FunctionName string
+	FilePath     string
+}
+
+var currentSimplismProcess = SimplismProcess{}
 
 func getEnvVarsFromString(envars string) []string {
 	var vars []string
@@ -151,6 +160,12 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 func Listen(wasmArgs WasmArguments, configKey string) {
 
 	// fmt.Println("🤖", wasmArgs)
+	//fmt.Println("🤖", os.Getpid())
+
+	// Store information about the current simplism process
+	currentSimplismProcess.PID = os.Getpid()
+	currentSimplismProcess.FilePath = wasmArgs.FilePath
+	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
 		fmt.Println("🌍 downloading", wasmArgs.URL, "...")
@@ -238,7 +253,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 
 		// read the header admin-reload-token
 		adminReloadToken := request.Header.Get("admin-reload-token")
-		var authorised bool	= false
+		var authorised bool = false
 
 		if wasmArgs.AdminReloadToken != "" {
 			// token is awaited
@@ -249,7 +264,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 				response.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintln(response, "😡 wrong token")
 			}
-			
+
 		} else {
 			// check if the environment variable WASM_URL_AUTH_HEADER is set
 			wasmURLAuthHeader := os.Getenv("ADMIN_RELOAD_TOKEN")
@@ -267,7 +282,6 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			}
 		}
 
-
 		// Test if it's a POST request
 		if request.Method == "POST" && authorised == true {
 			body := httphelper.GetBody(request)
@@ -278,7 +292,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			if err != nil {
 				// send response http code error
 				response.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintln(response, "😡 " + err.Error())
+				fmt.Fprintln(response, "😡 "+err.Error())
 			} else {
 
 				// TODO test token
@@ -297,7 +311,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 				hosts := getHostsFromString(wasmArgs.AllowHosts)
 				paths := getPathsFromJSONString(wasmArgs.AllowPaths)
 				manifestConfig := getConfigFromJSONString(wasmArgs.Config)
-			
+
 				// Add environment variable to the manifest config
 				envVars := getEnvVarsFromString(wasmArgs.EnvVars)
 				// loop throw envVars and add it to the manifest config
@@ -305,30 +319,53 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 					manifestConfig[envVar] = os.Getenv(envVar)
 				}
 				// now we can use `pdk.GetConfig()` to get the value of the environment variables
-			
+
 				level := wasmhelper.GetLevel(wasmArgs.LogLevel)
-			
+
 				//ctx := context.Background()
-			
+
 				config, manifest := wasmhelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
-			
+
 				wasmhelper.ReplacePluginInPool(0, ctx, config, manifest)
 				fmt.Println("🙂 new wasm plug-in reloaded")
 
 				response.WriteHeader(http.StatusOK)
 				fmt.Fprintln(response, string("🙂 new wasm plug-in reloaded"))
 
+				// Update information about the current simplism process
+				currentSimplismProcess.FilePath = wasmArgs.FilePath
+				currentSimplismProcess.FunctionName = wasmArgs.FunctionName
+
 			}
 
-			
 		} else {
 			// response that it's not allowed
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			fmt.Fprintln(response, "😡 Method not allowed or you're not authorized")
 		}
-		
-		
+
 	})
+
+	/*
+		Every 20 seconds, store information about the current simplism process
+	*/
+	go func() {
+		
+		ticker := time.NewTicker(20 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				// TODO: this is a work in progress 🚧
+				fmt.Println("👋", currentSimplismProcess)
+				// store data somewhere
+				// how to garden the data? (with which condition)
+				// create an API endpoint to query the data
+			}
+		}
+
+	}()
 
 	go func(configKey string) {
 
