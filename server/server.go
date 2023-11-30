@@ -351,6 +351,8 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	*/
 	go func() {
 		
+		// TODO: store the process a first time
+
 		ticker := time.NewTicker(20 * time.Second)
 		defer ticker.Stop()
 
