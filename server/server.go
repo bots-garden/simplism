@@ -11,27 +11,29 @@ import (
 	functiontypes "simplism/functiontypes"
 	httphelper "simplism/httphelper"
 	"simplism/wasmhelper"
+	"strings"
 
 	"github.com/go-resty/resty/v2"
 )
 
 // WasmArguments type
 type WasmArguments struct {
-	FilePath        string `yaml:"wasm-file,omitempty"`
-	FunctionName    string `yaml:"wasm-function,omitempty"`
-	HTTPPort        string `yaml:"http-port,omitempty"`
-	Input           string `yaml:"input,omitempty"`
-	LogLevel        string `yaml:"log-level,omitempty"`
-	AllowHosts      string `yaml:"allow-hosts,omitempty"`
-	AllowPaths      string `yaml:"allow-paths,omitempty"`
-	EnvVars         string `yaml:"env,omitempty"`
-	Config          string `yaml:"config,omitempty"`
-	Wasi            bool   `yaml:"wasi,omitempty"`
-	URL             string `yaml:"wasm-url,omitempty"`
-	AuthHeaderName  string `yaml:"auth-header-name,omitempty"`
-	AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
-	CertFile        string `yaml:"cert-file,omitempty"`
-	KeyFile         string `yaml:"key-file,omitempty"`
+	FilePath          string `yaml:"wasm-file,omitempty"`
+	FunctionName      string `yaml:"wasm-function,omitempty"`
+	HTTPPort          string `yaml:"http-port,omitempty"`
+	Input             string `yaml:"input,omitempty"`
+	LogLevel          string `yaml:"log-level,omitempty"`
+	AllowHosts        string `yaml:"allow-hosts,omitempty"`
+	AllowPaths        string `yaml:"allow-paths,omitempty"`
+	EnvVars           string `yaml:"env,omitempty"`
+	Config            string `yaml:"config,omitempty"`
+	Wasi              bool   `yaml:"wasi,omitempty"`
+	URL               string `yaml:"wasm-url,omitempty"`
+	WasmURLAuthHeader string `yaml:"wasm-url-auth-header,omitempty"`
+	//AuthHeaderName  string `yaml:"auth-header-name,omitempty"`
+	//AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
+	CertFile string `yaml:"cert-file,omitempty"`
+	KeyFile  string `yaml:"key-file,omitempty"`
 }
 
 func getEnvVarsFromString(envars string) []string {
@@ -87,6 +89,14 @@ func getConfigFromJSONString(config string) map[string]string {
 	return manifestConfig
 }
 
+func getHeaderFromString(headerNameAndValue string) (string, string) {
+	splitHeader := strings.Split(headerNameAndValue, "=")
+	headerName := splitHeader[0]
+	// join all item of splitAuthHeader with "" except the first one
+	headerValue := strings.Join(splitHeader[1:], "")
+	return headerName, headerValue
+}
+
 // downloadWasmFile downloads a WebAssembly (Wasm) file from a given URL and saves it to the specified file path.
 //
 // It takes a WasmArguments struct as a parameter, which contains the necessary information for the download, such as the URL, authentication header, and file path.
@@ -103,9 +113,23 @@ func downloadWasmFile(wasmArgs WasmArguments) error {
 	// Example: "PRIVATE-TOKEN: ${GITLAB_WASM_TOKEN}"
 	client := resty.New()
 
-	if wasmArgs.AuthHeaderName != "" {
-		client.SetHeader(wasmArgs.AuthHeaderName, wasmArgs.AuthHeaderValue)
+	//fmt.Println("🚧 downloading", wasmArgs.FilePath, "...")
+
+	if wasmArgs.WasmURLAuthHeader != "" {
+		authHeaderName, authHeaderValue := getHeaderFromString(wasmArgs.WasmURLAuthHeader)
+		client.SetHeader(authHeaderName, authHeaderValue)
+
+	} else {
+		// check if the environment variable WASM_URL_AUTH_HEADER is set
+		wasmURLAuthHeader := os.Getenv("WASM_URL_AUTH_HEADER")
+		if wasmURLAuthHeader != "" {
+			authHeaderName, authHeaderValue := getHeaderFromString(wasmURLAuthHeader)
+			client.SetHeader(authHeaderName, authHeaderValue)
+
+		}
 	}
+
+
 
 	resp, err := client.R().
 		SetOutput(wasmArgs.FilePath).
@@ -130,7 +154,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	// fmt.Println("🤖", wasmArgs)
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
-		fmt.Println("🌍 downloading...", wasmArgs.URL)
+		fmt.Println("🌍 downloading", wasmArgs.URL, "...")
 		err := downloadWasmFile(wasmArgs)
 		if err != nil {
 			fmt.Println(err)
@@ -148,7 +172,6 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 		manifestConfig[envVar] = os.Getenv(envVar)
 	}
 	// now we can use `pdk.GetConfig()` to get the value of the environment variables
-
 
 	level := wasmhelper.GetLevel(wasmArgs.LogLevel)
 
