@@ -6,7 +6,7 @@
 
 **Simplism** is a tiny HTTP server to serve [Extism](https://extism.org/) WebAssembly plug-ins and execute/call a single WebAssembly function.
 
-> It's like the official [Extism CLI](https://github.com/extism/cli), but **Simplism** is "serving" the Extism WebAssembly plugin instead of running it, and call a function at every HTPP request.
+> It's like the official [Extism CLI](https://github.com/extism/cli), but **Simplism** is "serving" the Extism WebAssembly plug-in instead of running it, and call a function at every HTTP request.
 
 ## 🚀 Getting started
 
