@@ -1,0 +1,5 @@
+👋 Simplism is a cloud-native runtime for Extism Wasm nanoservices plug-ins.
+Simplism is developed with 💜 thanks to:
+- Extism: https://extism.org/
+- Extism Go-SDK: https://github.com/extism/go-sdk
+- Wazero: https://wazero.io/

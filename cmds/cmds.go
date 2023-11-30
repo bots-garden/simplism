@@ -12,6 +12,9 @@ import (
 //go:embed version.txt
 var version []byte
 
+//go:embed about.txt
+var about []byte
+
 // Parse parses the command and arguments to perform a specific action.
 //
 // The function takes in a command string and an array of arguments.
@@ -64,8 +67,12 @@ func Parse(command string, args []string) error {
 		generators.Generate(language, projectName, projectPath)
 
 		return nil
+	
+	case "about":
+		fmt.Println(string(about))
+		return nil
 
-	// TODO: add help, about
+	// TODO: add help
 	default:
 		return fmt.Errorf("😡 invalid command")
 	}
