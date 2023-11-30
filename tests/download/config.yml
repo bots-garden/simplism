@@ -5,4 +5,6 @@ hey-one-plugin:
   wasm-url: http://0.0.0.0:3333/hey-one/hey-one.wasm
   wasm-url-auth-header: 'DOWNLOAD-TOKEN=ilovepandas'
   # or use export WASM_URL_AUTH_HEADER='DOWNLOAD-TOKEN=ilovepandas'
+  admin-reload-token: "1234567890"
+  # or use export ADMIN_RELOAD_TOKEN="1234567890"
 

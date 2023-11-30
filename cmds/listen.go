@@ -21,6 +21,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	allowHosts := flagSet.String("allow-hosts", `["*"]`, "Hosts for HTTP request (json array)")
 	allowPaths := flagSet.String("allow-paths", "{}", "Allowed paths to write and read files (json string)")
 
+	// these environment variables are forwarded to the wasm plug-in (not the other variables)
 	envVars := flagSet.String("env", `[]`, "Environment variables to forward to the wasm plug-in")
 
 	config := flagSet.String("config", "{}", "Configuration data (json string)")
@@ -30,12 +31,20 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	wasmURL := flagSet.String("wasm-url", "", "Url to download the wasm file")
 
 	wasmURLAuthHeader := flagSet.String("wasm-url-auth-header", "", "Authentication header ex: `PRIVATE-TOKEN=IlovePandas`")
+	// or you can use this environment variable: WASM_URL_AUTH_HEADER="PRIVATE-TOKEN=IlovePandas"
 
 	//authHeaderName := flagSet.String("auth-header-name", "", "Authentication header name, ex: PRIVATE-TOKEN")
 	//authHeaderValue := flagSet.String("auth-header-value", "", "Value of the authentication header, ex: IlovePandas")
 
 	certFile := flagSet.String("cert-file", "", "Certificate file")
 	keyFile := flagSet.String("key-file", "", "Key file")
+
+	/* --- admin tokens --- */
+
+	// admin-reload-token or environment variable: ADMIN_RELOAD_TOKEN
+	adminReloadToken := flagSet.String("admin-reload-token", "", "Admin reload token")
+
+
 
 	flagSet.Parse(args[2:])
 
@@ -56,5 +65,6 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		//AuthHeaderValue: *authHeaderValue,
 		CertFile: *certFile,
 		KeyFile:  *keyFile,
+		AdminReloadToken: *adminReloadToken,
 	}, "") // no config key
 }

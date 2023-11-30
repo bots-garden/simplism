@@ -34,6 +34,7 @@ type WasmArguments struct {
 	//AuthHeaderValue string `yaml:"auth-header-value,omitempty"`
 	CertFile string `yaml:"cert-file,omitempty"`
 	KeyFile  string `yaml:"key-file,omitempty"`
+	AdminReloadToken string `yaml:"admin-reload-token,omitempty"`
 }
 
 func getEnvVarsFromString(envars string) []string {
@@ -235,8 +236,40 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 		// - url for the wasm file
 		// - admin-reload-token and ADMIN_RELOAD_TOKEN env variable
 
+		// read the header admin-reload-token
+		adminReloadToken := request.Header.Get("admin-reload-token")
+		var authorised bool	= false
+
+		if wasmArgs.AdminReloadToken != "" {
+			// token is awaited
+			if wasmArgs.AdminReloadToken == adminReloadToken {
+				authorised = true
+			} else {
+				// send response http code error
+				response.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintln(response, "😡 wrong token")
+			}
+			
+		} else {
+			// check if the environment variable WASM_URL_AUTH_HEADER is set
+			wasmURLAuthHeader := os.Getenv("ADMIN_RELOAD_TOKEN")
+			if wasmURLAuthHeader != "" {
+				// token is awaited
+				if wasmURLAuthHeader == adminReloadToken {
+					authorised = true
+				} else {
+					// send response http code error
+					response.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprintln(response, "😡 wrong token")
+				}
+			} else {
+				authorised = true
+			}
+		}
+
+
 		// Test if it's a POST request
-		if request.Method == "POST" {
+		if request.Method == "POST" && authorised == true {
 			body := httphelper.GetBody(request)
 			// body is a JSON string, extract the url field value of the JSON string
 			bodyMap := map[string]string{}
@@ -291,7 +324,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 		} else {
 			// response that it's not allowed
 			response.WriteHeader(http.StatusMethodNotAllowed)
-			fmt.Fprintln(response, "😡 Method not allowed")
+			fmt.Fprintln(response, "😡 Method not allowed or you're not authorized")
 		}
 		
 		
