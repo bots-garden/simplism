@@ -44,27 +44,25 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	// admin-reload-token or environment variable: ADMIN_RELOAD_TOKEN
 	adminReloadToken := flagSet.String("admin-reload-token", "", "Admin reload token")
 
-
-
 	flagSet.Parse(args[2:])
 
 	server.Listen(server.WasmArguments{
-		FilePath:     wasmFilePath,
-		FunctionName: wasmFunctionName,
-		HTTPPort:     *httpPort,
-		Input:        *input,
-		LogLevel:     *logLevel,
-		AllowHosts:   *allowHosts,
-		AllowPaths:   *allowPaths,
-		EnvVars:      *envVars,
-		Config:       *config,
-		Wasi:         *wasi,
-		URL:          *wasmURL,
+		FilePath:          wasmFilePath,
+		FunctionName:      wasmFunctionName,
+		HTTPPort:          *httpPort,
+		Input:             *input,
+		LogLevel:          *logLevel,
+		AllowHosts:        *allowHosts,
+		AllowPaths:        *allowPaths,
+		EnvVars:           *envVars,
+		Config:            *config,
+		Wasi:              *wasi,
+		URL:               *wasmURL,
 		WasmURLAuthHeader: *wasmURLAuthHeader,
 		//AuthHeaderName:  *authHeaderName,
 		//AuthHeaderValue: *authHeaderValue,
-		CertFile: *certFile,
-		KeyFile:  *keyFile,
+		CertFile:         *certFile,
+		KeyFile:          *keyFile,
 		AdminReloadToken: *adminReloadToken,
 	}, "") // no config key
 }
