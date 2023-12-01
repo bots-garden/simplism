@@ -76,25 +76,34 @@ Available Commands:
               Arguments: [yaml file path] [config key]
 
 Flags for listen command:
-  --http-port            string   HTTP port of the Simplism server (default: 8080)
-  --log-level            string   Log level to print message
-                                  Possible values: error, warn, info, debug, trace
-  --allow-hosts          string   Hosts for HTTP request (json array) 
-                                  Default: ["*"]
-  --allow-paths          string   Allowed paths to write and read files (json string) 
-                                  Default: {}
-  --config               string   Configuration data (json string)
-                                  Default: {}
-  --env                  string   Environment variables to forward to the wasm plug-in
-                                  Default: []
-  --wasi                 bool     Default: true
-  --wasm-url             string   Url to download the wasm file
-  --wasm-url-auth-header string   Authentication header to download the wasm file, ex: "PRIVATE-TOKEN=IlovePandas"
-                                  Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
-  --cert-file            string   Path to certificate file (https)
-  --key-file             string   Path to key file (https)
-  --admin-reload-token.  string   Admin token to be authorized to reload the wasm-plugin
-                                  Or use this environment variable: ADMIN_RELOAD_TOKEN
+  --http-port             string   HTTP port of the Simplism server (default: 8080)
+  --log-level             string   Log level to print message
+                                   Possible values: error, warn, info, debug, trace
+  --allow-hosts           string   Hosts for HTTP request (json array) 
+                                   Default: ["*"]
+  --allow-paths           string   Allowed paths to write and read files (json string) 
+                                   Default: {}
+  --config                string   Configuration data (json string)
+                                   Default: {}
+  --env                   string   Environment variables to forward to the wasm plug-in
+                                   Default: []
+  --wasi                  bool     Default: true
+  --wasm-url              string   Url to download the wasm file
+  --wasm-url-auth-header  string   Authentication header to download the wasm file, ex: "PRIVATE-TOKEN=IlovePandas"
+                                   Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
+  --cert-file             string   Path to certificate file (https)
+  --key-file              string   Path to key file (https)
+  --admin-reload-token    string   Admin token to be authorized to reload the wasm-plugin
+                                   Or use this environment variable: ADMIN_RELOAD_TOKEN
+                                   Use the /reload endpoint to reload the wasm-plugin
+  --discovery             bool     The current Simplism server is a service discovery server
+                                   Default: false
+  --discovery-endpoint    string   The endpoint of the service discovery server
+                                   It always ends with /discovery
+                                   Example: http://localhost:9000/discovery
+  --admin-discovery-token string   Admin token to be authorized to post information to the service discovery server
+                                   Or use this environment variable: ADMIN_DISCOVERY_TOKEN
+                                   Use the /discovery endpoint to post information to the service discovery server
 ```
 > *Remarks: look at the `./samples` directory*
 
@@ -149,18 +158,38 @@ hello-3:
 
 Run the server**s** like this: `simplism flock ./config.yml`. It will start **3** instances of Simplism.
 
-If you add this section to the yaml file:
-
-```yaml
-service-discovery:
-  http-port: 8888
-```
-Then this endpoint: `http://localhost:8888` will return a JSON payload with the list of the wasm services:
-```bash
-{"hello-1":["8081","say_hello"],"hello-2":["8082","hello"],"hello-3":["8083","hello"]}
-```
-
 > See `samples/flock` repository for a more complex example.
+
+
+## Reload remotely a wasm plug-in without stopping the Simplism server
+
+### Start the Simplism server
+
+```bash
+simplism listen ./hey-one.wasm handle --http-port 8080  --admin-reload-token "1234567890"
+```
+
+or
+
+```bash
+export ADMIN_RELOAD_TOKEN="1234567890"
+simplism listen ./hey-one.wasm handle --http-port 8080
+```
+
+### Reload the wasm plug-in with the /reload api
+
+```bash
+curl -v -X POST \
+http://localhost:8080/reload \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-reload-token:1234567890' \
+-d '{"wasm-url":"http://0.0.0.0:3333/hey-two/hey-two.wasm", "wasm-file": "./hey-two.wasm", "wasm-function": "handle"}'
+```
+
+## Service discovery
+
+> 🚧 this is a work in progress
+
 
 ## Generate Extism plug-in projects for Simplism
 
@@ -241,30 +270,6 @@ go build
 
 > ✋ **important**: you can write Extism plug-ins with Go, Rust, AssemblyScript, Zig, C, Haskell and JavaScript
 
-## Reload remotely a wasm plug-in without stopping the Simplism server
-
-### Start the Simplism server
-
-```bash
-simplism listen ./hey-one.wasm handle --http-port 8080  --admin-reload-token "1234567890"
-```
-
-or
-
-```bash
-export ADMIN_RELOAD_TOKEN="1234567890"
-simplism listen ./hey-one.wasm handle --http-port 8080
-```
-
-### Reload the wasm plug-in with the /reload api
-
-```bash
-curl -v -X POST \
-http://localhost:8080/reload \
--H 'content-type: application/json; charset=utf-8' \
--H 'admin-reload-token:1234567890' \
--d '{"wasm-url":"http://0.0.0.0:3333/hey-two/hey-two.wasm", "wasm-file": "./hey-two.wasm", "wasm-function": "handle"}'
-```
 
 [^1]: Wazero is a project from **[Tetrate](https://tetrate.io/)**
 [^2]: Extism is a project from **[Dylibso](https://dylibso.com/)**

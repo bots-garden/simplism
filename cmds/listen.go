@@ -47,6 +47,9 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	discovery := flagSet.Bool("discovery", false, "")
     discoveryEndpoint := flagSet.String("discovery-endpoint", "", "Discovery endpoint")
 
+	adminDiscoveryToken := flagSet.String("admin-discovery-token", "", "Admin discovery token")
+
+
 	flagSet.Parse(args[2:])
 
 	server.Listen(server.WasmArguments{
@@ -69,5 +72,6 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AdminReloadToken: *adminReloadToken,
 		Discovery:        *discovery,
 		DiscoveryEndpoint: *discoveryEndpoint,
+		AdminDiscoveryToken: *adminDiscoveryToken,
 	}, "") // no config key
 }

@@ -40,6 +40,7 @@ func sendProcessInformationToDiscoveryServer(currentSimplismProcess SimplismProc
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	
 	if err != nil {
 		fmt.Println("😡 Error sending request:", err)
 		return // 🤔

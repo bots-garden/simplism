@@ -10,6 +10,37 @@ import (
 	"simplism/wasmhelper"
 )
 
+func checkReloadToken(request *http.Request, wasmArgs WasmArguments) bool {
+	var authorised bool = false
+
+	// read the header admin-reload-token
+	adminReloadToken := request.Header.Get("admin-reload-token")
+
+	if wasmArgs.AdminReloadToken != "" {
+		// token is awaited
+		if wasmArgs.AdminReloadToken == adminReloadToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+
+	} else {
+		// check if the environment variable ADMIN_RELOAD_TOKEN is set
+		envAdminReloadToken := os.Getenv("ADMIN_RELOAD_TOKEN")
+		if envAdminReloadToken != "" {
+			// token is awaited
+			if envAdminReloadToken == adminReloadToken {
+				authorised = true
+			} else {
+				authorised = false
+			}
+		} else {
+			authorised = true
+		}
+	}
+	return authorised
+}
+
 /*
 	This handler is responsible for:
 	- reloading the WebAssembly file,
@@ -34,37 +65,7 @@ func reloadHandler(ctx context.Context, wasmArgs WasmArguments) http.HandlerFunc
 		// - POST request
 		// - url for the wasm file
 		// - admin-reload-token and ADMIN_RELOAD_TOKEN env variable
-
-		// read the header admin-reload-token
-		adminReloadToken := request.Header.Get("admin-reload-token")
-		var authorised bool = false
-
-		if wasmArgs.AdminReloadToken != "" {
-			// token is awaited
-			if wasmArgs.AdminReloadToken == adminReloadToken {
-				authorised = true
-			} else {
-				// send response http code error
-				response.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintln(response, "😡 wrong token")
-			}
-
-		} else {
-			// check if the environment variable WASM_URL_AUTH_HEADER is set
-			wasmURLAuthHeader := os.Getenv("ADMIN_RELOAD_TOKEN")
-			if wasmURLAuthHeader != "" {
-				// token is awaited
-				if wasmURLAuthHeader == adminReloadToken {
-					authorised = true
-				} else {
-					// send response http code error
-					response.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprintln(response, "😡 wrong token")
-				}
-			} else {
-				authorised = true
-			}
-		}
+		authorised := checkReloadToken(request, wasmArgs)
 
 		// Test if it's a POST request
 		if request.Method == "POST" && authorised == true {
@@ -123,9 +124,15 @@ func reloadHandler(ctx context.Context, wasmArgs WasmArguments) http.HandlerFunc
 			}
 
 		} else {
-			// response that it's not allowed
-			response.WriteHeader(http.StatusMethodNotAllowed)
-			fmt.Fprintln(response, "😡 Method not allowed or you're not authorized")
+			if authorised == false {
+				response.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintln(response, "😡 You're not authorized")
+
+			} else {
+				response.WriteHeader(http.StatusMethodNotAllowed)
+				fmt.Fprintln(response, "😡 Method not allowed")
+
+			}
 		}
 
 	}

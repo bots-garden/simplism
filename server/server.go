@@ -2,12 +2,11 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"simplism/httphelper"
 	"simplism/wasmhelper"
+	"time"
 )
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
@@ -28,6 +27,8 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	currentSimplismProcess.PID = os.Getpid()
 	currentSimplismProcess.FilePath = wasmArgs.FilePath
 	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
+
+	currentSimplismProcess.StartTime = time.Now()
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
 		fmt.Println("🌍 downloading", wasmArgs.URL, "...")
@@ -79,40 +80,10 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 			This handler is responsible for:
 			- listening for the other Simplism processes,
 		*/
-		fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
-		// TODO: we need a discovery token
-		http.HandleFunc("/discovery", func(response http.ResponseWriter, request *http.Request) {
+		http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 
-			body := httphelper.GetBody(request) // is the body the same with fiber ?
-			fmt.Println("🟣", string(body))
-
-			response.Header().Set("Content-Type", "application/json")
-
-			wasmServicesJSON, err := json.Marshal(wasmServices)
-			if err != nil {
-				response.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintln(response, "😡 Error when transforming the wasmServices map to json:", err)
-			}
-			response.WriteHeader(http.StatusOK)
-			fmt.Fprintln(response, string(wasmServicesJSON))
-
-			// If POST request
-
-			// If GET request
-
-			// If DELETE request
-
-			// If PUT request
-
-			/*
-				protection.Lock()
-				defer protection.Unlock()
-				//TODO: test if certificate to determine if https or not
-				wasmServices[configKey] = []string{wasmArguments.HTTPPort, wasmArguments.FunctionName}
-
-			*/
-		})
-
+		// TODO: add a go routine to clean the process db: remove all old processes
+		// Or do it into the discovery handler ?
 	}
 
 	/*
@@ -120,6 +91,7 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	*/
 	if wasmArgs.DiscoveryEndpoint != "" {
 		fmt.Println("👋 this service is discoverable")
+		
 		go func() {
 			goRoutineSimplismProcess(currentSimplismProcess, wasmArgs)
 		}()
