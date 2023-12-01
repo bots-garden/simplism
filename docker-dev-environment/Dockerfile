@@ -165,6 +165,12 @@ RUN <<EOF
 go install github.com/goreleaser/goreleaser@latest
 EOF
 
+# ------------------------------------
+# Install OhMyBash
+# ------------------------------------
+RUN <<EOF
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+EOF
 
 # Command to run when starting the container
 CMD ["/bin/bash"]
