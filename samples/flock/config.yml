@@ -1,8 +1,18 @@
+service-discovery:
+  wasm-file: ./discovery/discovery.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  #discovery-endpoint: http://localhost:9000/discovery
+  discovery: true
+
+
 raider-1:
   wasm-file: ./raider/raider.wasm
   wasm-function: handle
   http-port: 8001
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
   config: |
     {
       "basestar-url":"http://localhost:9000",
@@ -17,6 +27,7 @@ raider-2:
   wasm-function: handle
   http-port: 8002
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
   config: |
     {
       "basestar-url":"http://localhost:9000",
@@ -31,6 +42,7 @@ raider-3:
   wasm-function: handle
   http-port: 8003
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
   config: |
     {
       "basestar-url":"http://localhost:9000",
@@ -43,8 +55,10 @@ raider-3:
 basestar-mother:
   wasm-file: ./basestar/basestar.wasm
   wasm-function: handle
-  http-port: 9000
+  http-port: 8010
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  #discovery: true
   config: |
     {
       "basestar-name":"basestar-mummy",
@@ -53,6 +67,4 @@ basestar-mother:
       "raiders": "raider-1,raider-2,raider-3"
     }
 
-# This is 🚧 work in progress
-service-discovery:
-  http-port: 8888
+

@@ -44,6 +44,9 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	// admin-reload-token or environment variable: ADMIN_RELOAD_TOKEN
 	adminReloadToken := flagSet.String("admin-reload-token", "", "Admin reload token")
 
+	discovery := flagSet.Bool("discovery", false, "")
+    discoveryEndpoint := flagSet.String("discovery-endpoint", "", "Discovery endpoint")
+
 	flagSet.Parse(args[2:])
 
 	server.Listen(server.WasmArguments{
@@ -64,5 +67,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		CertFile:         *certFile,
 		KeyFile:          *keyFile,
 		AdminReloadToken: *adminReloadToken,
+		Discovery:        *discovery,
+		DiscoveryEndpoint: *discoveryEndpoint,
 	}, "") // no config key
 }

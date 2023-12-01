@@ -2,9 +2,11 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"simplism/httphelper"
 	"simplism/wasmhelper"
 )
 
@@ -70,11 +72,58 @@ func Listen(wasmArgs WasmArguments, configKey string) {
 	http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 
 	/*
-		Every 20 seconds, store information about the current simplism process
+		The current Simplism process is responsible for handling the list of the other Simplism processes.
 	*/
-	go func() {
-		goRoutineSimplismProcess(currentSimplismProcess)
-	}()
+	if wasmArgs.Discovery == true {
+		/*
+			This handler is responsible for:
+			- listening for the other Simplism processes,
+		*/
+		fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
+		// TODO: we need a discovery token
+		http.HandleFunc("/discovery", func(response http.ResponseWriter, request *http.Request) {
+
+			body := httphelper.GetBody(request) // is the body the same with fiber ?
+			fmt.Println("🟣", string(body))
+
+			response.Header().Set("Content-Type", "application/json")
+
+			wasmServicesJSON, err := json.Marshal(wasmServices)
+			if err != nil {
+				response.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintln(response, "😡 Error when transforming the wasmServices map to json:", err)
+			}
+			response.WriteHeader(http.StatusOK)
+			fmt.Fprintln(response, string(wasmServicesJSON))
+
+			// If POST request
+
+			// If GET request
+
+			// If DELETE request
+
+			// If PUT request
+
+			/*
+				protection.Lock()
+				defer protection.Unlock()
+				//TODO: test if certificate to determine if https or not
+				wasmServices[configKey] = []string{wasmArguments.HTTPPort, wasmArguments.FunctionName}
+
+			*/
+		})
+
+	}
+
+	/*
+		Every 20 seconds, send information about the current simplism process to the discovery simplism process.
+	*/
+	if wasmArgs.DiscoveryEndpoint != "" {
+		fmt.Println("👋 this service is discoverable")
+		go func() {
+			goRoutineSimplismProcess(currentSimplismProcess, wasmArgs)
+		}()
+	}
 
 	// Start the Simplism HTTP server
 	go func(configKey string) {
