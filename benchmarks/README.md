@@ -1,5 +1,3 @@
 # Benchmarks
 
-## Results
-
-The benchmarks were run on a Pi5.
+These benchmarks are run on a Pi5. (they do not run correctly on GitPod - investigation in progress)
