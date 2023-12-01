@@ -77,6 +77,12 @@ func startFlockMode(configFilepath string) {
 		}
 
 	}
+
+	// TODO:
+	// This part has to be externalized: 
+	// - one of the simplism processes is started with a specific flag "service-discovery"
+	// - then it will add a handler
+	
 	// create a small service-discovery http server
 	if serviceDiscoveryWasmArguments.HTTPPort != "" {
 		go func() {

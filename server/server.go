@@ -14,6 +14,14 @@ import (
 // The function does not return anything.
 func Listen(wasmArgs WasmArguments, configKey string) {
 
+	/*
+		db, err := bolt.Open("simplism.db", 0600, nil)
+		if err != nil {
+			log.Fatal("😡🤬🥵", err)
+		}
+		defer db.Close()
+	*/
+
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()
 	currentSimplismProcess.FilePath = wasmArgs.FilePath
