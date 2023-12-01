@@ -6,52 +6,6 @@ service-discovery:
   #discovery-endpoint: http://localhost:9000/discovery
   discovery: true
 
-
-raider-1:
-  wasm-file: ./raider/raider.wasm
-  wasm-function: handle
-  http-port: 8001
-  log-level: info
-  discovery-endpoint: http://localhost:9000/discovery
-  config: |
-    {
-      "basestar-url":"http://localhost:9000",
-      "raider-name":"raider-1",
-      "raider-url":"http://localhost:8001",
-      "y-start":"10",
-      "x-start":"10"
-    }
-
-raider-2:
-  wasm-file: ./raider/raider.wasm
-  wasm-function: handle
-  http-port: 8002
-  log-level: info
-  discovery-endpoint: http://localhost:9000/discovery
-  config: |
-    {
-      "basestar-url":"http://localhost:9000",
-      "raider-name":"raider-2",
-      "raider-url":"http://localhost:8002",
-      "y-start":"5",
-      "x-start":"5"
-    }
-
-raider-3:
-  wasm-file: ./raider/raider.wasm
-  wasm-function: handle
-  http-port: 8003
-  log-level: info
-  discovery-endpoint: http://localhost:9000/discovery
-  config: |
-    {
-      "basestar-url":"http://localhost:9000",
-      "raider-name":"raider-3",
-      "raider-url":"http://localhost:8003",
-      "y-start":"30",
-      "x-start":"20"
-    }
-
 basestar-mother:
   wasm-file: ./basestar/basestar.wasm
   wasm-function: handle
@@ -67,4 +21,48 @@ basestar-mother:
       "raiders": "raider-1,raider-2,raider-3"
     }
 
+raider-1:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8001
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  config: |
+    {
+      "basestar-url":"http://localhost:8010",
+      "raider-name":"raider-1",
+      "raider-url":"http://localhost:8001",
+      "y-start":"10",
+      "x-start":"10"
+    }
+
+raider-2:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8002
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  config: |
+    {
+      "basestar-url":"http://localhost:8010",
+      "raider-name":"raider-2",
+      "raider-url":"http://localhost:8002",
+      "y-start":"5",
+      "x-start":"5"
+    }
+
+raider-3:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8003
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  config: |
+    {
+      "basestar-url":"http://localhost:8010",
+      "raider-name":"raider-3",
+      "raider-url":"http://localhost:8003",
+      "y-start":"30",
+      "x-start":"20"
+    }
 
