@@ -1,4 +1,6 @@
 #!/bin/bash
+find . -name '.DS_Store' -type f -delete
+
 message=""
 case $1 in
 
