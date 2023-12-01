@@ -8,9 +8,18 @@ import (
 	"os"
 	"simplism/httphelper"
 	"simplism/wasmhelper"
+	simplismTypes "simplism/types"
+
 )
 
-func checkReloadToken(request *http.Request, wasmArgs WasmArguments) bool {
+// checkReloadToken checks if the provided request has a valid admin reload token.
+//
+// It takes in the following parameters:
+// - request: a pointer to an http.Request object representing the incoming request.
+// - wasmArgs: a WasmArguments object representing the Wasm arguments.
+//
+// It returns a boolean value indicating whether the request is authorized or not.
+func checkReloadToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
 	var authorised bool = false
 
 	// read the header admin-reload-token
@@ -59,7 +68,7 @@ func checkReloadToken(request *http.Request, wasmArgs WasmArguments) bool {
 //
 // Return type:
 // - http.HandlerFunc
-func reloadHandler(ctx context.Context, wasmArgs WasmArguments) http.HandlerFunc {
+func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		// wait for:
 		// - POST request

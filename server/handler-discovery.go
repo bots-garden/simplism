@@ -1,19 +1,24 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"simplism/httphelper"
-	"strconv"
-	"time"
+	"simplism/jsonhelper"
 
-	bolt "go.etcd.io/bbolt"
+	simplismTypes "simplism/types"
 )
 
-func checkDiscoveryToken(request *http.Request, wasmArgs WasmArguments) bool {
+// checkDiscoveryToken checks if the provided request is authorized using the admin-discovery-token.
+//
+// Parameters:
+// - request: the HTTP request to check.
+// - wasmArgs: the Wasm arguments.
+//
+// Returns:
+// - bool: true if the request is authorized, false otherwise.
+func checkDiscoveryToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
 	var authorised bool = false
 	// read the header admin-discovery-token
 	adminDiscoveryToken := request.Header.Get("admin-discovery-token")
@@ -27,10 +32,10 @@ func checkDiscoveryToken(request *http.Request, wasmArgs WasmArguments) bool {
 		}
 	} else {
 		// check if the env variable ADMIN_DISCOVERY_TOKEN is set
-		enAdminDiscoveryToken := os.Getenv("ADMIN_DISCOVERY_TOKEN")
-		if enAdminDiscoveryToken != "" {
+		envAdminDiscoveryToken := os.Getenv("ADMIN_DISCOVERY_TOKEN")
+		if envAdminDiscoveryToken != "" {
 			// token is awaited
-			if enAdminDiscoveryToken == adminDiscoveryToken {
+			if envAdminDiscoveryToken == adminDiscoveryToken {
 				authorised = true
 			} else {
 				authorised = false
@@ -44,29 +49,22 @@ func checkDiscoveryToken(request *http.Request, wasmArgs WasmArguments) bool {
 	return authorised
 }
 
-func discoveryHandler(wasmArgs WasmArguments) http.HandlerFunc {
+// discoveryHandler handles the /discovery endpoint in the API.
+//
+// It takes a WasmArguments object as a parameter and returns an http.HandlerFunc.
+// The WasmArguments object contains information about the HTTP port.
+// The returned http.HandlerFunc handles incoming HTTP requests to the /discovery endpoint.
+// It checks if the request is authorized and if it is a POST request.
+// If authorized and a POST request, it processes the information from the request body,
+// creates a SimpleProcess struct instance from the JSON body, and stores the process information in the database.
+// If there is an error while saving the process information, it returns a 500 Internal Server Error response.
+// If the request is not authorized, it returns a 401 Unauthorized response.
+// If the request method is not allowed, it returns a 405 Method Not Allowed response.
+// This function is a work in progress and handles GET, DELETE, and PUT requests.
+func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
 
-	//db, err := bolt.Open("my.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
-	db, err := bolt.Open(wasmArgs.FilePath+".db", 0600, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	//defer db.Close()
-
-	db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("simplism-bucket"))
-		if err != nil {
-			return fmt.Errorf("😡 When creating bucket: %s", err)
-		}
-		return nil
-	})
-
-	/*
-		go install go.etcd.io/bbolt/cmd/bbolt@latest
-		bbolt keys samples/flock/discovery/discovery.wasm.db simplism-bucket
-		bbolt page --all samples/flock/discovery/discovery.wasm.db
-	*/
+	db, _ := initializeDB(wasmArgs)
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
@@ -77,33 +75,11 @@ func discoveryHandler(wasmArgs WasmArguments) http.HandlerFunc {
 			body := httphelper.GetBody(request) // process information from simplism POST request
 
 			// create SimpleProcess struct instance from JSON Body
-			var simplismProcess SimplismProcess
-			jsonUnmarshallErr := json.Unmarshal(body, &simplismProcess)
-			if jsonUnmarshallErr != nil {
-				fmt.Println("😡 Error when unmarshaling JSON:", jsonUnmarshallErr)
-			}
-			// record the time
-			simplismProcess.RecordTime = time.Now()
-			// convert PID to string
-			pidStr := strconv.Itoa(simplismProcess.PID)
+			simplismProcess, _ := jsonhelper.GetSimplismProcesseFromJSONBytes(body)
+			// store the process information in the database
+			err := saveSimplismProcessToDB(db, simplismProcess)
 
-			// convert the process information to JSON
-			jsonProcess, jsonMarshallErr := json.Marshal(simplismProcess)
-			if jsonMarshallErr != nil {
-				fmt.Println("😡 Errorwhen  marshaling JSON:", err)
-			}
-
-			// for debugging (temporary)
-			fmt.Println("🟣", string(jsonProcess))
-
-			// Store the process information
-			err := db.Update(func(tx *bolt.Tx) error {
-				b := tx.Bucket([]byte("simplism-bucket"))
-				err := b.Put([]byte(pidStr), jsonProcess)
-				return err
-			})
 			// TODO: look at old records and delete old ones
-			// TODO: move all the db stuff to data.go
 			if err != nil {
 				fmt.Println("😡 When updating bucket", err)
 				response.WriteHeader(http.StatusInternalServerError)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"simplism/server"
+	simplismTypes "simplism/types"
 )
 
 // getExecutablePath returns the path of the executable file for the given program name.
@@ -46,7 +46,7 @@ func startFlockMode(configFilepath string) {
 		wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
 
 		// Start a new server process with the specified wasm plugin in the config
-		go func(configKey string, wasmArguments server.WasmArguments) {
+		go func(configKey string, wasmArguments simplismTypes.WasmArguments) {
 			cmd := &exec.Cmd{
 				Path:   simplismExecutablePath,
 				Args:   []string{"", "config", configFilepath, configKey},

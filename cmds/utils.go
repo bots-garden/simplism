@@ -3,7 +3,7 @@ package cmds
 import (
 	"fmt"
 	"os"
-	"simplism/server"
+	simplismTypes "simplism/types"
 
 	"gopkg.in/yaml.v3"
 )
@@ -12,7 +12,7 @@ import (
 //
 // It takes a string parameter called yamlFilePath, which represents the path to the YAML file.
 // The function returns a map[string]server.WasmArguments, which is a map of server.WasmArguments objects, and an error.
-func readYamlFile(yamlFilePath string) (map[string]server.WasmArguments, error) {
+func readYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, error) {
 
 	yamlFile, err := os.ReadFile(yamlFilePath)
 
@@ -20,7 +20,7 @@ func readYamlFile(yamlFilePath string) (map[string]server.WasmArguments, error) 
 		return nil, err
 	}
 
-	data := make(map[string]server.WasmArguments)
+	data := make(map[string]simplismTypes.WasmArguments)
 
 	err = yaml.Unmarshal(yamlFile, &data)
 
@@ -37,7 +37,7 @@ func readYamlFile(yamlFilePath string) (map[string]server.WasmArguments, error) 
 //
 // Return type:
 // - server.WasmArguments: The WasmArguments struct with default values applied.
-func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.WasmArguments {
+func applyDefaultValuesIfMissing(wasmArguments simplismTypes.WasmArguments) simplismTypes.WasmArguments {
 	// default values:
 	if wasmArguments.AllowHosts == "" {
 		wasmArguments.AllowHosts = `["*"]`
@@ -59,7 +59,7 @@ func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.Wasm
 		wasmArguments.EnvVars = "[]"
 	}
 
-    //TODO: add log level
+	//TODO: add log level
 	return wasmArguments
 
 }
@@ -68,11 +68,11 @@ func applyDefaultValuesIfMissing(wasmArguments server.WasmArguments) server.Wasm
 //
 // configFilepath: The filepath of the YAML config file.
 // map[string]server.WasmArguments: The map of WasmArguments.
-func getWasmArgumentsMap(configFilepath string) map[string]server.WasmArguments {
+func getWasmArgumentsMap(configFilepath string) map[string]simplismTypes.WasmArguments {
 	wasmArgumentsMap, err := readYamlFile(configFilepath)
 	if err != nil {
 		fmt.Println("😡 (getWasmArgumentsMap) reading the yaml config file:", err)
 		os.Exit(1)
 	}
-    return wasmArgumentsMap
+	return wasmArgumentsMap
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	simplismTypes "simplism/types"
 )
 
 /*
@@ -20,7 +21,7 @@ var delayToSendInformationProcess = 10
 // Parameters:
 // - currentSimplismProcess: The current Simplism process to be sent.
 // - wasmArgs: The Wasm arguments containing the discovery endpoint.
-func sendProcessInformationToDiscoveryServer(currentSimplismProcess SimplismProcess, wasmArgs WasmArguments) {
+func sendProcessInformationToDiscoveryServer(currentSimplismProcess simplismTypes.SimplismProcess, wasmArgs simplismTypes.WasmArguments) {
 	discoveryEndPoint := wasmArgs.DiscoveryEndpoint
 
 	// make a post http request
@@ -55,7 +56,7 @@ func sendProcessInformationToDiscoveryServer(currentSimplismProcess SimplismProc
 // Parameters:
 // - currentSimplismProcess: the SimplismProcess to be processed.
 // - wasmArgs: the WasmArguments to be used during processing.
-func goRoutineSimplismProcess(currentSimplismProcess SimplismProcess, wasmArgs WasmArguments) {
+func goRoutineSimplismProcess(currentSimplismProcess simplismTypes.SimplismProcess, wasmArgs simplismTypes.WasmArguments) {
 	
 	sendProcessInformationToDiscoveryServer(currentSimplismProcess, wasmArgs)
 

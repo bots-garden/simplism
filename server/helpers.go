@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/go-resty/resty/v2"
+	simplismTypes "simplism/types"
+
 )
 
 // getEnvVarsFromString returns a slice of strings parsed from the given envars string.
@@ -98,7 +100,7 @@ func getHeaderFromString(headerNameAndValue string) (string, string) {
 //
 // This function returns an error if there is any issue during the download process, such as a network error or an error response from the server.
 // If the download is successful, it returns nil.
-func downloadWasmFile(wasmArgs WasmArguments) error {
+func downloadWasmFile(wasmArgs simplismTypes.WasmArguments) error {
 	// authenticationHeader:
 	// Example: "PRIVATE-TOKEN: ${GITLAB_WASM_TOKEN}"
 	client := resty.New()

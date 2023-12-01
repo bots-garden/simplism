@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"simplism/functiontypes"
 	"simplism/httphelper"
+	simplismTypes "simplism/types"
 	"simplism/wasmhelper"
 )
 
@@ -37,7 +37,7 @@ import (
 //
 // Return Type:
 // - http.HandlerFunc: The handler function for HTTP requests.
-func mainHandler(wasmArgs WasmArguments) http.HandlerFunc {
+func mainHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
@@ -48,7 +48,7 @@ func mainHandler(wasmArgs WasmArguments) http.HandlerFunc {
 
 		body := httphelper.GetBody(request) // is the body the same with fiber ?
 
-		mainFunctionArgument := functiontypes.Argument{
+		mainFunctionArgument := simplismTypes.Argument{
 			Header: request.Header,
 			Body:   string(body),
 			Method: request.Method,
@@ -64,7 +64,7 @@ func mainHandler(wasmArgs WasmArguments) http.HandlerFunc {
 			Header map[string][]string `json:"header"`
 		}
 		*/
-		returnValue := functiontypes.ReturnValue{}
+		returnValue := simplismTypes.ReturnValue{}
 		errJSONUnmarshal := json.Unmarshal(result, &returnValue)
 
 		if errJSONUnmarshal != nil {

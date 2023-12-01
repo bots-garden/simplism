@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	simplismTypes "simplism/types"
+
 )
 
 // goRoutineStartServer starts an HTTP server using the provided configuration and arguments.
@@ -14,7 +16,7 @@ import (
 // - wasmArgs: The arguments for the WebAssembly module.
 //
 // Return type: None.
-func goRoutineStartServer(configKey string, wasmArgs WasmArguments) {
+func goRoutineStartServer(configKey string, wasmArgs simplismTypes.WasmArguments) {
 
 	if wasmArgs.CertFile != "" && wasmArgs.KeyFile != "" {
 		var message string

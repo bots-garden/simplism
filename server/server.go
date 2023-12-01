@@ -7,13 +7,15 @@ import (
 	"os"
 	"simplism/wasmhelper"
 	"time"
+	simplismTypes "simplism/types"
+
 )
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
 // It takes a `wasmArgs` parameter of type `WasmArguments` which contains the necessary arguments for configuring the WebAssembly environment.
 // The function does not return anything.
-func Listen(wasmArgs WasmArguments, configKey string) {
+func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	/*
 		db, err := bolt.Open("simplism.db", 0600, nil)

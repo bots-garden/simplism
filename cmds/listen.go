@@ -3,6 +3,7 @@ package cmds
 import (
 	"flag"
 	"simplism/server"
+	simplismTypes "simplism/types"
 )
 
 // startListening initializes a server to listen for requests and executes a WebAssembly function.
@@ -45,14 +46,13 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	adminReloadToken := flagSet.String("admin-reload-token", "", "Admin reload token")
 
 	discovery := flagSet.Bool("discovery", false, "")
-    discoveryEndpoint := flagSet.String("discovery-endpoint", "", "Discovery endpoint")
+	discoveryEndpoint := flagSet.String("discovery-endpoint", "", "Discovery endpoint")
 
 	adminDiscoveryToken := flagSet.String("admin-discovery-token", "", "Admin discovery token")
 
-
 	flagSet.Parse(args[2:])
 
-	server.Listen(server.WasmArguments{
+	server.Listen(simplismTypes.WasmArguments{
 		FilePath:          wasmFilePath,
 		FunctionName:      wasmFunctionName,
 		HTTPPort:          *httpPort,
@@ -67,11 +67,11 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		WasmURLAuthHeader: *wasmURLAuthHeader,
 		//AuthHeaderName:  *authHeaderName,
 		//AuthHeaderValue: *authHeaderValue,
-		CertFile:         *certFile,
-		KeyFile:          *keyFile,
-		AdminReloadToken: *adminReloadToken,
-		Discovery:        *discovery,
-		DiscoveryEndpoint: *discoveryEndpoint,
+		CertFile:            *certFile,
+		KeyFile:             *keyFile,
+		AdminReloadToken:    *adminReloadToken,
+		Discovery:           *discovery,
+		DiscoveryEndpoint:   *discoveryEndpoint,
 		AdminDiscoveryToken: *adminDiscoveryToken,
 	}, "") // no config key
 }

@@ -1,6 +1,4 @@
-package server
-
-import "time"
+package simplismTypes
 
 // WasmArguments type
 type WasmArguments struct {
@@ -22,12 +20,4 @@ type WasmArguments struct {
 	Discovery           bool   `yaml:"discovery,omitempty"`
 	DiscoveryEndpoint   string `yaml:"discovery-endpoint,omitempty"`
 	AdminDiscoveryToken string `yaml:"admin-discovery-token,omitempty"`
-}
-
-type SimplismProcess struct {
-	PID          int       `json:"pid"`
-	FunctionName string    `json:"functionName"`
-	FilePath     string    `json:"filePath"`
-	RecordTime   time.Time `json:"recordTime"`
-	StartTime    time.Time `json:"startTime"`
 }
