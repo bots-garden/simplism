@@ -17,7 +17,7 @@ type WasmArguments struct {
 	CertFile            string `yaml:"cert-file,omitempty"`
 	KeyFile             string `yaml:"key-file,omitempty"`
 	AdminReloadToken    string `yaml:"admin-reload-token,omitempty"`
-	Discovery           bool   `yaml:"discovery,omitempty"`
+	ServiceDiscovery    bool   `yaml:"service-discovery,omitempty"`
 	DiscoveryEndpoint   string `yaml:"discovery-endpoint,omitempty"`
 	AdminDiscoveryToken string `yaml:"admin-discovery-token,omitempty"`
 }

@@ -1,15 +1,20 @@
 // Package wasmhelper contains helper functions for the wasm runtime
-package wasmhelper
+package wasmHelper
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
 	"strconv"
 	"sync"
 
 	extism "github.com/extism/go-sdk"
+	"github.com/go-resty/resty/v2"
 	"github.com/tetratelabs/wazero"
+
+	httpHelper "simplism/helpers/http"
+	simplismTypes "simplism/types"
 )
 
 // WasmPlugin type
@@ -19,9 +24,9 @@ type WasmPlugin struct {
 }
 
 var (
-	wasmPlugins     = make(map[string]*WasmPlugin)
-	counter         = 0
-	poolSize        = 1 //4 (this should be a parameter) 
+	wasmPlugins = make(map[string]*WasmPlugin)
+	counter     = 0
+	poolSize    = 1 //4 (this should be a parameter)
 	// if several wasm plugins are needed,
 	// you never know which memory you are using (eg: counters)
 	prefixPluginKey = "plugin"
@@ -173,12 +178,18 @@ func ReplacePluginInPool(index int, ctx context.Context, config extism.PluginCon
 // It returns the output of the function as a byte slice and any error
 // encountered during the execution of the function.
 func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
+
+	//key := prefixPluginKey + "0"
+	//wasmPlugin := getPlugin(key)
+
 	key := prefixPluginKey + strconv.Itoa(counter)
 	wasmPlugin := getPlugin(key)
 	counter++
 	if counter == poolSize {
 		counter = 0
 	}
+	
+
 	wasmPlugin.Protection.Lock()
 
 	defer wasmPlugin.Protection.Unlock()
@@ -191,4 +202,54 @@ func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
 		return out, nil
 	}
 
+}
+
+func GetPlugin(index int) *WasmPlugin {
+	return wasmPlugins[prefixPluginKey+strconv.Itoa(index)]
+}
+
+// downloadWasmFile downloads a WebAssembly (Wasm) file from a given URL and saves it to the specified file path.
+//
+// It takes a WasmArguments struct as a parameter, which contains the necessary information for the download, such as the URL, authentication header, and file path.
+// The WasmArguments struct has the following fields:
+// - AuthHeaderName (string): the name of the authentication header (e.g., "PRIVATE-TOKEN")
+// - AuthHeaderValue (string): the value of the authentication header (e.g., "${GITLAB_WASM_TOKEN}")
+// - FilePath (string): the file path where the downloaded Wasm file will be saved
+// - URL (string): the URL from which the Wasm file will be downloaded
+//
+// This function returns an error if there is any issue during the download process, such as a network error or an error response from the server.
+// If the download is successful, it returns nil.
+func DownloadWasmFile(wasmArgs simplismTypes.WasmArguments) error {
+	// authenticationHeader:
+	// Example: "PRIVATE-TOKEN: ${GITLAB_WASM_TOKEN}"
+	client := resty.New()
+
+	//fmt.Println("🚧 downloading", wasmArgs.FilePath, "...")
+
+	if wasmArgs.WasmURLAuthHeader != "" {
+		authHeaderName, authHeaderValue := httpHelper.GetHeaderFromString(wasmArgs.WasmURLAuthHeader)
+		client.SetHeader(authHeaderName, authHeaderValue)
+
+	} else {
+		// check if the environment variable WASM_URL_AUTH_HEADER is set
+		wasmURLAuthHeader := os.Getenv("WASM_URL_AUTH_HEADER")
+		if wasmURLAuthHeader != "" {
+			authHeaderName, authHeaderValue := httpHelper.GetHeaderFromString(wasmURLAuthHeader)
+			client.SetHeader(authHeaderName, authHeaderValue)
+
+		}
+	}
+
+	resp, err := client.R().
+		SetOutput(wasmArgs.FilePath).
+		Get(wasmArgs.URL)
+
+	if resp.IsError() {
+		return errors.New("😡 error while downloading the wasm file")
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

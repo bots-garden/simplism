@@ -4,7 +4,8 @@ service-discovery:
   http-port: 9000
   log-level: info
   #discovery-endpoint: http://localhost:9000/discovery
-  discovery: true
+  service-discovery: true
+  admin-discovery-token: this-is-the-way
 
 basestar-mother:
   wasm-file: ./basestar/basestar.wasm
@@ -12,7 +13,7 @@ basestar-mother:
   http-port: 8010
   log-level: info
   discovery-endpoint: http://localhost:9000/discovery
-  #discovery: true
+  admin-discovery-token: this-is-the-way
   config: |
     {
       "basestar-name":"basestar-mummy",
@@ -27,6 +28,7 @@ raider-1:
   http-port: 8001
   log-level: info
   discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
       "basestar-url":"http://localhost:8010",
@@ -42,6 +44,7 @@ raider-2:
   http-port: 8002
   log-level: info
   discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
       "basestar-url":"http://localhost:8010",
@@ -57,6 +60,7 @@ raider-3:
   http-port: 8003
   log-level: info
   discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
       "basestar-url":"http://localhost:8010",

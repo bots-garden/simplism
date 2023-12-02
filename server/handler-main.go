@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"simplism/httphelper"
+	httpHelper "simplism/helpers/http"
 	simplismTypes "simplism/types"
-	"simplism/wasmhelper"
+	wasmHelper "simplism/helpers/wasm"
 )
 
 /*
@@ -46,7 +46,7 @@ func mainHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			err    error
 		)
 
-		body := httphelper.GetBody(request) // is the body the same with fiber ?
+		body := httpHelper.GetBody(request) // is the body the same with fiber ?
 
 		mainFunctionArgument := simplismTypes.Argument{
 			Header: request.Header,
@@ -56,7 +56,7 @@ func mainHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		}
 
 		//result, err = wasmHelper.CallWasmFunction(wasmFunctionName, []byte(mainFunctionArgument.ToEncodedJSONString()))
-		result, err = wasmhelper.CallWasmFunction(wasmArgs.FunctionName, mainFunctionArgument.ToJSONBuffer())
+		result, err = wasmHelper.CallWasmFunction(wasmArgs.FunctionName, mainFunctionArgument.ToJSONBuffer())
 
 		/* Expected response
 		type ReturnValue struct {

@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
-	"simplism/jsonhelper"
+	jsonhelper "simplism/helpers/json"
 	simplismTypes "simplism/types"
 	"strconv"
 	"time"
@@ -56,8 +56,9 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 	pidStr := strconv.Itoa(simplismProcess.PID)
 	// convert the process information to JSON
 	jsonProcess, _ := jsonhelper.GetJSONBytesFromSimplismProcess(simplismProcess)
+	
 	// for debugging (temporary)
-	fmt.Println("🟣", string(jsonProcess))
+	//fmt.Println("🟣", string(jsonProcess))
 
 	// Store the process information
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -66,4 +67,24 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 		return err
 	})
     return err
+}
+
+func getSimpleProcessesListFromDB(db *bolt.DB,) map[string]simplismTypes.SimplismProcess {
+	processes := map[string]simplismTypes.SimplismProcess{}
+
+	db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte("simplism-bucket"))
+	
+		c := b.Cursor()
+	
+		for pid, processValue := c.First(); pid != nil; pid, processValue = c.Next() {
+			//fmt.Printf("key=%s, value=%s\n", pid, processValue)
+			simplismProcess, _ := jsonhelper.GetSimplismProcesseFromJSONBytes(processValue)
+			processes[string(pid)] = simplismProcess
+		}
+	
+		return nil
+	})
+	return processes
 }

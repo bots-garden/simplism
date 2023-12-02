@@ -27,7 +27,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 
 	config := flagSet.String("config", "{}", "Configuration data (json string)")
 
-	wasi := flagSet.Bool("wasi", true, "")
+	wasi := flagSet.String("wasi", "true", "")
 
 	wasmURL := flagSet.String("wasm-url", "", "Url to download the wasm file")
 
@@ -45,12 +45,24 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	// admin-reload-token or environment variable: ADMIN_RELOAD_TOKEN
 	adminReloadToken := flagSet.String("admin-reload-token", "", "Admin reload token")
 
-	discovery := flagSet.Bool("discovery", false, "")
+	serviceDiscovery := flagSet.String("service-discovery", "false", "")
+
 	discoveryEndpoint := flagSet.String("discovery-endpoint", "", "Discovery endpoint")
 
 	adminDiscoveryToken := flagSet.String("admin-discovery-token", "", "Admin discovery token")
 
 	flagSet.Parse(args[2:])
+
+	getTheBooleanValueOf := func(value string) bool {
+		switch {
+		case value == "true":
+			return true
+		case value == "false":
+			return false
+		default:
+			return false
+		}
+	}
 
 	server.Listen(simplismTypes.WasmArguments{
 		FilePath:          wasmFilePath,
@@ -62,7 +74,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AllowPaths:        *allowPaths,
 		EnvVars:           *envVars,
 		Config:            *config,
-		Wasi:              *wasi,
+		Wasi:              getTheBooleanValueOf(*wasi),
 		URL:               *wasmURL,
 		WasmURLAuthHeader: *wasmURLAuthHeader,
 		//AuthHeaderName:  *authHeaderName,
@@ -70,7 +82,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		CertFile:            *certFile,
 		KeyFile:             *keyFile,
 		AdminReloadToken:    *adminReloadToken,
-		Discovery:           *discovery,
+		ServiceDiscovery:    getTheBooleanValueOf(*serviceDiscovery),
 		DiscoveryEndpoint:   *discoveryEndpoint,
 		AdminDiscoveryToken: *adminDiscoveryToken,
 	}, "") // no config key

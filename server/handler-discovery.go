@@ -1,53 +1,14 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-	"simplism/httphelper"
-	"simplism/jsonhelper"
 
+	httpHelper "simplism/helpers/http"
+	jsonHelper "simplism/helpers/json"
 	simplismTypes "simplism/types"
 )
-
-// checkDiscoveryToken checks if the provided request is authorized using the admin-discovery-token.
-//
-// Parameters:
-// - request: the HTTP request to check.
-// - wasmArgs: the Wasm arguments.
-//
-// Returns:
-// - bool: true if the request is authorized, false otherwise.
-func checkDiscoveryToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
-	var authorised bool = false
-	// read the header admin-discovery-token
-	adminDiscoveryToken := request.Header.Get("admin-discovery-token")
-
-	if wasmArgs.AdminDiscoveryToken != "" {
-		// token is awaited
-		if wasmArgs.AdminDiscoveryToken == adminDiscoveryToken {
-			authorised = true
-		} else {
-			authorised = false
-		}
-	} else {
-		// check if the env variable ADMIN_DISCOVERY_TOKEN is set
-		envAdminDiscoveryToken := os.Getenv("ADMIN_DISCOVERY_TOKEN")
-		if envAdminDiscoveryToken != "" {
-			// token is awaited
-			if envAdminDiscoveryToken == adminDiscoveryToken {
-				authorised = true
-			} else {
-				authorised = false
-			}
-		} else {
-			authorised = true
-		}
-
-	}
-
-	return authorised
-}
 
 // discoveryHandler handles the /discovery endpoint in the API.
 //
@@ -65,21 +26,22 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
 
 	db, _ := initializeDB(wasmArgs)
+	// TODO: look at old records and delete old ones
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
-		authorised := checkDiscoveryToken(request, wasmArgs)
-		// Test if it is a POST request
-		if request.Method == http.MethodPost && authorised == true {
+		authorised := httpHelper.CheckDiscoveryToken(request, wasmArgs)
 
-			body := httphelper.GetBody(request) // process information from simplism POST request
+		switch {
+		// triggered when a simplism process contacts the discovery endpoint
+		case request.Method == http.MethodPost && authorised == true:
 
-			// create SimpleProcess struct instance from JSON Body
-			simplismProcess, _ := jsonhelper.GetSimplismProcesseFromJSONBytes(body)
+			body := httpHelper.GetBody(request) // process information from simplism POST request
+
 			// store the process information in the database
+			simplismProcess, _ := jsonHelper.GetSimplismProcesseFromJSONBytes(body)
 			err := saveSimplismProcessToDB(db, simplismProcess)
 
-			// TODO: look at old records and delete old ones
 			if err != nil {
 				fmt.Println("😡 When updating bucket", err)
 				response.WriteHeader(http.StatusInternalServerError)
@@ -87,21 +49,34 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.WriteHeader(http.StatusOK)
 			}
 
-		} else {
-			if authorised == false {
-				response.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintln(response, "😡 You're not authorized")
+		case request.Method == http.MethodGet && authorised == true:
 
+			// get the list of the services that are running
+			processes := getSimpleProcessesListFromDB(db)
+			jsonString, err := json.Marshal(processes)
+
+			if err != nil {
+				fmt.Println("😡 When marshalling", err)
+				response.WriteHeader(http.StatusInternalServerError)
 			} else {
-				response.WriteHeader(http.StatusMethodNotAllowed)
-				fmt.Fprintln(response, "😡 Method not allowed")
+				response.WriteHeader(http.StatusOK)
+				response.Write(jsonString)
 			}
-			// 🚧 This is a Work In Progress
-			// If GET request
 
-			// If DELETE request
+		case request.Method == http.MethodPut && authorised == true:
+			// TODO update the Information field of the service
+			// if the token is propagated, the service will be able to PUT information
 
-			// If PUT request
+		// to kill a service, see the admin handler
+
+		case authorised == false:
+			response.WriteHeader(http.StatusUnauthorized)
+			//fmt.Println("😡 You're not authorized")
+			fmt.Fprintln(response, "😡 You're not authorized")
+
+		default:
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			fmt.Fprintln(response, "😡 Method not allowed")
 		}
 
 	}

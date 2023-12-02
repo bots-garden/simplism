@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	simplismTypes "simplism/types"
+	"time"
 )
 
 /*
-Every Simplism process launched with the --discovery-endpoint flag 
+Every Simplism process launched with the --discovery-endpoint flag
 will send information to the discovery server.
 */
 
@@ -38,10 +38,15 @@ func sendProcessInformationToDiscoveryServer(currentSimplismProcess simplismType
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	if wasmArgs.AdminDiscoveryToken != "" {
+		req.Header.Set("admin-discovery-token", wasmArgs.AdminDiscoveryToken)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	
+
+	//fmt.Println("🤖 simplism process:", resp.Body)
+
 	if err != nil {
 		fmt.Println("😡 Error sending request:", err)
 		return // 🤔
@@ -57,7 +62,7 @@ func sendProcessInformationToDiscoveryServer(currentSimplismProcess simplismType
 // - currentSimplismProcess: the SimplismProcess to be processed.
 // - wasmArgs: the WasmArguments to be used during processing.
 func goRoutineSimplismProcess(currentSimplismProcess simplismTypes.SimplismProcess, wasmArgs simplismTypes.WasmArguments) {
-	
+
 	sendProcessInformationToDiscoveryServer(currentSimplismProcess, wasmArgs)
 
 	ticker := time.NewTicker(time.Duration(delayToSendInformationProcess) * time.Second)

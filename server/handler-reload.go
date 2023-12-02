@@ -6,49 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"simplism/httphelper"
-	"simplism/wasmhelper"
+	httpHelper "simplism/helpers/http"
+	wasmHelper "simplism/helpers/wasm"
 	simplismTypes "simplism/types"
-
+	configHelper "simplism/helpers/config"
 )
-
-// checkReloadToken checks if the provided request has a valid admin reload token.
-//
-// It takes in the following parameters:
-// - request: a pointer to an http.Request object representing the incoming request.
-// - wasmArgs: a WasmArguments object representing the Wasm arguments.
-//
-// It returns a boolean value indicating whether the request is authorized or not.
-func checkReloadToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
-	var authorised bool = false
-
-	// read the header admin-reload-token
-	adminReloadToken := request.Header.Get("admin-reload-token")
-
-	if wasmArgs.AdminReloadToken != "" {
-		// token is awaited
-		if wasmArgs.AdminReloadToken == adminReloadToken {
-			authorised = true
-		} else {
-			authorised = false
-		}
-
-	} else {
-		// check if the environment variable ADMIN_RELOAD_TOKEN is set
-		envAdminReloadToken := os.Getenv("ADMIN_RELOAD_TOKEN")
-		if envAdminReloadToken != "" {
-			// token is awaited
-			if envAdminReloadToken == adminReloadToken {
-				authorised = true
-			} else {
-				authorised = false
-			}
-		} else {
-			authorised = true
-		}
-	}
-	return authorised
-}
 
 /*
 	This handler is responsible for:
@@ -74,11 +36,11 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 		// - POST request
 		// - url for the wasm file
 		// - admin-reload-token and ADMIN_RELOAD_TOKEN env variable
-		authorised := checkReloadToken(request, wasmArgs)
+		authorised := httpHelper.CheckReloadToken(request, wasmArgs)
 
 		// Test if it's a POST request
 		if request.Method == "POST" && authorised == true {
-			body := httphelper.GetBody(request)
+			body := httpHelper.GetBody(request)
 			// body is a JSON string, extract the url field value of the JSON string
 			bodyMap := map[string]string{}
 			err := json.Unmarshal([]byte(body), &bodyMap)
@@ -89,38 +51,36 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 				fmt.Fprintln(response, "😡 "+err.Error())
 			} else {
 
-				// TODO test token
-
 				wasmArgs.URL = bodyMap["wasm-url"]
 				wasmArgs.FilePath = bodyMap["wasm-file"]
 				wasmArgs.FunctionName = bodyMap["wasm-function"]
 
 				fmt.Println("🚀 downloading", wasmArgs.URL, "...")
-				err := downloadWasmFile(wasmArgs)
+				err := wasmHelper.DownloadWasmFile(wasmArgs)
 				if err != nil {
 					fmt.Println(err)
 					os.Exit(1) // TODO: do something else
 				}
 
-				hosts := getHostsFromString(wasmArgs.AllowHosts)
-				paths := getPathsFromJSONString(wasmArgs.AllowPaths)
-				manifestConfig := getConfigFromJSONString(wasmArgs.Config)
+				hosts := configHelper.GetHostsFromString(wasmArgs.AllowHosts)
+				paths := configHelper.GetPathsFromJSONString(wasmArgs.AllowPaths)
+				manifestConfig := configHelper.GetConfigFromJSONString(wasmArgs.Config)
 
 				// Add environment variable to the manifest config
-				envVars := getEnvVarsFromString(wasmArgs.EnvVars)
+				envVars := configHelper.GetEnvVarsFromString(wasmArgs.EnvVars)
 				// loop throw envVars and add it to the manifest config
 				for _, envVar := range envVars {
 					manifestConfig[envVar] = os.Getenv(envVar)
 				}
 				// now we can use `pdk.GetConfig()` to get the value of the environment variables
 
-				level := wasmhelper.GetLevel(wasmArgs.LogLevel)
+				level := wasmHelper.GetLevel(wasmArgs.LogLevel)
 
 				//ctx := context.Background()
 
-				config, manifest := wasmhelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
+				config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
 
-				wasmhelper.ReplacePluginInPool(0, ctx, config, manifest)
+				wasmHelper.ReplacePluginInPool(0, ctx, config, manifest)
 				fmt.Println("🙂 new wasm plug-in reloaded")
 
 				response.WriteHeader(http.StatusOK)

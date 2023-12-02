@@ -74,5 +74,6 @@ func getWasmArgumentsMap(configFilepath string) map[string]simplismTypes.WasmArg
 		fmt.Println("😡 (getWasmArgumentsMap) reading the yaml config file:", err)
 		os.Exit(1)
 	}
+	//fmt.Println("🤖 +>", wasmArgumentsMap)
 	return wasmArgumentsMap
 }

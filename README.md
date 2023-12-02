@@ -96,7 +96,7 @@ Flags for listen command:
   --admin-reload-token    string   Admin token to be authorized to reload the wasm-plugin
                                    Or use this environment variable: ADMIN_RELOAD_TOKEN
                                    Use the /reload endpoint to reload the wasm-plugin
-  --discovery             bool     The current Simplism server is a service discovery server
+  --service-discovery     bool     The current Simplism server is a service discovery server
                                    Default: false
   --discovery-endpoint    string   The endpoint of the service discovery server
                                    It always ends with /discovery
@@ -190,6 +190,75 @@ http://localhost:8080/reload \
 
 > 🚧 this is a work in progress
 
+Simplism comes with a service discovery feature. It can be used to discover the running Simplism servers.
+- One of the servers (simplism service) can be a service discovery server. The service discovery server can be configured with the `--service-discovery` flag:
+
+```bash
+simplism listen discovery-service/discovery-service.wasm handle \
+--http-port 9000 \
+--log-level info \
+--service-discovery true \
+--admin-discovery-token people-are-strange
+```
+> `--admin-discovery-token` is not mandatory, but it's probably a good idea to set it.
+
+- Then, the other services can be configured with the `--discovery-endpoint` flag:
+
+```bash
+simplism listen service-one/service-one.wasm handle \
+--http-port 8001 \
+--log-level info \
+--discovery-endpoint http://localhost:9000/discovery \
+--admin-discovery-token people-are-strange &
+
+simplism listen service-two/service-two.wasm handle \
+--http-port 8002 \
+--log-level info \
+--discovery-endpoint http://localhost:9000/discovery \
+--admin-discovery-token people-are-strange &
+
+simplism listen service-three/service-three.wasm handle \
+--http-port 8003 \
+--log-level info \
+--discovery-endpoint http://localhost:9000/discovery \
+--admin-discovery-token people-are-strange &
+```
+> the 3 services will be discovered by the service discovery server. Every services will regularly post information to the service discovery server.
+
+- You can query the service discovery server with the `/discovery` endpoint to get the list of the running services:
+
+```bash
+curl http://localhost:9000/discovery \
+-H 'admin-discovery-token:people-are-strange'
+```
+
+- You can use the flock mode jointly with the service discovery:
+
+```yaml
+service-discovery:
+  wasm-file: ./discovery/discovery.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  service-discovery: true
+  admin-discovery-token: this-is-the-way
+
+basestar-mother:
+  wasm-file: ./basestar/basestar.wasm
+  wasm-function: handle
+  http-port: 8010
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+
+raider-1:
+  wasm-file: ./raider/raider.wasm
+  wasm-function: handle
+  http-port: 8001
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+```
 
 ## Generate Extism plug-in projects for Simplism
 
