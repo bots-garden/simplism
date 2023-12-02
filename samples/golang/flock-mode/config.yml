@@ -34,5 +34,5 @@ hello-rust-plugin-3:
   http-port: 8090
 
 # This is 🚧 work in progress
-service-discovery:
-  http-port: 8888
+#service-discovery:
+#  http-port: 8888

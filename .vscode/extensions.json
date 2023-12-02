@@ -4,6 +4,8 @@
     "pkief.material-product-icons",
     "aaron-bond.better-comments",
     "golang.go",
-    "equinusocio.vsc-material-theme"
+    "equinusocio.vsc-material-theme",
+    "rust-lang.rust-analyzer",
+    "codeium.codeium"
   ]
 }

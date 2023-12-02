@@ -1,10 +1,7 @@
-- wasm file hot reload:
-  - add a route to trigger the wasm file reload
-  - it's a POST request with a token (reload-token)
-  - into the map: load a new instance of plugin, remove the previous one
 - health check
 - orchestrator (choose another name): but kiss, an API to:
   - spawn a simplism process
   - get the list of the processes
   - kill a simplism process
   - reload the wasm file of a process
+- check if it's doable to use the plugin var method (type?) to do something like actors+messages

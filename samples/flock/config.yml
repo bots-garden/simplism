@@ -1,11 +1,37 @@
+service-discovery:
+  wasm-file: ./discovery/discovery.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  #discovery-endpoint: http://localhost:9000/discovery
+  service-discovery: true
+  admin-discovery-token: this-is-the-way
+
+basestar-mother:
+  wasm-file: ./basestar/basestar.wasm
+  wasm-function: handle
+  http-port: 8010
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+  config: |
+    {
+      "basestar-name":"basestar-mummy",
+      "x-max":"100",
+      "y-max":"100",
+      "raiders": "raider-1,raider-2,raider-3"
+    }
+
 raider-1:
   wasm-file: ./raider/raider.wasm
   wasm-function: handle
   http-port: 8001
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
-      "basestar-url":"http://localhost:9000",
+      "basestar-url":"http://localhost:8010",
       "raider-name":"raider-1",
       "raider-url":"http://localhost:8001",
       "y-start":"10",
@@ -17,9 +43,11 @@ raider-2:
   wasm-function: handle
   http-port: 8002
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
-      "basestar-url":"http://localhost:9000",
+      "basestar-url":"http://localhost:8010",
       "raider-name":"raider-2",
       "raider-url":"http://localhost:8002",
       "y-start":"5",
@@ -31,28 +59,14 @@ raider-3:
   wasm-function: handle
   http-port: 8003
   log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
   config: |
     {
-      "basestar-url":"http://localhost:9000",
+      "basestar-url":"http://localhost:8010",
       "raider-name":"raider-3",
       "raider-url":"http://localhost:8003",
       "y-start":"30",
       "x-start":"20"
     }
 
-basestar-mother:
-  wasm-file: ./basestar/basestar.wasm
-  wasm-function: handle
-  http-port: 9000
-  log-level: info
-  config: |
-    {
-      "basestar-name":"basestar-mummy",
-      "x-max":"100",
-      "y-max":"100",
-      "raiders": "raider-1,raider-2,raider-3"
-    }
-
-# This is 🚧 work in progress
-service-discovery:
-  http-port: 8888

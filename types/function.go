@@ -1,4 +1,4 @@
-package functiontypes
+package simplismTypes
 
 import (
 	"encoding/base64"
