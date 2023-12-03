@@ -11,7 +11,7 @@ services:
         - TINYGO_ARCH=arm64
         - TINYGO_VERSION=0.30.0
         - EXTISM_ARCH=arm64
-        - EXTISM_VERSION=0.3.0
+        - EXTISM_VERSION=0.3.3
         - NODE_DISTRO=linux-arm64
         - NODE_VERSION=v21.1.0
       context: ./docker-dev-environment
