@@ -2,6 +2,7 @@ package cmds
 
 import (
 	"flag"
+	stringHelper "simplism/helpers/stringHelper"
 	"simplism/server"
 	simplismTypes "simplism/types"
 )
@@ -51,18 +52,10 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 
 	adminDiscoveryToken := flagSet.String("admin-discovery-token", "", "Admin discovery token")
 
-	flagSet.Parse(args[2:])
+	spawnMode := flagSet.String("spawn-mode", "false", "")
+	adminSpawnToken := flagSet.String("admin-spawn-token", "", "Admin spawn token")
 
-	getTheBooleanValueOf := func(value string) bool {
-		switch {
-		case value == "true":
-			return true
-		case value == "false":
-			return false
-		default:
-			return false
-		}
-	}
+	flagSet.Parse(args[2:])
 
 	server.Listen(simplismTypes.WasmArguments{
 		FilePath:          wasmFilePath,
@@ -74,7 +67,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AllowPaths:        *allowPaths,
 		EnvVars:           *envVars,
 		Config:            *config,
-		Wasi:              getTheBooleanValueOf(*wasi),
+		Wasi:              stringHelper.GetTheBooleanValueOf(*wasi),
 		URL:               *wasmURL,
 		WasmURLAuthHeader: *wasmURLAuthHeader,
 		//AuthHeaderName:  *authHeaderName,
@@ -82,8 +75,10 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		CertFile:            *certFile,
 		KeyFile:             *keyFile,
 		AdminReloadToken:    *adminReloadToken,
-		ServiceDiscovery:    getTheBooleanValueOf(*serviceDiscovery),
+		ServiceDiscovery:    stringHelper.GetTheBooleanValueOf(*serviceDiscovery),
 		DiscoveryEndpoint:   *discoveryEndpoint,
 		AdminDiscoveryToken: *adminDiscoveryToken,
+		SpawnMode:           stringHelper.GetTheBooleanValueOf(*spawnMode),
+		AdminSpawnToken:     *adminSpawnToken,
 	}, "") // no config key
 }

@@ -21,6 +21,9 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	currentSimplismProcess.PID = os.Getpid()
 	currentSimplismProcess.FilePath = wasmArgs.FilePath
 	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
+	currentSimplismProcess.HTTPPort = wasmArgs.HTTPPort
+
+	currentSimplismProcess.Information = "simplism process"
 
 	currentSimplismProcess.StartTime = time.Now()
 
@@ -54,35 +57,37 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	wasmHelper.GeneratePluginsPool(ctx, config, manifest)
 
 	/*
-		This handler is responsible for:
-		- handling HTTP requests and,
-		- calling the WebAssembly function.
+	This handler is responsible for:
+	- handling HTTP requests and,
+	- calling the WebAssembly function.
 	*/
 	http.HandleFunc("/", mainHandler(wasmArgs))
 
-	/*
-		This handler is responsible for:
-		- reloading the WebAssembly file,
-	*/
+	// This handler is responsible for reloading the WebAssembly file,
 	http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 
-	/*
-		The current Simplism process is responsible for handling the list of the other Simplism processes.
-	*/
 
 	// This handler is responsible for listening for the other Simplism processes,
+	// The current Simplism process is responsible for handling the list of the other Simplism processes.
 	if wasmArgs.ServiceDiscovery == true {
+		fmt.Println("🤖 this service is a service discovery")
 		http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 
-	/*
-		Every N seconds, send information about the current simplism process to the discovery simplism process.
-	*/
+	//Every N seconds, send information about the current simplism process to the discovery simplism process.
+	// TODO: add a paramater for this
 	if wasmArgs.DiscoveryEndpoint != "" {
 		fmt.Println("👋 this service is discoverable")
 		go func() {
 			goRoutineSimplismProcess(currentSimplismProcess, wasmArgs)
 		}()
+	}
+
+	// This handler is responsible for spawning other services
+	// That means that the current simplism process can spawn other simplism processes
+	if wasmArgs.SpawnMode == true {
+		fmt.Println("🚀 this service can spawn other services")
+		http.HandleFunc("/spawn", spawnHandler(wasmArgs))
 	}
 
 	// Start the Simplism HTTP server

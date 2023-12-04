@@ -72,11 +72,13 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		case authorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
 			//fmt.Println("😡 You're not authorized")
-			fmt.Fprintln(response, "😡 You're not authorized")
+			//fmt.Fprintln(response, "😡 You're not authorized")
+			response.Write([]byte("😡 You're not authorized"))
 
 		default:
 			response.WriteHeader(http.StatusMethodNotAllowed)
-			fmt.Fprintln(response, "😡 Method not allowed")
+			response.Write([]byte("😡 Method not allowed"))
+			//fmt.Fprintln(response, "😡 Method not allowed")
 		}
 
 	}

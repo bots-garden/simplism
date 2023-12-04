@@ -30,39 +30,6 @@ func readYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, 
 	return data, nil
 }
 
-// applyDefaultValuesIfMissing applies default values to the given WasmArguments struct if any of its fields are empty.
-//
-// Parameters:
-// - wasmArguments: The WasmArguments struct to apply default values to.
-//
-// Return type:
-// - server.WasmArguments: The WasmArguments struct with default values applied.
-func applyDefaultValuesIfMissing(wasmArguments simplismTypes.WasmArguments) simplismTypes.WasmArguments {
-	// default values:
-	if wasmArguments.AllowHosts == "" {
-		wasmArguments.AllowHosts = `["*"]`
-	}
-
-	if wasmArguments.AllowPaths == "" {
-		wasmArguments.AllowPaths = "{}"
-	}
-
-	if wasmArguments.Config == "" {
-		wasmArguments.Config = "{}"
-	}
-
-	if wasmArguments.HTTPPort == "" {
-		wasmArguments.HTTPPort = "8080"
-	}
-
-	if wasmArguments.EnvVars == "" {
-		wasmArguments.EnvVars = "[]"
-	}
-
-	//TODO: add log level
-	return wasmArguments
-
-}
 
 // getWasmArgumentsMap returns a map of WasmArguments based on the provided configFilepath.
 //

@@ -20,4 +20,6 @@ type WasmArguments struct {
 	ServiceDiscovery    bool   `yaml:"service-discovery,omitempty"`
 	DiscoveryEndpoint   string `yaml:"discovery-endpoint,omitempty"`
 	AdminDiscoveryToken string `yaml:"admin-discovery-token,omitempty"`
+	SpawnMode           bool   `yaml:"spawn-mode,omitempty"`
+	AdminSpawnToken     string `yaml:"admin-spawn-token,omitempty"`
 }

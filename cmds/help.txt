@@ -42,4 +42,8 @@ Flags for listen command:
   --admin-discovery-token string   Admin token to be authorized to post information to the service discovery server
                                    Or use this environment variable: ADMIN_DISCOVERY_TOKEN
                                    Use the /discovery endpoint to post information to the service discovery server
-                                   
+  --spawn-mode            bool     The current Simplism server is in spawn mode (it can create new simplism servers with the /spawn endpoint)
+                                   Default: false
+  --admin-spawn-token     string   Admin token to be authorized to spawn a new Simplism server
+                                   Or use this environment variable: ADMIN_SPAWN_TOKEN
+                                   Use the /spawn endpoint to spawn a new Simplism server

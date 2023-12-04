@@ -1,0 +1,11 @@
+process-spawner-01:
+  wasm-file: ./process-spawner.wasm
+  wasm-function: handle
+  http-port: 8080
+  log-level: info
+  spawn-mode: true
+  admin-spawn-token: michael-burnham-rocks
+  admin-discovery-token: michael-burnham-rocks
+  service-discovery: true
+
+
