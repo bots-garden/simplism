@@ -50,9 +50,9 @@ func SpawnSimplismProcess(wasmArguments simplismTypes.WasmArguments) {
 		//"--spawn-mode", "true",
 		"--service-discovery", stringHelper.GetTheStringValueOf(wasmArguments.ServiceDiscovery),
 		"--discovery-endpoint", wasmArguments.DiscoveryEndpoint,
+		"--service-name", wasmArguments.ServiceName,
+		"--information", wasmArguments.Information,
 	}
-
-	//fmt.Println("🚀", spawnArgs)
 
 	cmd := &exec.Cmd{
 		Path:   GetExecutablePath("simplism"),

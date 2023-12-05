@@ -7,5 +7,7 @@ process-spawner-01:
   admin-spawn-token: michael-burnham-rocks
   admin-discovery-token: michael-burnham-rocks
   service-discovery: true
+  information: "👋 I'm the spawner service"
+  service-name: process-spawner
 
 

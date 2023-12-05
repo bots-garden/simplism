@@ -11,11 +11,14 @@ import (
 	"time"
 )
 
+var currentSimplismProcess = simplismTypes.SimplismProcess{}
+
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
 // It takes a `wasmArgs` parameter of type `WasmArguments` which contains the necessary arguments for configuring the WebAssembly environment.
 // The function does not return anything.
 func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
+
 
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()
@@ -23,7 +26,11 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
 	currentSimplismProcess.HTTPPort = wasmArgs.HTTPPort
 
-	currentSimplismProcess.Information = "simplism process"
+	currentSimplismProcess.Information = wasmArgs.Information
+	currentSimplismProcess.ServiceName = wasmArgs.ServiceName
+
+	// for debugging
+	//fmt.Println("🤔", currentSimplismProcess.Information,":", currentSimplismProcess.ServiceName)
 
 	currentSimplismProcess.StartTime = time.Now()
 

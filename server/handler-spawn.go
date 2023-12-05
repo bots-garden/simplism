@@ -57,6 +57,12 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				wasmArgsFromJsonPayload.ServiceDiscovery = stringHelper.GetTheBooleanValueOf(bodyMap["service-discovery"])
 				wasmArgsFromJsonPayload.DiscoveryEndpoint = bodyMap["discovery-endpoint"]
 
+				wasmArgsFromJsonPayload.Information = bodyMap["information"]
+				wasmArgsFromJsonPayload.ServiceName = bodyMap["service-name"]
+
+				// for debugging
+				//fmt.Println("🤓", wasmArgsFromJsonPayload.Information, wasmArgsFromJsonPayload.ServiceName)
+
 				go func() {
 					processesHelper.SpawnSimplismProcess(wasmArgsFromJsonPayload)
 				}()

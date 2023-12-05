@@ -10,4 +10,6 @@ type SimplismProcess struct {
 	StartTime    time.Time `json:"startTime"`
 	HTTPPort     string    `json:"httpPort"`
 	Information  string    `json:"information"` // not used, but soon
+	ServiceName  string    `json:"serviceName"`
+	//Host         string    `json:"host"` // how to set this?
 }

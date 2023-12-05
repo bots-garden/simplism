@@ -11,7 +11,6 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-var currentSimplismProcess = simplismTypes.SimplismProcess{}
 
 // initializeDB initializes the database for the given WasmArguments.
 //

@@ -21,6 +21,8 @@ basestar-mother:
       "y-max":"100",
       "raiders": "raider-1,raider-2,raider-3"
     }
+  information: 👋 I'm the mother of the basestars
+  service-name: basestar
 
 raider-1:
   wasm-file: ./raider/raider.wasm
@@ -37,6 +39,8 @@ raider-1:
       "y-start":"10",
       "x-start":"10"
     }
+  information: 👋 I'm a raider
+  service-name: raider one
 
 raider-2:
   wasm-file: ./raider/raider.wasm
@@ -53,6 +57,8 @@ raider-2:
       "y-start":"5",
       "x-start":"5"
     }
+  information: 👋 I'm a raider
+  service-name: raider two
 
 raider-3:
   wasm-file: ./raider/raider.wasm
@@ -69,4 +75,6 @@ raider-3:
       "y-start":"30",
       "x-start":"20"
     }
+  information: 👋 I'm a raider
+  service-name: raider three
 
