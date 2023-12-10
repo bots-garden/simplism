@@ -68,20 +68,19 @@ func SpawnSimplismProcess(wasmArguments simplismTypes.WasmArguments) {
 	}
 }
 
-func KillSimplismProcess(pid int) {
+func KillSimplismProcess(pid int) error {
 	process, err := os.FindProcess(pid)
 	if err != nil {
 		fmt.Println("😡 Error finding process", err)
-		return
+		return err
 	}
 
 	err = process.Kill()
 	if err != nil {
 		fmt.Println("😡 Error killing process", err)
-		return
+		return err
 	}
 
-	fmt.Println("🙂 Process killed successfully")
-	// TODO: return something
+	return nil
 
 }

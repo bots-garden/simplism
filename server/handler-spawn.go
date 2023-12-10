@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	httpHelper "simplism/helpers/http"
 	simplismTypes "simplism/types"
@@ -16,7 +17,7 @@ import (
 // It takes wasmArgs simplismTypes.WasmArguments as a parameter.
 // It returns an http.HandlerFunc.
 func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
-	// TODO
+	
 	return func(response http.ResponseWriter, request *http.Request) {
 
 		authorised := httpHelper.CheckSpawnToken(request, wasmArgs)
@@ -122,11 +123,23 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 						// do nothing
 					} else {
 						// kill the process
-						processesHelper.KillSimplismProcess(pid)
+						errKill := processesHelper.KillSimplismProcess(pid)
+						if errKill != nil {
+							fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
+						} else {
+							fmt.Println("🙂 Process killed successfully")
+
+							errKillNotification := NotifyDiscoveryServiceOfKillingProcess(pid)
+							if errKillNotification != nil {
+								fmt.Println("😡 handler-spawn/NotifyDiscoveryServiceOfKillingProcess", errKillNotification)
+							} else {
+								fmt.Println("🙂 Notification for process killed sent for db update")
+							}
+						}
 					}
-					// TODO: kill only one process (? 🤔)
-					
+					//? Question: kill only one process (? 🤔)
 				}
+
 				response.WriteHeader(http.StatusOK)
 				response.Write([]byte("Simplism processe(s) killed"))
 			}
@@ -134,13 +147,10 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		case authorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
 			response.Write([]byte("😡 You're not authorized"))
-			//fmt.Fprintln(response, "😡 You're not authorized")
 
 		default:
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			response.Write([]byte("😡 Method not allowed"))
-			//fmt.Fprintln(response, "😡 Method not allowed")
 		}
-
 	}
 }

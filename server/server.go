@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	configHelper "simplism/helpers/config"
 	wasmHelper "simplism/helpers/wasm"
 	simplismTypes "simplism/types"
+	"syscall"
 	"time"
 )
 
@@ -18,7 +20,6 @@ var currentSimplismProcess = simplismTypes.SimplismProcess{}
 // It takes a `wasmArgs` parameter of type `WasmArguments` which contains the necessary arguments for configuring the WebAssembly environment.
 // The function does not return anything.
 func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
-
 
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()
@@ -57,22 +58,25 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	level := wasmHelper.GetLevel(wasmArgs.LogLevel)
 
-	ctx := context.Background()
+	//ctx := context.Background()
+	// Create context that listens for the interrupt signal from the OS.
+	// This context will be used for function calls.
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
 
 	wasmHelper.GeneratePluginsPool(ctx, config, manifest)
 
 	/*
-	This handler is responsible for:
-	- handling HTTP requests and,
-	- calling the WebAssembly function.
+		This handler is responsible for:
+		- handling HTTP requests and,
+		- calling the WebAssembly function.
 	*/
 	http.HandleFunc("/", mainHandler(wasmArgs))
 
 	// This handler is responsible for reloading the WebAssembly file,
 	http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
-
 
 	// This handler is responsible for listening for the other Simplism processes,
 	// The current Simplism process is responsible for handling the list of the other Simplism processes.
@@ -104,5 +108,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	// Listen for the interrupt signal.
 	<-ctx.Done()
+	//stop()
+	fmt.Println("😢", configKey, "service exited")
 
 }

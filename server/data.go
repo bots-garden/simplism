@@ -11,7 +11,6 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-
 // initializeDB initializes the database for the given WasmArguments.
 //
 // It takes a single parameter, wasmArgs, of type simplismTypes.WasmArguments.
@@ -55,7 +54,7 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 	pidStr := strconv.Itoa(simplismProcess.PID)
 	// convert the process information to JSON
 	jsonProcess, _ := jsonhelper.GetJSONBytesFromSimplismProcess(simplismProcess)
-	
+
 	// for debugging (temporary)
 	//fmt.Println("🟣", string(jsonProcess))
 
@@ -65,24 +64,42 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 		err := b.Put([]byte(pidStr), jsonProcess)
 		return err
 	})
-    return err
+	return err
 }
 
-func getSimpleProcessesListFromDB(db *bolt.DB,) map[string]simplismTypes.SimplismProcess {
+func getSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess {
+
+	var simplismProcess  simplismTypes.SimplismProcess
+
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("simplism-bucket"))
+		processValue := b.Get([]byte(strconv.Itoa(pid)))
+		
+		if processValue == nil {
+			simplismProcess = simplismTypes.SimplismProcess{}
+		}
+		simplismProcess, _ = jsonhelper.GetSimplismProcesseFromJSONBytes(processValue)
+		return nil
+	})
+	// TODO handle error return value
+	return simplismProcess // if nil, return an empty simplismProcess
+}
+
+func getSimplismProcessesListFromDB(db *bolt.DB) map[string]simplismTypes.SimplismProcess {
 	processes := map[string]simplismTypes.SimplismProcess{}
 
 	db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("simplism-bucket"))
-	
+
 		c := b.Cursor()
-	
+
 		for pid, processValue := c.First(); pid != nil; pid, processValue = c.Next() {
 			//fmt.Printf("key=%s, value=%s\n", pid, processValue)
 			simplismProcess, _ := jsonhelper.GetSimplismProcesseFromJSONBytes(processValue)
 			processes[string(pid)] = simplismProcess
 		}
-	
+
 		return nil
 	})
 	return processes
