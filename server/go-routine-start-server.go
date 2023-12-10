@@ -32,6 +32,9 @@ func goRoutineStartServer(configKey string, wasmArgs simplismTypes.WasmArguments
 
 		fmt.Println(message)
 		err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, nil)
+
+		//currentSimplismProcess.Host = 
+
 		if err != nil {
 			log.Fatal("😡", err)
 			os.Exit(1)
@@ -45,6 +48,7 @@ func goRoutineStartServer(configKey string, wasmArgs simplismTypes.WasmArguments
 		}
 		fmt.Println(message)
 		err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
+		
 		if err != nil {
 			log.Fatal("😡", err)
 			os.Exit(1)

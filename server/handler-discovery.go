@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	httpHelper "simplism/helpers/http"
 	jsonHelper "simplism/helpers/json"
 	simplismTypes "simplism/types"
 )
+
+var NotifyDiscoveryServiceOfKillingProcess func(pid int) error
 
 // discoveryHandler handles the /discovery endpoint in the API.
 //
@@ -27,6 +30,34 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	db, _ := initializeDB(wasmArgs)
 	// TODO: look at old records and delete old ones
+
+	// This function is called by the spawn handler (DELETE method), see handle-spawn.go
+	notifyForKill := func(pid int) error {
+		simplismProcess := getSimplismProcessByPiD(db, pid)
+
+		// test simplismProcess.StopTime
+		if simplismProcess.StopTime.IsZero() {
+		    fmt.Println("⏳ Stop time is not set")
+			simplismProcess.StopTime = time.Now()
+
+			err := saveSimplismProcessToDB(db, simplismProcess)
+			if err != nil {
+				fmt.Println("😡 When updating bucket with the Stop Time", err)
+				
+			} else {
+				fmt.Println("🙂 Bucket updated with the Stop Time")
+			}
+			return err
+
+		} else {
+		    fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
+			fmt.Println("✋ This process is already killed")
+		}
+		
+		return nil
+
+	}
+	NotifyDiscoveryServiceOfKillingProcess = notifyForKill
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
@@ -52,7 +83,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		case request.Method == http.MethodGet && authorised == true:
 
 			// get the list of the services that are running
-			processes := getSimpleProcessesListFromDB(db)
+			processes := getSimplismProcessesListFromDB(db)
 			jsonString, err := json.Marshal(processes)
 
 			if err != nil {
@@ -72,11 +103,13 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		case authorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
 			//fmt.Println("😡 You're not authorized")
-			fmt.Fprintln(response, "😡 You're not authorized")
+			//fmt.Fprintln(response, "😡 You're not authorized")
+			response.Write([]byte("😡 You're not authorized"))
 
 		default:
 			response.WriteHeader(http.StatusMethodNotAllowed)
-			fmt.Fprintln(response, "😡 Method not allowed")
+			response.Write([]byte("😡 Method not allowed"))
+			//fmt.Fprintln(response, "😡 Method not allowed")
 		}
 
 	}

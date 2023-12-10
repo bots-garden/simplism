@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	configHelper "simplism/helpers/config"
 	wasmHelper "simplism/helpers/wasm"
 	simplismTypes "simplism/types"
+	"syscall"
 	"time"
 )
+
+var currentSimplismProcess = simplismTypes.SimplismProcess{}
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
@@ -21,6 +25,13 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	currentSimplismProcess.PID = os.Getpid()
 	currentSimplismProcess.FilePath = wasmArgs.FilePath
 	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
+	currentSimplismProcess.HTTPPort = wasmArgs.HTTPPort
+
+	currentSimplismProcess.Information = wasmArgs.Information
+	currentSimplismProcess.ServiceName = wasmArgs.ServiceName
+
+	// for debugging
+	//fmt.Println("🤔", currentSimplismProcess.Information,":", currentSimplismProcess.ServiceName)
 
 	currentSimplismProcess.StartTime = time.Now()
 
@@ -47,7 +58,11 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	level := wasmHelper.GetLevel(wasmArgs.LogLevel)
 
-	ctx := context.Background()
+	//ctx := context.Background()
+	// Create context that listens for the interrupt signal from the OS.
+	// This context will be used for function calls.
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
 
@@ -60,29 +75,30 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	*/
 	http.HandleFunc("/", mainHandler(wasmArgs))
 
-	/*
-		This handler is responsible for:
-		- reloading the WebAssembly file,
-	*/
+	// This handler is responsible for reloading the WebAssembly file,
 	http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 
-	/*
-		The current Simplism process is responsible for handling the list of the other Simplism processes.
-	*/
-
 	// This handler is responsible for listening for the other Simplism processes,
+	// The current Simplism process is responsible for handling the list of the other Simplism processes.
 	if wasmArgs.ServiceDiscovery == true {
+		fmt.Println("🤖 this service is a service discovery")
 		http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 
-	/*
-		Every N seconds, send information about the current simplism process to the discovery simplism process.
-	*/
+	//Every N seconds, send information about the current simplism process to the discovery simplism process.
+	// TODO: add a paramater for this
 	if wasmArgs.DiscoveryEndpoint != "" {
 		fmt.Println("👋 this service is discoverable")
 		go func() {
 			goRoutineSimplismProcess(currentSimplismProcess, wasmArgs)
 		}()
+	}
+
+	// This handler is responsible for spawning other services
+	// That means that the current simplism process can spawn other simplism processes
+	if wasmArgs.SpawnMode == true {
+		fmt.Println("🚀 this service can spawn other services")
+		http.HandleFunc("/spawn", spawnHandler(wasmArgs))
 	}
 
 	// Start the Simplism HTTP server
@@ -92,5 +108,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	// Listen for the interrupt signal.
 	<-ctx.Done()
+	//stop()
+	fmt.Println("😢", configKey, "service exited")
 
 }

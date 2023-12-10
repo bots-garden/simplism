@@ -6,4 +6,23 @@ hello-plugin:
   #allow-hosts: '["localhost", "127.0.0.1"]'
   #allow-paths: '{"path":"/"}'
   #config: '{"name":"hello"}'
+  service-discovery: true
+
+hello-plugin-1:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8081
+  log-level: info
+  discovery-endpoint: http://localhost:8080/discovery
+  information: "👋 I'm the first hello plugin"
+  service-name: hello-1
+
+hello-plugin-2:
+  wasm-file: ./hello.wasm
+  wasm-function: say_hello
+  http-port: 8082
+  log-level: info
+  discovery-endpoint: http://localhost:8080/discovery
+  information: "👋 I'm the second hello plugin"
+  service-name: hello-2
 

@@ -39,7 +39,7 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 		authorised := httpHelper.CheckReloadToken(request, wasmArgs)
 
 		// Test if it's a POST request
-		if request.Method == "POST" && authorised == true {
+		if request.Method == http.MethodPost && authorised == true {
 			body := httpHelper.GetBody(request)
 			// body is a JSON string, extract the url field value of the JSON string
 			bodyMap := map[string]string{}
@@ -48,7 +48,8 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 			if err != nil {
 				// send response http code error
 				response.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintln(response, "😡 "+err.Error())
+				response.Write([]byte("😡 "+err.Error()))
+				//fmt.Fprintln(response, "😡 "+err.Error())
 			} else {
 
 				wasmArgs.URL = bodyMap["wasm-url"]
@@ -84,7 +85,8 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 				fmt.Println("🙂 new wasm plug-in reloaded")
 
 				response.WriteHeader(http.StatusOK)
-				fmt.Fprintln(response, string("🙂 new wasm plug-in reloaded"))
+				//fmt.Fprintln(response, string("🙂 new wasm plug-in reloaded"))
+				response.Write([]byte("🙂 new wasm plug-in reloaded"))
 
 				// Update information about the current simplism process
 				currentSimplismProcess.FilePath = wasmArgs.FilePath
@@ -95,12 +97,13 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 		} else {
 			if authorised == false {
 				response.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintln(response, "😡 You're not authorized")
+				//fmt.Fprintln(response, "😡 You're not authorized")
+				response.Write([]byte("😡 You're not authorized"))
 
 			} else {
 				response.WriteHeader(http.StatusMethodNotAllowed)
-				fmt.Fprintln(response, "😡 Method not allowed")
-
+				//fmt.Fprintln(response, "😡 Method not allowed")
+				response.Write([]byte("😡 Method not allowed"))
 			}
 		}
 

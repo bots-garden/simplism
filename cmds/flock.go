@@ -6,20 +6,9 @@ import (
 	"os"
 	"os/exec"
 	simplismTypes "simplism/types"
+	processesHelper "simplism/helpers/processes"
+	configHelper "simplism/helpers/config"
 )
-
-// getExecutablePath returns the path of the executable file for the given program name.
-//
-// It takes a string parameter `progName` which represents the name of the program.
-// It returns a string which represents the path of the executable file.
-func getExecutablePath(progName string) string {
-	executablePath, err := exec.LookPath("simplism")
-	if err != nil {
-		fmt.Println("😡 Error finding executable:", err)
-		os.Exit(1)
-	}
-	return executablePath
-}
 
 // startFlockMode activates flock mode.
 //
@@ -30,7 +19,7 @@ func startFlockMode(configFilepath string) {
 	// read the yaml file to get the wasm arguments of each wasm service
 	wasmArgumentsMap := getWasmArgumentsMap(configFilepath)
 	// get the executable path of simplism
-	simplismExecutablePath := getExecutablePath("simplism")
+	simplismExecutablePath := processesHelper.GetExecutablePath("simplism")
 
 	//var serviceDiscoveryWasmArguments server.WasmArguments
 
@@ -43,7 +32,7 @@ func startFlockMode(configFilepath string) {
 
 	// loop through the map
 	for configKey, wasmArguments := range wasmArgumentsMap {
-		wasmArguments = applyDefaultValuesIfMissing(wasmArguments)
+		wasmArguments = configHelper.ApplyDefaultValuesIfMissing(wasmArguments)
 
 		// Start a new server process with the specified wasm plugin in the config
 		go func(configKey string, wasmArguments simplismTypes.WasmArguments) {

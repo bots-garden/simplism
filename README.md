@@ -104,6 +104,13 @@ Flags for listen command:
   --admin-discovery-token string   Admin token to be authorized to post information to the service discovery server
                                    Or use this environment variable: ADMIN_DISCOVERY_TOKEN
                                    Use the /discovery endpoint to post information to the service discovery server
+  --service-name          string   Name of the service (it can be useful with the service discovery mode)
+  --information           string   Information about the service (it can be useful with the service discovery mode)
+  --spawn-mode            bool     The current Simplism server is in spawn mode (it can create new simplism servers with the /spawn endpoint)
+                                   Default: false
+  --admin-spawn-token     string   Admin token to be authorized to spawn a new Simplism server
+                                   Or use this environment variable: ADMIN_SPAWN_TOKEN
+                                   Use the /spawn endpoint to spawn a new Simplism server
 ```
 > *Remarks: look at the `./samples` directory*
 
@@ -258,6 +265,39 @@ raider-1:
   log-level: info
   discovery-endpoint: http://localhost:9000/discovery
   admin-discovery-token: this-is-the-way
+```
+
+## Spawn mode
+
+> 🚧 this is a work in progress
+
+If you activate the `--spawn-mode` flag, the Simplism server will be able tospawn a new Simplism server with the `/spawn` endpoint:
+
+```bash
+simplism listen ./process-spawner.wasm handle \
+--http-port 8000 \
+--log-level info \
+--spawn-mode true \
+--admin-spawn-token michael-burnham-rocks
+```
+
+Then, to "spawn" a new Simplism server process, you can use the `/spawn` endpoint with a simple curl request:
+
+```bash
+curl -X POST \
+http://localhost:8080/spawn \
+-H 'admin-spawn-token:michael-burnham-rocks' \
+-H 'Content-Type: application/json; charset=utf-8' \
+--data-binary @- << EOF
+{
+    "wasm-file":"../say-hello/say-hello.wasm", 
+    "wasm-function":"handle", 
+    "http-port":"9093", 
+    "discovery-endpoint":"http://localhost:8080/discovery", 
+    "admin-discovery-token":"michael-burnham-rocks"
+}
+EOF
+echo ""
 ```
 
 ## Generate Extism plug-in projects for Simplism

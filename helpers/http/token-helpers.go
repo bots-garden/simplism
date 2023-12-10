@@ -82,3 +82,38 @@ func CheckReloadToken(request *http.Request, wasmArgs simplismTypes.WasmArgument
 	}
 	return authorised
 }
+
+// CheckSpawnToken checks if the provided spawn token is authorized.
+//
+// It takes a *http.Request object and a simplismTypes.WasmArguments object as parameters.
+// The function returns a boolean value indicating whether the spawn token is authorized or not.
+func CheckSpawnToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
+	var authorised bool = false
+	// read the header admin-discovery-token
+	adminSpawnToken := request.Header.Get("admin-spawn-token")
+
+	envAdminSpawnToken := os.Getenv("ADMIN_SPAWN_TOKEN")
+
+	switch {
+	// a token is awaited
+	case wasmArgs.AdminSpawnToken != "":
+		if wasmArgs.AdminSpawnToken == adminSpawnToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	// a token is awaited
+	case wasmArgs.AdminSpawnToken == "" && envAdminSpawnToken != "":
+		if envAdminSpawnToken == adminSpawnToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	case wasmArgs.AdminSpawnToken == "" && envAdminSpawnToken == "":
+		authorised = true
+	default:
+		authorised = false
+	}
+
+	return authorised
+}

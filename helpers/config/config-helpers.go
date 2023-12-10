@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	simplismTypes "simplism/types"
 )
 
 // GetEnvVarsFromString returns a slice of strings parsed from the given envars string.
@@ -22,7 +23,6 @@ func GetEnvVarsFromString(envars string) []string {
 	}
 	return vars
 }
-
 
 // GetHostsFromString gets a string representing a JSON array of hosts and returns a slice of strings containing the hosts.
 //
@@ -65,4 +65,41 @@ func GetConfigFromJSONString(config string) map[string]string {
 		os.Exit(1)
 	}
 	return manifestConfig
+}
+
+// ApplyDefaultValuesIfMissing applies default values to the given WasmArguments struct if any of its fields are empty.
+//
+// Parameters:
+// - wasmArguments: The WasmArguments struct to apply default values to.
+//
+// Return type:
+// - server.WasmArguments: The WasmArguments struct with default values applied.
+func ApplyDefaultValuesIfMissing(wasmArguments simplismTypes.WasmArguments) simplismTypes.WasmArguments {
+	// default values:
+	if wasmArguments.AllowHosts == "" {
+		wasmArguments.AllowHosts = `["*"]`
+	}
+
+	if wasmArguments.AllowPaths == "" {
+		wasmArguments.AllowPaths = "{}"
+	}
+
+	if wasmArguments.Config == "" {
+		wasmArguments.Config = "{}"
+	}
+
+	if wasmArguments.HTTPPort == "" {
+		wasmArguments.HTTPPort = "8080"
+	}
+
+	if wasmArguments.EnvVars == "" {
+		wasmArguments.EnvVars = "[]"
+	}
+
+	if wasmArguments.LogLevel == "" {
+		wasmArguments.LogLevel = "info"
+	}
+
+	return wasmArguments
+
 }
