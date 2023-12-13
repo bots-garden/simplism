@@ -100,7 +100,32 @@ curl http://localhost:9000/discovery \
 
 You should get:
 ```json
-{"10504":{"pid":10504,"functionName":"handle","filePath":"../hello-people/hello-people.wasm","recordTime":"2023-12-13T13:23:08.152474368Z","startTime":"2023-12-13T13:22:58.042558546Z","stopTime":"0001-01-01T00:00:00Z","httpPort":"8081","information":"","serviceName":"hello-people","host":""},"10551":{"pid":10551,"functionName":"handle","filePath":"../hello/hello.wasm","recordTime":"2023-12-13T13:23:03.587034276Z","startTime":"2023-12-13T13:23:03.495780517Z","stopTime":"0001-01-01T00:00:00Z","httpPort":"8082","information":"","serviceName":"hello","host":""}
+{
+    "10504":{
+        "pid":10504,
+        "functionName":"handle",
+        "filePath":"../hello-people/hello-people.wasm",
+        "recordTime":"2023-12-13T13:23:08.152474368Z",
+        "startTime":"2023-12-13T13:22:58.042558546Z",
+        "stopTime":"0001-01-01T00:00:00Z",
+        "httpPort":"8081",
+        "information":"",
+        "serviceName":"hello-people",
+        "host":""
+    },
+    "10551":{
+        "pid":10551,
+        "functionName":"handle",
+        "filePath":"../hello/hello.wasm",
+        "recordTime":"2023-12-13T13:23:03.587034276Z",
+        "startTime":"2023-12-13T13:23:03.495780517Z",
+        "stopTime":"0001-01-01T00:00:00Z",
+        "httpPort":"8082",
+        "information":"",
+        "serviceName":"hello",
+        "host":""
+    }
+}
 ```
 
 ## Query the services
