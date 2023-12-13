@@ -16,3 +16,5 @@ set-git-user.sh
 notes.md
 *.js
 linux
+k3s.yaml
+
