@@ -1,4 +1,4 @@
-# How To with Simplism
+# Simplism: How-To
 
 ## What is Simplism?
 
@@ -12,6 +12,6 @@ Simplism is the fastest way to run [Extism](https://extism.org/) plug-ins on the
 - [Deploy a Simplism service to Kubernetes](deploy-service-to-k8s.md)
 - [Start an Extism service with a configuration file](start-an-extism-service-with-config-file.md)
 - [Use the service discovery feature](use-service-discovery.md)
-- [Start all the Slimplism services from a config file with the Flock mode](use-the-flock-mode.md)
+- [Start all the Slimplism services in batch mode from a config file with the Flock mode](use-the-flock-mode.md)
 - [Spawn mode: start Simplism process remotely with an API](use-the-spawn-mode.md)
 
