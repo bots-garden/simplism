@@ -268,7 +268,6 @@ raider-1:
 ```
 
 ## Spawn mode
-
 > 🚧 this is a work in progress
 
 If you activate the `--spawn-mode` flag, the Simplism server will be able tospawn a new Simplism server with the `/spawn` endpoint:
@@ -298,6 +297,25 @@ http://localhost:8080/spawn \
 }
 EOF
 echo ""
+```
+
+## Use it like a "FaaS"
+> 🚧 this is a work in progress
+
+When the service discovery is enabled, and the services are discoverable, if you specify the `--service-name` for every service, you can use the discovery server to call the services by their name:
+
+```bash
+curl http://localhost:9000/service/one \
+-H 'content-type: application/json; charset=utf-8' \
+-d '{"firstName":"Bob","lastName":"Morane"}'
+
+curl http://localhost:9000/service/two \
+-H 'content-type: application/json; charset=utf-8' \
+-d '{"firstName":"Bob","lastName":"Morane"}'
+
+curl http://localhost:9000/service/three \
+-H 'content-type: application/json; charset=utf-8' \
+-d '{"firstName":"Bob","lastName":"Morane"}'
 ```
 
 ## Generate Extism plug-in projects for Simplism
