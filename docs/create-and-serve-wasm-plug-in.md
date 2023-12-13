@@ -5,6 +5,10 @@ Main objectives:
 - Serve the plug-in through HTTP like a microservice
 - Query the service
 
+> prerequisite: 
+> - Install Go and TinyGo compilers
+> - Install Simplism
+
 ## Request Data
 
 The Simplism server sends the request data to the wasm plug-in in this form:
