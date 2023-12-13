@@ -1,5 +1,4 @@
-image:
-  file: .gitpod.dockerfile
+image: k33g/gitpod-simplism-playground:0.0.0
 
 tasks:
   - name: initialize

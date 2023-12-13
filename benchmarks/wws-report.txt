@@ -1,46 +1,48 @@
 
 Summary:
-  Total:	13.8409 secs
-  Slowest:	9.9179 secs
-  Fastest:	0.0809 secs
-  Average:	3.8356 secs
-  Requests/sec:	216.7493
+  Total:	28.8508 secs
+  Slowest:	19.9941 secs
+  Fastest:	0.0696 secs
+  Average:	7.8844 secs
+  Requests/sec:	103.9831
   
-  Total data:	78000 bytes
-  Size/request:	26 bytes
+  Total data:	75868 bytes
+  Size/request:	25 bytes
 
 Response time histogram:
-  0.081 [1]	|
-  1.065 [254]	|■■■■■■■■■
-  2.048 [290]	|■■■■■■■■■■
-  3.032 [337]	|■■■■■■■■■■■■
-  4.016 [488]	|■■■■■■■■■■■■■■■■■■
-  4.999 [1111]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  5.983 [282]	|■■■■■■■■■■
-  6.967 [122]	|■■■■
-  7.951 [73]	|■■■
-  8.934 [32]	|■
-  9.918 [10]	|
+  0.070 [1]	|
+  2.062 [268]	|■■■■■■■■■■■■■■■■■■■
+  4.055 [427]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  6.047 [537]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  8.039 [557]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  10.032 [256]	|■■■■■■■■■■■■■■■■■■
+  12.024 [266]	|■■■■■■■■■■■■■■■■■■■
+  14.017 [278]	|■■■■■■■■■■■■■■■■■■■■
+  16.009 [198]	|■■■■■■■■■■■■■■
+  18.002 [136]	|■■■■■■■■■■
+  19.994 [58]	|■■■■
 
 
 Latency distribution:
-  10% in 1.2233 secs
-  25% in 2.6408 secs
-  50% in 4.2107 secs
-  75% in 4.8210 secs
-  90% in 5.6834 secs
-  95% in 6.6243 secs
-  99% in 8.1389 secs
+  10% in 2.2714 secs
+  25% in 4.2535 secs
+  50% in 6.8983 secs
+  75% in 11.4571 secs
+  90% in 14.8717 secs
+  95% in 16.6569 secs
+  99% in 19.1336 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:	0.0099 secs, 0.0809 secs, 9.9179 secs
+  DNS+dialup:	0.0297 secs, 0.0696 secs, 19.9941 secs
   DNS-lookup:	0.0000 secs, 0.0000 secs, 0.0000 secs
-  req write:	0.0013 secs, 0.0000 secs, 0.0309 secs
-  resp wait:	2.6062 secs, 0.0313 secs, 5.5386 secs
-  resp read:	0.0000 secs, 0.0000 secs, 0.0037 secs
+  req write:	0.0073 secs, 0.0000 secs, 0.1175 secs
+  resp wait:	4.4439 secs, 0.0472 secs, 14.9744 secs
+  resp read:	0.0001 secs, 0.0000 secs, 0.0005 secs
 
 Status code distribution:
-  [200]	3000 responses
+  [200]	2918 responses
+  [408]	64 responses
 
-
+Error distribution:
+  [18]	Get "http://0.0.0.0:8081/worker": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
 
