@@ -126,6 +126,16 @@ You should get:
 🤗 Hello 👋
 ```
 
+## Query the Simplism services by name
+
+You can call the services through the "spawner service":
+```bash
+curl http://localhost:8080/service/say-hello_9091
+curl http://localhost:8080/service/say-hello_9092
+curl http://localhost:8080/service/say-hello_9093
+```
+
+
 ## Kill a Simplism service
 
 ```bash

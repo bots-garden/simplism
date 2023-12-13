@@ -1,8 +1,11 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net"
 	"net/http"
 	"time"
 
@@ -12,6 +15,14 @@ import (
 )
 
 var NotifyDiscoveryServiceOfKillingProcess func(pid int) error
+
+var wasmFunctionHandlerList = map[string]int{}
+
+func wasmFunctionHandler(response http.ResponseWriter, request *http.Request) {
+
+	response.WriteHeader(http.StatusOK)
+	response.Write([]byte("...hello... " + request.RequestURI))
+}
 
 // discoveryHandler handles the /discovery endpoint in the API.
 //
@@ -37,23 +48,23 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 		// test simplismProcess.StopTime
 		if simplismProcess.StopTime.IsZero() {
-		    fmt.Println("⏳ Stop time is not set")
+			fmt.Println("⏳ Stop time is not set")
 			simplismProcess.StopTime = time.Now()
 
 			err := saveSimplismProcessToDB(db, simplismProcess)
 			if err != nil {
 				fmt.Println("😡 When updating bucket with the Stop Time", err)
-				
+
 			} else {
 				fmt.Println("🙂 Bucket updated with the Stop Time")
 			}
 			return err
 
 		} else {
-		    fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
+			fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
 			fmt.Println("✋ This process is already killed")
 		}
-		
+
 		return nil
 
 	}
@@ -73,11 +84,64 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			simplismProcess, _ := jsonHelper.GetSimplismProcesseFromJSONBytes(body)
 			err := saveSimplismProcessToDB(db, simplismProcess)
 
+			//simplismProcess.ServiceName
+
 			if err != nil {
 				fmt.Println("😡 When updating bucket", err)
 				response.WriteHeader(http.StatusInternalServerError)
 			} else {
 				response.WriteHeader(http.StatusOK)
+
+				
+
+				/*
+					if there is a new simplism function process contact
+					- create a new handler to handle the requests (kind of reverse proxy)
+					- only if the handler doesn't exist
+
+					if the process service name is "hello" and listening on port 9090
+					if the process spawaner is listening on port 8080
+
+					when you call http://localhost:8080/function/hello
+					a request will be sent to http://localhost:9090/function/hello
+
+				*/
+
+				if wasmFunctionHandlerList[simplismProcess.ServiceName] == 0 {
+					wasmFunctionHandlerList[simplismProcess.ServiceName] = simplismProcess.PID
+
+					//fmt.Println("🔥🔥🔥", simplismProcess.PID, simplismProcess.ServiceName)
+
+					http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+
+						host, _, _ := net.SplitHostPort(request.Host)
+
+						// make an HTTP request to the simplismservice
+						//! https? handled by the spawner
+						client := &http.Client{}
+						body := httpHelper.GetBody(request)
+						requestToSpawnedProcess, _ := http.NewRequest(request.Method, "http://"+host+":"+simplismProcess.HTTPPort, bytes.NewBuffer(body))
+						requestToSpawnedProcess.Header = request.Header
+
+						// Send the request
+						responseFromSpawnedProcess, err := client.Do(requestToSpawnedProcess)
+						if err != nil {
+							fmt.Println("😡 When making the HTTP request", err)
+						}
+						defer responseFromSpawnedProcess.Body.Close()
+						// Read the response body
+						responseBodyFromSpawnedProcess, err := io.ReadAll(responseFromSpawnedProcess.Body)
+						if err != nil {
+							fmt.Println("😡 Error reading response body:", err)
+							return
+						}
+
+						response.WriteHeader(responseFromSpawnedProcess.StatusCode)
+						response.Write(responseBodyFromSpawnedProcess)
+
+					})
+				}
+
 			}
 
 		case request.Method == http.MethodGet && authorised == true:

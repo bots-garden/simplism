@@ -52,7 +52,7 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.Write([]byte("😡 " + err.Error()))
 			} else {
 				response.WriteHeader(http.StatusOK)
-				response.Write([]byte("🚀 spawning mode, work in progress")) // TODO: should be changed
+				response.Write([]byte("🚀 spawning process...")) // TODO: should be changed
 				// ! Start the new process here
 				wasmArgsFromJsonPayload := simplismTypes.WasmArguments{}
 
