@@ -3,6 +3,7 @@
 > prerequisites: 
 > - create a Simplism service: read [create-and-serve-wasm-plug-in.md](create-and-serve-wasm-plug-in.md)
 > - dockerize your application: read [dockerize-a-simplism-service.md](dockerize-a-simplism-service.md)
+> remark: the tests have been done on https://civo.com
 
 ## Install kubectl
 
@@ -121,3 +122,4 @@ curl http://demo-hello-simplism.89ff64fe-3673-4ce6-82f7-9bc17793af6d.k8s.civo.co
 ```
 
 You should get: `🤗 Hello Bob Morane`
+
