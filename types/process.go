@@ -12,5 +12,7 @@ type SimplismProcess struct {
 	HTTPPort     string    `json:"httpPort"`
 	Information  string    `json:"information"` // not used, but soon
 	ServiceName  string    `json:"serviceName"`
-	//Host         string    `json:"host"` // how to set this?
+	Host         string    `json:"host"` // how to set this?
 }
+//TODO add default value to Host
+//? when this is set?

@@ -1,0 +1,37 @@
+service-discovery:
+  wasm-file: ./discovery/discovery.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  service-discovery: true
+  admin-discovery-token: this-is-the-way
+
+service-one:
+  wasm-file: ./service-one/service-one.wasm
+  wasm-function: handle
+  http-port: 8001
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+  information: 👋 I'm the 1️⃣
+  service-name: one
+
+service-two:
+  wasm-file: ./service-two/service-two.wasm
+  wasm-function: handle
+  http-port: 8002
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+  information: 👋 I'm the 2️⃣
+  service-name: two
+
+service-three:
+  wasm-file: ./service-three/service-three.wasm
+  wasm-function: handle
+  http-port: 8003
+  log-level: info
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-discovery-token: this-is-the-way
+  information: 👋 I'm the 3️⃣
+  service-name: three

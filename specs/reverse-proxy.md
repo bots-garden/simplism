@@ -16,3 +16,6 @@ in `server.go`
 		http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 ```
+
+or:
+- in `handler-discovery.go`, create (if not exist, a new handler) with this route: simplismProcess.ServiceName
