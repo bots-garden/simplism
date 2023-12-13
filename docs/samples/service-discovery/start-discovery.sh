@@ -1,4 +1,5 @@
 #!/bin/bash
+rm *.db
 simplism listen \
 service-discovery.wasm handle \
 --http-port 9000 \

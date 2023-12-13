@@ -1,0 +1,27 @@
+service-discovery:
+  wasm-file: ../service-discovery/service-discovery.wasm
+  wasm-function: handle
+  http-port: 9000
+  log-level: info
+  service-discovery: true
+  admin-discovery-token: people-are-strange
+
+hello-people:
+  wasm-file: ../hello-people/hello-people.wasm
+  wasm-function: handle
+  http-port: 8081
+  log-level: info
+  service-name: hello-people
+  admin-discovery-token: people-are-strange
+  discovery-endpoint: http://localhost:9000/discovery
+
+hello: 
+  wasm-file: ../hello/hello.wasm
+  wasm-function: handle
+  http-port: 8082
+  log-level: info
+  service-name: hello
+  admin-discovery-token: people-are-strange
+  discovery-endpoint: http://localhost:9000/discovery
+
+
