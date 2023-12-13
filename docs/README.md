@@ -11,3 +11,4 @@ Simplism is the fastest way to run [Extism](https://extism.org/) plug-ins on the
 - [Dockerize a Simplism service](dockerize-a-simplism-service.md)
 - [Deploy a Simplism service to Kubernetes](deploy-service-to-k8s.md)
 - [Start an Extism service with a configuration file](start-an-extism-service-with-config-file.md)
+- [Use the service discovery feature](use-service-discovery.md)
