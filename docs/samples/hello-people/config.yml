@@ -1,0 +1,12 @@
+config-one:
+  wasm-file: ./hello-people.wasm
+  wasm-function: handle
+  http-port: 8080
+
+config-two:
+  wasm-file: ./hello-people.wasm
+  wasm-function: handle
+  http-port: 9090
+
+# simplism config ./config.yml config-one
+# simplism config ./config.yml config-two
