@@ -120,3 +120,13 @@ curl http://localhost:8080 \
 -d 'Bob Morane'
 ```
 > you should get this response: `🤗 Hello Bob Morane`
+
+### Serve the wasm plug-in with Docker
+
+```bash
+docker run \
+-p 8080:8080 \
+-v $(pwd):/app \
+--rm k33g/simplism:0.0.7 \
+/simplism listen ./app/hello.wasm handle --http-port 8080 --log-level info
+```
