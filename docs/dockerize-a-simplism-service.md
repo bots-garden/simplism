@@ -39,7 +39,7 @@ docker run \
 ## Call the service
 
 ```bash
-curl http://localhost:8080 \
+curl http://localhost:8000 \
 -d 'Bob Morane'
 ```
 
