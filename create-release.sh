@@ -18,3 +18,4 @@ git push origin ${TAG}
 #goreleaser release --snapshot --clean
 goreleaser release --clean
 
+echo "👋 Create the 🐳 image manually with dockerize-simplism.sh"

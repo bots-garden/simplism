@@ -14,7 +14,7 @@ import (
 // Returns:
 //   - a string representing the text/plain response body.
 func TextPlainResponse(bodyContent string, httpCode int) string {
-	return `{"code":` + strconv.Itoa(httpCode) + `, "body":"` + bodyContent + `","header":{"Content-Type":["text/plain; charset=utf-8"]}}`
+	return `{"code":` + strconv.Itoa(httpCode) + `, "body":"` + bodyContent + `","header":		{"Content-Type":["text/plain; charset=utf-8"]}}`
 }
 
 //export say_hello

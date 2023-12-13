@@ -5,6 +5,33 @@ Main objectives:
 - Serve the plug-in through HTTP like a microservice
 - Query the service
 
+## Request Data
+
+The Simplism server sends the request data to the wasm plug-in in this form:
+
+> example
+```json
+{
+    "body": "hello",
+    "method": "POST",
+    "uri": "/hello/world",
+    "header": {"Content-Type":["text/plain; charset=utf-8"]}
+}
+```
+
+## Response Data
+
+The wasm plugin has to return a response data in this form:
+
+> example
+```json
+{
+    "body": "hello",
+    "header": {"Content-Type":["text/plain; charset=utf-8"]},
+    "code": 200
+}
+```
+
 ## Create an Extism plugin
 
 ### Create the source code
@@ -61,7 +88,7 @@ func handle() {
     pdk.OutputMemory(mem)
 
 }
-
+ 
 func main() {}
 ```
 
@@ -79,6 +106,8 @@ tinygo build -scheduler=none --no-debug \
 simplism listen \
 hello.wasm handle --http-port 8080 --log-level info
 ```
+> `handle` is the name of the function to call
+
 
 ### Query the wasm service
 
