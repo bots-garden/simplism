@@ -1,0 +1,11 @@
+use-store-config:
+  wasm-file: ./use-store.wasm
+  wasm-function: handle
+  http-port: 9090
+  log-level: info
+  config: |
+    {
+      "store-url":"http://localhost:8080",
+      "store-token":"morrison-hotel"
+    }
+  service-name: use-store

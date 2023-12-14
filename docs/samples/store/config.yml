@@ -1,0 +1,11 @@
+store-config:
+  wasm-file: ./store.wasm
+  wasm-function: handle
+  http-port: 8080
+  log-level: info
+  store-mode: true
+  admin-store-token: morrison-hotel
+  information: 👋 I'm the store service
+  service-name: store
+
+# simplism config ./config.yml store-config
