@@ -47,11 +47,13 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			// all; http://localhost:8080/store
 			// prefix: http://localhost:8080/store?prefix=hello
 			query := request.URL.Query()
-			prefixList, present := query["prefix"]
-			if !present {
-				// get all records
-				records := getAllFromStore(db)
-				jsonString, err := json.Marshal(records)
+
+			keyList, present := query["key"]
+			if present {
+
+				key := keyList[0]
+				record := getFromStore(db, key)
+				jsonString, err := json.Marshal(record)
 				if err != nil {
 					fmt.Println("😡 When marshalling", err)
 					response.WriteHeader(http.StatusInternalServerError)
@@ -61,20 +63,38 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				}
 
 			} else {
-				// get records with prefix
-				prefix := prefixList[0]
-				records := getAllWitPrefixFromStore(db, prefix)
-				jsonString, err := json.Marshal(records)
 
-				if err != nil {
-					fmt.Println("😡 When marshalling", err)
-					response.WriteHeader(http.StatusInternalServerError)
+				prefixList, present := query["prefix"]
+				if !present {
+					// get all records
+					records := getAllFromStore(db)
+					jsonString, err := json.Marshal(records)
+					if err != nil {
+						fmt.Println("😡 When marshalling", err)
+						response.WriteHeader(http.StatusInternalServerError)
+					} else {
+						response.WriteHeader(http.StatusOK)
+						response.Write(jsonString)
+					}
+	
 				} else {
-					response.WriteHeader(http.StatusOK)
-					response.Write(jsonString)
+					// get records with prefix
+					prefix := prefixList[0]
+					records := getAllWitPrefixFromStore(db, prefix)
+					jsonString, err := json.Marshal(records)
+	
+					if err != nil {
+						fmt.Println("😡 When marshalling", err)
+						response.WriteHeader(http.StatusInternalServerError)
+					} else {
+						response.WriteHeader(http.StatusOK)
+						response.Write(jsonString)
+					}
+	
 				}
-
 			}
+
+
 
 			//response.WriteHeader(http.StatusOK)
 			//response.Write([]byte("📦 Hello [GET]"))
