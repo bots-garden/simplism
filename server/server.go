@@ -101,6 +101,12 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		http.HandleFunc("/spawn", spawnHandler(wasmArgs))
 	}
 
+	// https://github.com/etcd-io/bbolt
+	if wasmArgs.StoreMode == true {
+		fmt.Println("📦 this service can store data")
+		http.HandleFunc("/store", storeHandler(wasmArgs))
+	}
+
 	// Start the Simplism HTTP server
 	go func(configKey string) {
 		goRoutineStartServer(configKey, wasmArgs)

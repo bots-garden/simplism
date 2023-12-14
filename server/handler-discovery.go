@@ -18,12 +18,6 @@ var NotifyDiscoveryServiceOfKillingProcess func(pid int) error
 
 var wasmFunctionHandlerList = map[string]int{}
 
-func wasmFunctionHandler(response http.ResponseWriter, request *http.Request) {
-
-	response.WriteHeader(http.StatusOK)
-	response.Write([]byte("...hello... " + request.RequestURI))
-}
-
 // discoveryHandler handles the /discovery endpoint in the API.
 //
 // It takes a WasmArguments object as a parameter and returns an http.HandlerFunc.
@@ -92,9 +86,8 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			} else {
 				response.WriteHeader(http.StatusOK)
 
-				
-
-				/*
+				/* Call a function from the discovery service
+				   ------------------------------------------
 					if there is a new simplism function process contact
 					- create a new handler to handle the requests (kind of reverse proxy)
 					- only if the handler doesn't exist

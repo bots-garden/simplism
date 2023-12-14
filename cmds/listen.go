@@ -58,6 +58,10 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	information := flagSet.String("information", "", "Information about the simplism service (useful for the discovery mode)")
 	serviceName := flagSet.String("service-name", "", "Simplism service name (useful for the discovery mode)")
 
+	storeMode := flagSet.String("store-mode", "false", "")
+	adminStoreToken := flagSet.String("admin-store-token", "", "Admin store token")
+
+
 	flagSet.Parse(args[2:])
 
 	server.Listen(simplismTypes.WasmArguments{
@@ -85,5 +89,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		AdminSpawnToken:     *adminSpawnToken,
 		Information:         *information,
 		ServiceName:         *serviceName,
+		StoreMode:           stringHelper.GetTheBooleanValueOf(*storeMode),
+		AdminStoreToken:     *adminStoreToken,
 	}, "") // no config key
 }

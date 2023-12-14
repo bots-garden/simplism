@@ -117,3 +117,34 @@ func CheckSpawnToken(request *http.Request, wasmArgs simplismTypes.WasmArguments
 
 	return authorised
 }
+
+func CheckStoreToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
+	var authorised bool = false
+	// read the header admin-store-token
+	adminStoreToken := request.Header.Get("admin-store-token")
+
+	envAdminStoreToken := os.Getenv("ADMIN_STORE_TOKEN")
+
+	switch {
+	// a token is awaited
+	case wasmArgs.AdminStoreToken != "":
+		if wasmArgs.AdminStoreToken == adminStoreToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	// a token is awaited
+	case wasmArgs.AdminStoreToken == "" && envAdminStoreToken != "":
+		if envAdminStoreToken == adminStoreToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	case wasmArgs.AdminStoreToken == "" && envAdminStoreToken == "":
+		authorised = true
+	default:
+		authorised = false
+	}
+
+	return authorised
+}
