@@ -14,4 +14,4 @@ Simplism is the fastest way to run [Extism](https://extism.org/) plug-ins on the
 - [Use the service discovery feature](use-service-discovery.md)
 - [Start all the Slimplism services in batch mode from a config file with the Flock mode](use-the-flock-mode.md)
 - [Spawn mode: start Simplism process remotely with an API](use-the-spawn-mode.md)
-
+- [Use the persistance HTTP API of Simplism](use-the-store-api.md)

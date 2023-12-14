@@ -24,4 +24,12 @@ type WasmArguments struct {
 	AdminSpawnToken     string `yaml:"admin-spawn-token,omitempty"`
 	Information         string `yaml:"information,omitempty"`
 	ServiceName         string `yaml:"service-name,omitempty"`
+	StoreMode           bool   `yaml:"store-mode,omitempty"`
+	AdminStoreToken     string `yaml:"admin-store-token,omitempty"`
 }
+
+/*
+	When adding a field to the structure, you need to update these files:
+	- cmds/listen.go
+    - server/handler-spawn.go
+*/

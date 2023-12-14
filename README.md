@@ -111,6 +111,11 @@ Flags for listen command:
   --admin-spawn-token     string   Admin token to be authorized to spawn a new Simplism server
                                    Or use this environment variable: ADMIN_SPAWN_TOKEN
                                    Use the /spawn endpoint to spawn a new Simplism server
+  --store-mode.           bool     The current Simplism server exposes a store api to save data in a bbolt database
+                                   Use the /store endpoint (see documentation)
+                                   Default: false
+  --admin-store-token     string   Admin token to be authorized to use the store API of a Simplism server
+                                   Or use this environment variable: ADMIN_STORE_TOKEN                                   
 ```
 > *Remarks: look at the `./samples` directory*
 
@@ -299,6 +304,74 @@ http://localhost:8080/spawn \
 EOF
 echo ""
 ```
+
+## Expose and use the "store API"
+
+> start a Simplism server with the `--store-mode` flag:
+```bash
+simplism listen \
+store.wasm handle \
+--http-port 8080 \
+--log-level info \
+--store-mode true \
+--admin-store-token morrison-hotel \
+--information "👋 I'm the store service"
+```
+
+### Query the "store API"
+
+> add records to the store:
+```bash
+curl http://localhost:8080/store \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-store-token: morrison-hotel' \
+-d '{"key":"hello","value":"hello world"}'
+
+curl http://localhost:8080/store \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-store-token: morrison-hotel' \
+-d '{"key":"hey","value":"hey people"}'
+
+curl http://localhost:8080/store \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-store-token: morrison-hotel' \
+-d '{"key":"001","value":"first"}'
+
+curl http://localhost:8080/store \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-store-token: morrison-hotel' \
+-d '{"key":"002","value":"second"}'
+
+curl http://localhost:8080/store \
+-H 'content-type: application/json; charset=utf-8' \
+-H 'admin-store-token: morrison-hotel' \
+-d '{"key":"003","value":"third"}'
+```
+
+> get all records from the store:
+```bash
+curl http://localhost:8080/store \
+-H 'admin-store-token: morrison-hotel'
+```
+
+> get a specific record from the store:
+```bash
+curl http://localhost:8080/store?key=hey \
+-H 'admin-store-token: morrison-hotel'
+```
+
+> get all records from the store with a key prefix:
+```bash
+curl http://localhost:8080/store?prefix=00 \
+-H 'admin-store-token: morrison-hotel'
+```
+
+> delete a specific record from the store:
+```bash
+curl -X "DELETE" http://localhost:8080/store?key=002 \
+-H 'admin-store-token: morrison-hotel'
+```
+
 
 ## Generate Extism plug-in projects for Simplism
 
