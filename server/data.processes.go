@@ -11,11 +11,11 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-// initializeDB initializes the database for the given WasmArguments.
+// initializeProcessesDB initializes the database for the given WasmArguments.
 //
 // It takes a single parameter, wasmArgs, of type simplismTypes.WasmArguments.
 // It returns a *bolt.DB and an error.
-func initializeDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, error) {
+func initializeProcessesDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, error) {
 
 	/*
 		go install go.etcd.io/bbolt/cmd/bbolt@latest
@@ -25,7 +25,7 @@ func initializeDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, error) {
 
 	//db, err := bolt.Open("my.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
 
-	db, err := bolt.Open(wasmArgs.FilePath+".db", 0600, nil)
+	db, err := bolt.Open(wasmArgs.FilePath+".processes.db", 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,12 +69,12 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 
 func getSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess {
 
-	var simplismProcess  simplismTypes.SimplismProcess
+	var simplismProcess simplismTypes.SimplismProcess
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("simplism-bucket"))
 		processValue := b.Get([]byte(strconv.Itoa(pid)))
-		
+
 		if processValue == nil {
 			simplismProcess = simplismTypes.SimplismProcess{}
 		}

@@ -33,7 +33,7 @@ var wasmFunctionHandlerList = map[string]int{}
 func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
 
-	db, _ := initializeDB(wasmArgs)
+	db, _ := initializeProcessesDB(wasmArgs)
 	// TODO: look at old records and delete old ones
 
 	// This function is called by the spawn handler (DELETE method), see handle-spawn.go

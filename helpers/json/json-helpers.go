@@ -6,6 +6,28 @@ import (
 	simplismTypes "simplism/types"
 )
 
+// GetStoreRecordFromJSONString parses a JSON string and returns a simplismTypes.StoreRecord and an error.
+//
+// It takes a JSON string as a parameter.
+// It returns a simplismTypes.StoreRecord and an error.
+func GetStoreRecordFromJSONString(json string) (simplismTypes.StoreRecord, error) {
+    return GetStoreRecordFromJSONBytes([]byte(json))
+}
+
+// GetStoreRecordFromJSONBytes parses the given JSON bytes and returns a StoreRecord and an error.
+//
+// The function takes a byte array 'body' as input, which contains the JSON data to be parsed.
+// It returns a StoreRecord and an error. The StoreRecord is the parsed JSON data, and the error
+// indicates if there was any issue during the parsing process.
+func GetStoreRecordFromJSONBytes(body []byte) (simplismTypes.StoreRecord, error) {
+	var record simplismTypes.StoreRecord
+	jsonUnmarshallErr := json.Unmarshal(body, &record)
+	if jsonUnmarshallErr != nil {
+		fmt.Println("😡 Error when unmarshaling JSON:", jsonUnmarshallErr)
+	}
+    return record, jsonUnmarshallErr
+}
+
 // GetSimplismProcesseFromJSONString generates a SimplismProcess object from a JSON string.
 //
 // json: the JSON string from which to generate the SimplismProcess object.
