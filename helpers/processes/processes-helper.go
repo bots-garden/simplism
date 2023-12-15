@@ -16,8 +16,9 @@ import (
 func GetExecutablePath(progName string) string {
 	executablePath, err := exec.LookPath(progName)
 	if err != nil {
-		fmt.Println("😡 Error finding executable:", err)
-		os.Exit(1)
+		executablePath = "./simplism"
+		//fmt.Println("😡 Error finding executable:", err)
+		//os.Exit(1)
 	}
 	return executablePath
 }
