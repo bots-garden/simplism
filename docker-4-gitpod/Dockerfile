@@ -160,5 +160,12 @@ RUN <<EOF
 go install github.com/goreleaser/goreleaser@latest
 EOF
 
+# ------------------------------------
+# Install GitHub CLI
+# ------------------------------------
+RUN <<EOF
+sudo apt install gh
+EOF
+
 # Command to run when starting the container
 CMD ["/bin/bash"]

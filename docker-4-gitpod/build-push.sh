@@ -1,6 +1,6 @@
 #!/bin/bash
 IMAGE_BASE_NAME="gitpod-simplism-playground"
-IMAGE_TAG="0.0.0"
+IMAGE_TAG="0.0.1"
 docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
 docker buildx build \
 --build-arg="GO_ARCH=amd64" \
