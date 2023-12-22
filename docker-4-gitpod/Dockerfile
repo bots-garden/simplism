@@ -29,7 +29,7 @@ ENV LC_CTYPE=en_US.UTF-8
 # ------------------------------------
 RUN <<EOF
 apt-get update 
-apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server
+apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server sshpass gettext
 ln -s /usr/bin/batcat /usr/bin/bat
 apt-get -y install hey
 EOF
@@ -165,6 +165,19 @@ EOF
 # ------------------------------------
 RUN <<EOF
 sudo apt install gh
+EOF
+
+# ------------------------------------
+# Install K8S tools
+# ------------------------------------
+RUN <<EOF
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+chmod +x kubectl
+mkdir -p ~/.local/bin
+mv ./kubectl ~/.local/bin/kubectl
+
+curl -sS https://webi.sh/k9s | sh
 EOF
 
 # Command to run when starting the container

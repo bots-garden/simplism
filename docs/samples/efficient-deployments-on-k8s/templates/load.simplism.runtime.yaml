@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: preload-simplism
+spec:
+  selector:
+    matchLabels:
+      name: preload-simplism
+  template:
+    metadata:
+      labels:
+        name: preload-simplism
+    spec:
+      containers:
+      - name: preload-simplism
+        image: ${IMAGE_NAME}:${IMAGE_TAG}
+        imagePullPolicy: Always
