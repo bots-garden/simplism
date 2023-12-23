@@ -121,19 +121,19 @@ ENV VERSION="${NODE_VERSION}"
 ENV DISTRO="${NODE_DISTRO}"
 ENV PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH
 
-RUN <<EOF
+#RUN <<EOF
 # -----------------------
 # Install Extism JS PDK
 # -----------------------
-export TAG="v0.5.0"
-export ARCH="aarch64"
+#export TAG="v0.5.0"
+#export ARCH="aarch64"
 #export ARCH="x86_64"
-export  OS="linux"
-curl -L -O "https://github.com/extism/js-pdk/releases/download/$TAG/extism-js-$ARCH-$OS-$TAG.gz"
-gunzip extism-js*.gz
-chmod +x extism-js-*
-mv extism-js-* /usr/local/bin/extism-js
-EOF
+#export  OS="linux"
+#curl -L -O "https://github.com/extism/js-pdk/releases/download/$TAG/extism-js-$ARCH-$OS-$TAG.gz"
+#gunzip extism-js*.gz
+#chmod +x extism-js-*
+#mv extism-js-* /usr/local/bin/extism-js
+#EOF
 
 # ------------------------------------
 # Install Spin
