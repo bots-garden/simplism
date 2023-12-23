@@ -12,6 +12,8 @@ ARG EXTISM_VERSION=${EXTISM_VERSION}
 ARG NODE_DISTRO=${NODE_DISTRO}
 ARG NODE_VERSION=${NODE_VERSION}
 
+ARG USER_NAME=${USER_NAME}
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LANG=en_US.UTF-8
@@ -22,7 +24,7 @@ ENV LC_CTYPE=en_US.UTF-8
 # Update the system and install necessary tools
 RUN <<EOF
 apt-get update 
-apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server
+apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server pkg-config libssl-dev
 ln -s /usr/bin/batcat /usr/bin/bat
 apt-get -y install hey
 EOF
@@ -42,9 +44,14 @@ EOF
 # ------------------------------------
 # Set Environment Variables for Go
 # ------------------------------------
-ENV GOROOT=/usr/local/go
-ENV GOPATH=$HOME/go
-ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+#ENV GOROOT=/usr/local/go
+#ENV GOPATH=$HOME/go
+#ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
+# Set Go environment variables
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH="/home/${USER_NAME}/go"
+ENV GOROOT="/usr/local/go"
 
 RUN <<EOF
 go version
@@ -92,18 +99,6 @@ rm extism-v${EXTISM_VERSION}-linux-${EXTISM_ARCH}.tar.gz
 extism --version
 EOF
 
-# ------------------------------------
-# Install Rust + Wasm Toolchain
-# ------------------------------------
-RUN <<EOF
-apt install -y pkg-config libssl-dev
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-export RUSTUP_HOME=~/.rustup
-export CARGO_HOME=~/.cargo
-export PATH=$PATH:$CARGO_HOME/bin
-curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh 
-rustup target add wasm32-wasi
-EOF
 
 # ------------------------------------
 # Install NodeJS
@@ -161,6 +156,31 @@ chmod +x install.sh
 mv wws /usr/bin
 rm install.sh
 EOF
+
+# Create a regular user
+RUN useradd -ms /bin/bash ${USER_NAME}
+
+# Set the working directory
+WORKDIR /home/${USER_NAME}
+
+# Set the user as the owner of the working directory
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
+
+# Switch to the regular user
+USER ${USER_NAME}
+
+# ------------------------------------
+# Install Rust + Wasm Toolchain
+# ------------------------------------
+RUN <<EOF
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+export RUSTUP_HOME=~/.rustup
+export CARGO_HOME=~/.cargo
+export PATH=$PATH:$CARGO_HOME/bin
+curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh 
+rustup target add wasm32-wasi
+EOF
+
 
 # ------------------------------------
 # Install GoReleaser
