@@ -16,6 +16,9 @@ ARG EXTISM_JS_VERSION=${EXTISM_JS_VERSION}
 ARG EXTISM_JS_ARCH=${EXTISM_JS_ARCH}
 ARG EXTISM_JS_OS=${EXTISM_JS_OS}
 ARG NODE_MAJOR=${NODE_MAJOR}
+ARG BINARYEN_VERSION=${BINARYEN_VERSION}
+ARG BINARYEN_ARCH=${BINARYEN_ARCH}
+ARG BINARYEN_OS=${BINARYEN_OS}
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -86,6 +89,7 @@ EOF
 # -----------------------
 # Install Extism JS PDK
 # -----------------------
+
 RUN <<EOF
 export EXTISM_JS_VERSION="${EXTISM_JS_VERSION}"
 export EXTISM_JS_ARCH="${EXTISM_JS_ARCH}"
@@ -97,6 +101,21 @@ mv extism-js-* /usr/local/bin/extism-js
 EOF
 
 USER gitpod
+
+RUN <<EOF
+#export BINARYEN_VERSION="${BINARYEN_VERSION}"
+#export BINARYEN_ARCH="${BINARYEN_ARCH}"
+#export BINARYEN_OS="${BINARYEN_OS}"
+
+wget https://github.com/WebAssembly/binaryen/releases/download/${BINARYEN_VERSION}/binaryen-${BINARYEN_VERSION}-${BINARYEN_ARCH}-${BINARYEN_OS}.tar.gz
+tar -xf binaryen-${BINARYEN_VERSION}-${BINARYEN_ARCH}-${BINARYEN_OS}.tar.gz
+
+sudo cp binaryen-${BINARYEN_VERSION}/bin/* /usr/bin
+rm -rf binaryen-${BINARYEN_VERSION}
+rm binaryen-${BINARYEN_VERSION}-${BINARYEN_ARCH}-${BINARYEN_OS}.tar.gz
+
+wasm2js --version
+EOF
 
 # ------------------------------------
 # Set Environment Variables for Go
