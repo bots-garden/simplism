@@ -12,8 +12,6 @@ ARG EXTISM_VERSION=${EXTISM_VERSION}
 ARG NODE_DISTRO=${NODE_DISTRO}
 ARG NODE_VERSION=${NODE_VERSION}
 
-ARG USER_NAME=${USER_NAME}
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LANG=en_US.UTF-8
@@ -171,23 +169,24 @@ RUN <<EOF
 go install github.com/goreleaser/goreleaser@latest
 EOF
 
-# Create a regular user
-RUN useradd -ms /bin/bash ${USER_NAME}
-
-# Set the working directory
-WORKDIR /home/${USER_NAME}
-
-# Set the user as the owner of the working directory
-RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
-
-# Switch to the regular user
-USER ${USER_NAME}
-
 # ------------------------------------
 # Install OhMyBash
 # ------------------------------------
 RUN <<EOF
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+EOF
+
+# ------------------------------------
+# Install K8S tools
+# ------------------------------------
+RUN <<EOF
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+chmod +x kubectl
+mkdir -p ~/.local/bin
+mv ./kubectl ~/.local/bin/kubectl
+
+curl -sS https://webi.sh/k9s | sh
 EOF
 
 # Command to run when starting the container

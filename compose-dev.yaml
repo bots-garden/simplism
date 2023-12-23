@@ -14,7 +14,6 @@ services:
         - EXTISM_VERSION=0.3.3
         - NODE_DISTRO=linux-arm64
         - NODE_VERSION=v21.1.0
-        - USER_NAME=simplism
       context: ./docker-dev-environment
       dockerfile: Dockerfile
     init: true
