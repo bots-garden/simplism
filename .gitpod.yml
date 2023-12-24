@@ -1,4 +1,4 @@
-image: k33g/gitpod-simplism-playground:0.0.3
+image: k33g/gitpod-simplism-playground:0.0.4
 
 tasks:
   - name: initialize
