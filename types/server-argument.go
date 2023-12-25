@@ -25,6 +25,7 @@ type WasmArguments struct {
 	Information         string `yaml:"information,omitempty"`
 	ServiceName         string `yaml:"service-name,omitempty"`
 	StoreMode           bool   `yaml:"store-mode,omitempty"`
+	StorePath           string `yaml:"store-path,omitempty"`
 	AdminStoreToken     string `yaml:"admin-store-token,omitempty"`
 }
 

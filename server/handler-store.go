@@ -11,7 +11,7 @@ import (
 
 func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
-	db, err := initializeStoreDB(wasmArgs, "") // use the default path
+	db, err := initializeStoreDB(wasmArgs, wasmArgs.StorePath) // default path == ""
 	if err != nil {
 		panic(err) // TODO: handle error in a better way
 	} else {
