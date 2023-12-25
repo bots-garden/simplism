@@ -22,6 +22,7 @@ store.wasm handle \
 --information "👋 I'm the store service" \
 --service-name store
 ```
+> You can define the path of the store with the `--store-path` flag. Otherwise the store db file will be stored in the same folder as the wasm file (and the name will be the wasm file name + ".store.db")
 This will activate a new endpoint at `http://localhost:8080/store`.
 
 It's possible to use a configuration file to start the Simplism store:
@@ -37,6 +38,7 @@ store-config:
   information: 👋 I'm the store service
   service-name: store
 ```
+> You can define the path of the store with the `store-path` field. Otherwise the store db file will be stored in the same folder as the wasm file (and the name will be the wasm file name + ".store.db")
 
 ## Make queries to the store
 
