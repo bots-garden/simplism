@@ -5,6 +5,7 @@ store-config:
   log-level: info
   store-mode: true
   admin-store-token: morrison-hotel
+  store-path: ./db/my-store.db
   information: 👋 I'm the store service
   service-name: store
 
