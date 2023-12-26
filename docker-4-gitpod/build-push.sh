@@ -1,6 +1,8 @@
 #!/bin/bash
-IMAGE_BASE_NAME="gitpod-simplism-playground"
-IMAGE_TAG="0.0.4"
+set -o allexport; source ../.release.env; set +o allexport
+
+IMAGE_BASE_NAME="${GITPOD_IMAGE_BASE_NAME}"
+IMAGE_TAG="${GITPOD_IMAGE_TAG}"
 docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
 docker buildx build \
 --build-arg="GO_ARCH=amd64" \
