@@ -83,6 +83,22 @@ var jsReadMe []byte
 //go:embed docker-template.txt
 var dockerTemplate []byte
 
+//go:embed docker.image.txt
+var dockerImage []byte
+
+//----------------------
+// Gitpod
+//----------------------
+
+//go:embed gitpod-template.txt
+var gitpodTemplate []byte
+
+//go:embed gitpod.image.txt
+var gitpodImage []byte
+
+//go:embed simplism.version.txt
+var simplismVersion []byte
+
 // makeDirectoryStructure creates a directory with the given projectPath and projectName.
 //
 // Parameters:
@@ -166,8 +182,16 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🔵 Generating Go project...")
 
 		makeDirectoryStructure(projectPath, projectName)
+
+		// Dockerfile
 		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		strDockerFile = strings.Replace(strDockerFile, "<image>", string(dockerImage), 1)
 		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
+
+		// .gitpod.yml
+		var strGitpodYamlFile = strings.Replace(string(gitpodTemplate), "<image>", string(gitpodImage), 1)
+		strGitpodYamlFile = strings.Replace(strGitpodYamlFile, "<version>", string(simplismVersion), 1)
+		createFileFromTemplate(projectPath, projectName, ".gitpod.yml", []byte(strGitpodYamlFile))
 
 		createFileFromTemplate(projectPath, projectName, "main.go", goTemplate)
 
@@ -198,8 +222,16 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🦀 Generating Ruslang project...")
 
 		makeDirectoryStructure(projectPath, projectName, "src")
+
+		// Dockerfile
 		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		strDockerFile = strings.Replace(strDockerFile, "<image>", string(dockerImage), 1)
 		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
+
+		// .gitpod.yml
+		var strGitpodYamlFile = strings.Replace(string(gitpodTemplate), "<image>", string(gitpodImage), 1)
+		strGitpodYamlFile = strings.Replace(strGitpodYamlFile, "<version>", string(simplismVersion), 1)
+		createFileFromTemplate(projectPath, projectName, ".gitpod.yml", []byte(strGitpodYamlFile))
 
 		createFileFromTemplate(projectPath, projectName, "src/lib.rs", rustTemplate)
 
@@ -222,8 +254,16 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🟨 Generating JavaScript project...")
 
 		makeDirectoryStructure(projectPath, projectName)
+
+		// Dockerfile
 		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		strDockerFile = strings.Replace(strDockerFile, "<image>", string(dockerImage), 1)
 		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
+
+		// .gitpod.yml
+		var strGitpodYamlFile = strings.Replace(string(gitpodTemplate), "<image>", string(gitpodImage), 1)
+		strGitpodYamlFile = strings.Replace(strGitpodYamlFile, "<version>", string(simplismVersion), 1)
+		createFileFromTemplate(projectPath, projectName, ".gitpod.yml", []byte(strGitpodYamlFile))
 
 		createFileFromTemplate(projectPath, projectName, "index.js", jsTemplate)
 		createFileFromTemplate(projectPath, projectName, "index.d.ts", jsIndexTsTemplate)
