@@ -24,7 +24,7 @@ ENV LC_CTYPE=en_US.UTF-8
 # Update the system and install necessary tools
 RUN <<EOF
 apt-get update 
-apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server pkg-config libssl-dev
+apt-get install -y curl wget git build-essential xz-utils bat exa software-properties-common htop openssh-server pkg-config libssl-dev sudo
 ln -s /usr/bin/batcat /usr/bin/bat
 apt-get -y install hey
 EOF
@@ -157,8 +157,16 @@ mv wws /usr/bin
 rm install.sh
 EOF
 
-# Create a regular user
-RUN useradd -ms /bin/bash ${USER_NAME}
+# Create new regular user `${USER_NAME}` and disable password and gecos for later
+# --gecos explained well here: https://askubuntu.com/a/1195288/635348
+RUN adduser --disabled-password --gecos '' ${USER_NAME}
+
+#  Add new user `${USER_NAME}` to sudo group
+RUN adduser ${USER_NAME} sudo
+
+# Ensure sudo group users are not asked for a password when using 
+# sudo command by ammending sudoers file
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Set the working directory
 WORKDIR /home/${USER_NAME}
