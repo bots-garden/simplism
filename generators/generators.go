@@ -76,6 +76,12 @@ var jsQuery []byte
 //go:embed js-readme.txt
 var jsReadMe []byte
 
+//----------------------
+// Dockerfile
+//----------------------
+
+//go:embed docker-template.txt
+var dockerTemplate []byte
 
 // makeDirectoryStructure creates a directory with the given projectPath and projectName.
 //
@@ -160,6 +166,8 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🔵 Generating Go project...")
 
 		makeDirectoryStructure(projectPath, projectName)
+		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
 
 		createFileFromTemplate(projectPath, projectName, "main.go", goTemplate)
 
@@ -168,7 +176,7 @@ func Generate(language string, projectName string, projectPath string) {
 
 		createFileFromTemplate(projectPath, projectName, "go.mod", []byte(strGoModule))
 
-		var strGoReadMe = strings.Replace(string(goReadMe), "<name>", projectName, 3)
+		var strGoReadMe = strings.Replace(string(goReadMe), "<name>", projectName, 6)
 		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strGoReadMe))
 
 		var strGoBuild = strings.Replace(string(goBuild), "<name>", projectName, 1)
@@ -190,12 +198,15 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🦀 Generating Ruslang project...")
 
 		makeDirectoryStructure(projectPath, projectName, "src")
+		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
+
 		createFileFromTemplate(projectPath, projectName, "src/lib.rs", rustTemplate)
 
 		var strRustCargo = strings.Replace(string(rustCargo), "<name>", projectName, 1)
 		createFileFromTemplate(projectPath, projectName, "Cargo.toml", []byte(strRustCargo))
 
-		var strRustReadMe = strings.Replace(string(rustReadMe), "<name>", projectName, 3)
+		var strRustReadMe = strings.Replace(string(rustReadMe), "<name>", projectName, 6)
 		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strRustReadMe))
 
 		createBashFileFromTemplate(projectPath, projectName, "build.sh", rustBuild)
@@ -211,11 +222,13 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🟨 Generating JavaScript project...")
 
 		makeDirectoryStructure(projectPath, projectName)
+		var strDockerFile = strings.Replace(string(dockerTemplate), "<name>", projectName, 2)
+		createFileFromTemplate(projectPath, projectName, "Dockerfile", []byte(strDockerFile))
 
 		createFileFromTemplate(projectPath, projectName, "index.js", jsTemplate)
 		createFileFromTemplate(projectPath, projectName, "index.d.ts", jsIndexTsTemplate)
 
-		var strJsReadMe = strings.Replace(string(jsReadMe), "<name>", projectName, 3)
+		var strJsReadMe = strings.Replace(string(jsReadMe), "<name>", projectName, 6)
 		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strJsReadMe))
 
 		var strJsBuild = strings.Replace(string(jsBuild), "<name>", projectName, 1)
