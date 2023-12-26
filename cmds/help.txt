@@ -8,6 +8,8 @@ Available Commands:
               Arguments: nothing
   generate    Generate a source code project of an Extism plug-in
               Arguments: [plug-in language] [project name] [project path]
+              Languages: golang (or go), rustlang (or rust), javascript (or js)
+              Ex: simplism generate js hello samples/javascript (it will create samples/javascript/hello/)
   config      Serve an Extism plug-in function using a yaml configuration file
               Arguments: [yaml file path] [config key]
   flock       Serve several Extism plug-in functions using a yaml configuration file

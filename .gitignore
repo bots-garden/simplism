@@ -15,6 +15,7 @@ dist/
 set-git-user.sh
 notes.md
 *.js
+!index.js
 linux
 k3s.yaml
 

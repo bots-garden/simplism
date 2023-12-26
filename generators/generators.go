@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+//----------------------
+// Golang
+//----------------------
+
 //go:embed go-template.txt
 var goTemplate []byte
 
@@ -28,6 +32,10 @@ var goRun []byte
 //go:embed go-query.txt
 var goQuery []byte
 
+//----------------------
+// Rustlang
+//----------------------
+
 //go:embed rust-template.txt
 var rustTemplate []byte
 
@@ -45,6 +53,29 @@ var rustRun []byte
 
 //go:embed rust-query.txt
 var rustQuery []byte
+
+//----------------------
+// JavaScript
+//----------------------
+
+//go:embed js-template.txt
+var jsTemplate []byte
+
+//go:embed js-index-ts-template.txt
+var jsIndexTsTemplate []byte
+
+//go:embed js-build.txt
+var jsBuild []byte
+
+//go:embed js-run.txt
+var jsRun []byte
+
+//go:embed js-query.txt
+var jsQuery []byte
+
+//go:embed js-readme.txt
+var jsReadMe []byte
+
 
 // makeDirectoryStructure creates a directory with the given projectPath and projectName.
 //
@@ -177,7 +208,25 @@ func Generate(language string, projectName string, projectPath string) {
 		fmt.Println("🎉", "project generated in", projectPath+"/"+projectName)
 
 	case "javascript", "js":
-		fmt.Println("Generating JavaScript project...")
+		fmt.Println("🟨 Generating JavaScript project...")
+
+		makeDirectoryStructure(projectPath, projectName)
+
+		createFileFromTemplate(projectPath, projectName, "index.js", jsTemplate)
+		createFileFromTemplate(projectPath, projectName, "index.d.ts", jsIndexTsTemplate)
+
+		var strJsReadMe = strings.Replace(string(jsReadMe), "<name>", projectName, 3)
+		createFileFromTemplate(projectPath, projectName, "README.md", []byte(strJsReadMe))
+
+		var strJsBuild = strings.Replace(string(jsBuild), "<name>", projectName, 1)
+		createBashFileFromTemplate(projectPath, projectName, "build.sh", []byte(strJsBuild))
+
+		var strJsRun = strings.Replace(string(jsRun), "<name>", projectName, 1)
+		createBashFileFromTemplate(projectPath, projectName, "run.sh", []byte(strJsRun))
+
+		createBashFileFromTemplate(projectPath, projectName, "query.sh", jsQuery)
+
+
 	default:
 		fmt.Println("Invalid language specified.")
 	}
