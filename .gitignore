@@ -9,8 +9,9 @@ target
 *.code-workspace
 
 dist/
-.env
-.github.env
+
+*.env
+!.env
 
 set-git-user.sh
 notes.md
@@ -19,3 +20,4 @@ notes.md
 linux
 k3s.yaml
 
+.config

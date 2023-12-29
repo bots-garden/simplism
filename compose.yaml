@@ -1,0 +1,38 @@
+# Simplism
+services:
+  app:
+    container_name: ${CONTAINER_NAME}
+    entrypoint: ["code-server", "--auth", "none", "--host", "0.0.0.0", "--port", "${CODER_HTTP_PORT}", "/${WORKDIR}"]
+    environment:
+      - ABOUT="Simplism Environment with Coder"
+      - XDG_DATA_HOME=/${WORKDIR}/.config
+    build:         
+      args:
+        - GO_ARCH=${GO_ARCH}
+        - GO_VERSION=${GO_VERSION}
+        - TINYGO_ARCH=${TINYGO_ARCH}
+        - TINYGO_VERSION=${TINYGO_VERSION}
+        - EXTISM_ARCH=${EXTISM_ARCH}
+        - EXTISM_VERSION=${EXTISM_VERSION}
+        - NODE_DISTRO=${NODE_DISTRO}
+        - NODE_VERSION=${NODE_VERSION}
+        - ZELLIJ_VERSION=${ZELLIJ_VERSION}
+        - ZELLIJ_ARCH=${ZELLIJ_ARCH}
+        - HELM_VERSION=${HELM_VERSION}
+        - HELM_ARCH=${HELM_ARCH}
+        - CODER_VERSION=${CODER_VERSION}
+        - CODER_ARCH=${CODER_ARCH}
+        - USER_NAME=${USER_NAME}
+      context: ./.docker/compose
+      dockerfile: Dockerfile
+    init: true
+    volumes:
+      - ~/.ssh:/root/.ssh
+      - ~/.kube:/home/${USER_NAME}/.kube
+      - .:/${WORKDIR} # to be use with docker exec (but problem with docker dev environment)
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    ports:
+      - 4000:4000 # Code Server HTTP port
+      - 8080:8080
