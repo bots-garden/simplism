@@ -20,6 +20,8 @@ services:
         - ZELLIJ_ARCH=${ZELLIJ_ARCH}
         - HELM_VERSION=${HELM_VERSION}
         - HELM_ARCH=${HELM_ARCH}
+        - K9S_VERSION=${K9S_VERSION}
+        - K9S_ARCH=${K9S_ARCH}    
         - CODER_VERSION=${CODER_VERSION}
         - CODER_ARCH=${CODER_ARCH}
         - USER_NAME=${USER_NAME}
@@ -30,6 +32,7 @@ services:
       - ~/.ssh:/root/.ssh
       - ~/.kube:/home/${USER_NAME}/.kube
       - .:/${WORKDIR} # to be use with docker exec (but problem with docker dev environment)
+      - ~/.gitconfig:/etc/gitconfig
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock

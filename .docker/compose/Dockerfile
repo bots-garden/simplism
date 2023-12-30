@@ -19,6 +19,9 @@ ARG ZELLIJ_ARCH=${ZELLIJ_ARCH}
 ARG HELM_VERSION=${HELM_VERSION}
 ARG HELM_ARCH=${HELM_ARCH}
 
+ARG K9S_VERSION=${K9S_VERSION}
+ARG K9S_ARCH=${K9S_ARCH}
+
 ARG CODER_VERSION=${CODER_VERSION}
 ARG CODER_ARCH=${CODER_ARCH}
 
@@ -151,6 +154,19 @@ mv linux-${HELM_ARCH}/helm /usr/local/bin
 EOF
 
 # ------------------------------------
+# Install K8S tools: kubectl & k9s
+# ------------------------------------
+RUN <<EOF
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+chmod +x kubectl
+mv ./kubectl /usr/local/bin/kubectl
+
+wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${K9S_ARCH}.tar.gz
+tar xvf k9s_${K9S_ARCH}.tar.gz -C /usr/local/bin
+EOF
+
+# ------------------------------------
 # Create a new user
 # ------------------------------------
 # Create new regular user `${USER_NAME}` and disable password and gecos for later
@@ -196,19 +212,6 @@ ENV PATH="/home/${USER_NAME}/.cargo/bin:$PATH"
 # ------------------------------------
 RUN <<EOF
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-EOF
-
-# ------------------------------------
-# Install K8S tools: kubectl & k9s
-# ------------------------------------
-RUN <<EOF
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-
-chmod +x kubectl
-mkdir -p ~/.local/bin
-mv ./kubectl ~/.local/bin/kubectl
-
-curl -sS https://webi.sh/k9s | sh
 EOF
 
 CMD ["/bin/bash"]

@@ -24,7 +24,7 @@ Then:
 - Open: http://0.0.0.0:4000
 - Open a terminal from the Web IDE
 - Type this command `git config --global --add safe.directory /cloud.simplism.dev`
-- And configure **git**:
+- And configure **git** (if necessary):
   ```bash
   git config --global user.name @your-handle
   git config --global user.email your@e.mail
