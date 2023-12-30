@@ -7,6 +7,7 @@ import (
 	simplismTypes "simplism/types"
 )
 
+
 // startListening initializes a server to listen for requests and executes a WebAssembly function.
 //
 // Parameters:
@@ -15,6 +16,14 @@ import (
 // - flagSet: The flag set containing the command-line arguments.
 // - args: The command-line arguments.
 func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet, args []string) {
+
+	/* How to add flags:
+		1. add a field to the structure of WasmArguments in types/server-argument.go
+		2. add the flag to the flagSet (here)
+		3. update the flagSet in server/handler-spawn.go
+		4. if you can set the flag value with an environment variable, update http/token-helpers.go
+		5. use the flag in server/server.go
+	*/
 
 	httpPort := flagSet.String("http-port", "8080", "http port")
 
@@ -62,6 +71,9 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	storePath := flagSet.String("store-path", "", "Path of the store db file")
 	adminStoreToken := flagSet.String("admin-store-token", "", "Admin store token")
 
+	registryMode := flagSet.String("registry-mode", "false", "")
+	registryPath := flagSet.String("registry-path", "", "Path of wasm files")
+	adminRegistryToken := flagSet.String("admin-registry-token", "", "Admin registry token")
 
 	flagSet.Parse(args[2:])
 
@@ -93,5 +105,8 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		StoreMode:           stringHelper.GetTheBooleanValueOf(*storeMode),
 		StorePath:           *storePath,
 		AdminStoreToken:     *adminStoreToken,
+		RegistryMode:        stringHelper.GetTheBooleanValueOf(*registryMode),
+		RegistryPath:        *registryPath,
+		AdminRegistryToken:  *adminRegistryToken,
 	}, "") // no config key
 }

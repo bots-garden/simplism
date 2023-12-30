@@ -148,3 +148,35 @@ func CheckStoreToken(request *http.Request, wasmArgs simplismTypes.WasmArguments
 
 	return authorised
 }
+
+
+func CheckRegistryToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
+	var authorised bool = false
+	// read the header admin-store-token
+	adminRegistryToken := request.Header.Get("admin-registry-token")
+
+	envAdminRegistryToken := os.Getenv("ADMIN_REGISTRY_TOKEN")
+
+	switch {
+	// a token is awaited
+	case wasmArgs.AdminRegistryToken != "":
+		if wasmArgs.AdminRegistryToken == adminRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	// a token is awaited
+	case wasmArgs.AdminRegistryToken == "" && envAdminRegistryToken != "":
+		if envAdminRegistryToken == adminRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	case wasmArgs.AdminRegistryToken == "" && envAdminRegistryToken == "":
+		authorised = true
+	default:
+		authorised = false
+	}
+
+	return authorised
+}

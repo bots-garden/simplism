@@ -55,6 +55,13 @@ Flags for listen command:
                                    Use the /store endpoint (see documentation)
                                    Default: false
   --store-path            string   File path of the store db file  
-                                   Default: file path of the wasm file + ".store.db"
+                                   Default: file path of the wasm file + file name + ".store.db"
   --admin-store-token     string   Admin token to be authorized to use the store API of a Simplism server
                                    Or use this environment variable: ADMIN_STORE_TOKEN
+  --registry-mode         bool     The current Simplism server exposes a registry api to upload wasm files
+                                   Use the /registry endpoint (see documentation)
+                                   Default: false
+  --registry-path         string   File path of the uploaded wasm files  
+                                   Default: file path of the wasm file + "/registry"
+  --admin-registry-token  string   Admin token to be authorized to use the registry API of a Simplism server
+                                   Or use this environment variable: ADMIN_REGISTRY_TOKEN

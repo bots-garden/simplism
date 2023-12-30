@@ -113,11 +113,20 @@ Flags for listen command:
   --admin-spawn-token     string   Admin token to be authorized to spawn a new Simplism server
                                    Or use this environment variable: ADMIN_SPAWN_TOKEN
                                    Use the /spawn endpoint to spawn a new Simplism server
-  --store-mode.           bool     The current Simplism server exposes a store api to save data in a bbolt database
+  --store-mode            bool     The current Simplism server exposes a store api to save data in a bbolt database
                                    Use the /store endpoint (see documentation)
                                    Default: false
+  --store-path            string   File path of the store db file  
+                                   Default: file path of the wasm file + file name + ".store.db"
   --admin-store-token     string   Admin token to be authorized to use the store API of a Simplism server
-                                   Or use this environment variable: ADMIN_STORE_TOKEN                                   
+                                   Or use this environment variable: ADMIN_STORE_TOKEN
+  --registry-mode         bool     The current Simplism server exposes a registry api to upload wasm files
+                                   Use the /registry endpoint (see documentation)
+                                   Default: false
+  --registry-path         string   File path of the uploaded wasm files  
+                                   Default: file path of the wasm file + "/registry"
+  --admin-registry-token  string   Admin token to be authorized to use the registry API of a Simplism server
+                                   Or use this environment variable: ADMIN_REGISTRY_TOKEN
 ```
 > *Remarks: look at the `./samples` directory*
 

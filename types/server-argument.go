@@ -27,6 +27,9 @@ type WasmArguments struct {
 	StoreMode           bool   `yaml:"store-mode,omitempty"`
 	StorePath           string `yaml:"store-path,omitempty"`
 	AdminStoreToken     string `yaml:"admin-store-token,omitempty"`
+	RegistryMode        bool   `yaml:"registry-mode,omitempty"`
+	RegistryPath        string `yaml:"registry-path,omitempty"`
+	AdminRegistryToken  string `yaml:"admin-registry-token,omitempty"`
 }
 
 /*
