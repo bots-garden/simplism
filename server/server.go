@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"net/http"
+	//"net/http"
 	"os"
 	"os/signal"
 	configHelper "simplism/helpers/config"
@@ -11,9 +11,13 @@ import (
 	simplismTypes "simplism/types"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 var currentSimplismProcess = simplismTypes.SimplismProcess{}
+
+var router = chi.NewRouter()
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
@@ -30,8 +34,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	currentSimplismProcess.Information = wasmArgs.Information
 	currentSimplismProcess.ServiceName = wasmArgs.ServiceName
 
-	// for debugging
-	//fmt.Println("🤔", currentSimplismProcess.Information,":", currentSimplismProcess.ServiceName)
 
 	currentSimplismProcess.StartTime = time.Now()
 
@@ -65,7 +67,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	defer stop()
 
 	config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
-
 	wasmHelper.GeneratePluginsPool(ctx, config, manifest)
 
 	/*
@@ -73,16 +74,19 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		- handling HTTP requests and,
 		- calling the WebAssembly function.
 	*/
-	http.HandleFunc("/", mainHandler(wasmArgs))
+	router.HandleFunc("/", mainHandler(wasmArgs))
+	//http.HandleFunc("/", mainHandler(wasmArgs))
 
 	// This handler is responsible for reloading the WebAssembly file,
-	http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
+	router.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
+	//http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 
 	// This handler is responsible for listening for the other Simplism processes,
 	// The current Simplism process is responsible for handling the list of the other Simplism processes.
 	if wasmArgs.ServiceDiscovery == true {
 		fmt.Println("🤖 this service is a service discovery")
-		http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
+		router.HandleFunc("/discovery", discoveryHandler(wasmArgs))
+		//http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 
 	//Every N seconds, send information about the current simplism process to the discovery simplism process.
@@ -98,18 +102,24 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// That means that the current simplism process can spawn other simplism processes
 	if wasmArgs.SpawnMode == true {
 		fmt.Println("🚀 this service can spawn other services")
-		http.HandleFunc("/spawn", spawnHandler(wasmArgs))
+		router.HandleFunc("/spawn", spawnHandler(wasmArgs))
+		//http.HandleFunc("/spawn", spawnHandler(wasmArgs))
 	}
 
 	// https://github.com/etcd-io/bbolt
 	if wasmArgs.StoreMode == true {
 		fmt.Println("📦 this service can store data")
-		http.HandleFunc("/store", storeHandler(wasmArgs))
+		router.HandleFunc("/store", storeHandler(wasmArgs))
+		//http.HandleFunc("/store", storeHandler(wasmArgs))
 	}
 
+	// this does not really work
 	if wasmArgs.RegistryMode == true {
 		fmt.Println("🐳 small wasm registry activated")
-		http.HandleFunc("/registry", registryHandler(wasmArgs))
+		router.HandleFunc("/registry/push", registryHandler(wasmArgs))
+		router.HandleFunc("/registry/pull/{wasmfilename}", registryHandler(wasmArgs))
+
+		//http.HandleFunc("/registry", registryHandler(wasmArgs))
 	}
 
 	// Start the Simplism HTTP server

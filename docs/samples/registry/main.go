@@ -19,7 +19,7 @@ type ResponseData struct {
 func handle() {
 
 	responseData := ResponseData{
-		Body:   "🐳 tiny wasm registry 🦄, use the `/registry` endpoint",
+		Body:   "🐳 tiny wasm registry 🦄, use the `/registry/push` and `/registry/pull` endpoints",
 		Header: map[string][]string{"Content-Type": {"text/plain; charset=utf-8"}},
 		Code:   200,
 	}

@@ -105,7 +105,9 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 					//fmt.Println("🔥🔥🔥", simplismProcess.PID, simplismProcess.ServiceName)
 
-					http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+					//http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+
+					router.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 
 						host, _, _ := net.SplitHostPort(request.Host)
 
