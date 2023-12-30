@@ -107,8 +107,8 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		http.HandleFunc("/store", storeHandler(wasmArgs))
 	}
 
-	if wasmArgs.StoreMode == true {
-		fmt.Println("🐳 this service is a small wasm registry")
+	if wasmArgs.RegistryMode == true {
+		fmt.Println("🐳 small wasm registry activated")
 		http.HandleFunc("/registry", registryHandler(wasmArgs))
 	}
 

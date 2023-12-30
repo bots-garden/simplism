@@ -1,0 +1,2 @@
+# Use the registry mode
+
