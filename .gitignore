@@ -12,6 +12,8 @@ dist/
 
 *.env
 !.env
+!.release.env
+
 
 set-git-user.sh
 notes.md

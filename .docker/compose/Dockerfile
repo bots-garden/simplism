@@ -167,6 +167,22 @@ tar xvf k9s_${K9S_ARCH}.tar.gz -C /usr/local/bin
 EOF
 
 # ------------------------------------
+# Install GitHub CLI
+# ------------------------------------
+RUN <<EOF
+apt-get -y install gh
+EOF
+
+# ------------------------------------
+# Install GoReleaser
+# ------------------------------------
+RUN <<EOF
+echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | tee /etc/apt/sources.list.d/goreleaser.list
+apt-get update
+apt-get -y install goreleaser
+EOF
+
+# ------------------------------------
 # Create a new user
 # ------------------------------------
 # Create new regular user `${USER_NAME}` and disable password and gecos for later
