@@ -150,6 +150,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.WriteHeader(http.StatusInternalServerError)
 			} else {
 				response.WriteHeader(http.StatusOK)
+				response.Header().Set("Content-Type", "application/json; charset=utf-8")
 				response.Write(jsonString)
 			}
 

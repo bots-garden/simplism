@@ -1,0 +1,19 @@
+image: k33g/gitpod-simplism-playground:0.0.4
+
+tasks:
+    - name: install-simplism
+      before: |
+        SIMPLISM_DISTRO="Linux_x86_64"
+        VERSION="v0.0.8"
+        wget https://github.com/bots-garden/simplism/releases/download/${VERSION}/simplism_${SIMPLISM_DISTRO}.tar.gz -O simplism.tar.gz 
+        sudo tar -xf simplism.tar.gz -C /usr/bin
+        rm simplism.tar.gz
+        simplism version
+
+vscode:
+  extensions:
+    - PKief.material-icon-theme
+    - PKief.material-product-icons
+    - aaron-bond.better-comments
+    - golang.go
+    - rust-lang.rust-analyzer

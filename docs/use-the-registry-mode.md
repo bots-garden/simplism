@@ -44,6 +44,18 @@ curl http://localhost:9090/registry/push \
 curl http://localhost:9090/registry/pull/hello.wasm -o hello.wasm
 ```
 
+### Get the list of the wasm files
+
+```bash
+curl http://localhost:9090/registry/discover
+```
+
+### Remove a wasm file
+
+```bash
+curl http://localhost:9090/registry/remove/hello.wasm
+```
+
 ### Start a remote wasm plugin
 
 ```bash
@@ -95,6 +107,20 @@ curl http://localhost:9090/registry/push \
 ```bash
 curl http://localhost:9090/registry/pull/hello.wasm -o hello.wasm \
 -H 'private-registry-token: people-are-strange'
+```
+
+### Get the list of the wasm files
+
+```bash
+curl http://localhost:9090/registry/discover \
+-H 'private-registry-token: people-are-strange'
+```
+
+### Remove a wasm file
+
+```bash
+curl http://localhost:9090/registry/remove/hello.wasm \
+-H 'admin-registry-token: morrison-hotel'
 ```
 
 ### Start a remote wasm plugin

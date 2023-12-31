@@ -1,14 +1,17 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	httpHelper "simplism/helpers/http"
 	simplismTypes "simplism/types"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -26,6 +29,42 @@ func setHeaders(response http.ResponseWriter, name, len string) {
 	response.Header().Set("Pragma", "private")
 	//No cache headers.
 	response.Header().Set("Expires", "Mon, 26 Jul 1997 05:00:00 GMT")
+}
+
+type FileInfo struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+	//FileType    string     `json:"fileType"`
+}
+
+func fetchFileInfo(directory string) ([]FileInfo, error) {
+	var files []FileInfo
+	if err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() { // Only process files, not directories
+			fileInfo := FileInfo{
+				Name: info.Name(),
+				Path: path,
+				//FileType: info.IsDir() == true ? "directory" : "file",
+			}
+			files = append(files, fileInfo)
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return files, nil
+}
+
+func convertFileInfoToJSON(files []FileInfo) (string, error) {
+	jsonData, err := json.Marshal(files)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonData), nil
 }
 
 func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
@@ -76,9 +115,13 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			response.WriteHeader(http.StatusOK)
 			response.Write([]byte("🎉 Successfully Uploaded File\n"))
 
-		// download: /registry/pull/wasmfilename
-		case request.Method == http.MethodGet && privateRegistryAuthorised == true:
-			//fmt.Printf("👋 downloading...")
+		// download: /registry/pull/{wasmfilename}
+		case request.Method == http.MethodGet &&
+			strings.HasPrefix(request.RequestURI, "/registry/pull/") &&
+			strings.HasSuffix(request.RequestURI, ".wasm") &&
+			privateRegistryAuthorised == true:
+
+			//fmt.Println("👋 downloading...", request.RequestURI, request.URL)
 
 			filename := chi.URLParam(request, "wasmfilename")
 
@@ -107,18 +150,54 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			}
 			log.Printf("📝 wasm file written : %d", n)
 
-		/*
-			/registry/remove
-			/registry/discover
+		// /registry/discover
+		case request.Method == http.MethodGet &&
+			strings.HasPrefix(request.RequestURI, "/registry/discover") &&
+			privateRegistryAuthorised == true:
 
-			case request.Method == http.MethodPut && authorised == true:
-				response.WriteHeader(http.StatusOK)
-				response.Write([]byte("🙂 PUT"))
+			files, err := fetchFileInfo(wasmArgs.RegistryPath)
+			//fmt.Println(files)
+			if err != nil {
+				response.WriteHeader(http.StatusInternalServerError)
+				response.Write([]byte("😡 Error reading directory"))
+				return
+			}
 
-			case request.Method == http.MethodDelete && authorised == true:
-				response.WriteHeader(http.StatusOK)
-				response.Write([]byte("🙂 DELETE"))
-		*/
+			jsonString, err := convertFileInfoToJSON(files)
+			//fmt.Println(jsonString)
+			if err != nil {
+				//fmt.Println("😡 Error writing wasm file")
+				response.WriteHeader(http.StatusInternalServerError)
+				response.Write([]byte("😡 Error when converting directory list to JSON"))
+				return
+			}
+
+			response.WriteHeader(http.StatusOK)
+			response.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+			response.Write([]byte(jsonString))
+
+		// /registry/remove/{wasmfilename}
+		case request.Method == http.MethodDelete &&
+			strings.HasPrefix(request.RequestURI, "/registry/remove") &&
+			strings.HasSuffix(request.RequestURI, ".wasm") &&
+			adminRegistryAuthorised == true:
+
+			fileName := chi.URLParam(request, "wasmfilename")
+
+			err := os.Remove(wasmArgs.RegistryPath + "/" + fileName)
+
+			if err != nil {
+				response.WriteHeader(http.StatusInternalServerError)
+				response.Write([]byte("😡 Error when removing wasm file"))
+				return
+			}
+
+			response.WriteHeader(http.StatusOK)
+			//response.Header().Set("Content-Type", "application/json; charset=utf-8")
+			response.Write([]byte("🙂 " + chi.URLParam(request, "wasmfilename") + " removed"))
+
+
 
 		case adminRegistryAuthorised == false || privateRegistryAuthorised == false:
 			response.WriteHeader(http.StatusUnauthorized)

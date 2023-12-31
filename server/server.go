@@ -122,7 +122,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		// TODO: to be implemented in the future 🚧 (soon)
 		router.HandleFunc("/registry/remove/{wasmfilename}", registryHandler(wasmArgs))
 		router.HandleFunc("/registry/discover", registryHandler(wasmArgs))
-		router.HandleFunc("/registry/discove/{filter}r", registryHandler(wasmArgs))
+		//router.HandleFunc("/registry/discover/{filter}r", registryHandler(wasmArgs))
 
 		//http.HandleFunc("/registry", registryHandler(wasmArgs))
 	}
