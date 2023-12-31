@@ -86,6 +86,7 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				wasmArgsFromJsonPayload.RegistryMode = stringHelper.GetTheBooleanValueOf(bodyMap["registry-mode"])
 				wasmArgsFromJsonPayload.RegistryPath = bodyMap["registry-path"]
 				wasmArgsFromJsonPayload.AdminRegistryToken = bodyMap["admin-registry-token"]
+				wasmArgsFromJsonPayload.PrivateRegistryToken = bodyMap["private-registry-token"]
 
 				// for debugging
 				//fmt.Println("🤓", wasmArgsFromJsonPayload.Information, wasmArgsFromJsonPayload.ServiceName)

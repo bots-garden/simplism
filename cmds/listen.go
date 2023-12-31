@@ -22,7 +22,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		2. add the flag to the flagSet (here)
 		3. update the flagSet in server/handler-spawn.go
 		4. if you can set the flag value with an environment variable, update http/token-helpers.go
-		5. use the flag in server/server.go
+		5. update the cmds/help.txt file (and the appropriate section into README.md)
 	*/
 
 	httpPort := flagSet.String("http-port", "8080", "http port")
@@ -73,7 +73,8 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 
 	registryMode := flagSet.String("registry-mode", "false", "")
 	registryPath := flagSet.String("registry-path", "", "Path of wasm files")
-	adminRegistryToken := flagSet.String("admin-registry-token", "", "Admin registry token")
+	adminRegistryToken := flagSet.String("admin-registry-token", "", "Admin registry token") // for upload and delete
+	privateRegistryToken := flagSet.String("private-registry-token", "", "Private registry token") // for download and discover
 
 	flagSet.Parse(args[2:])
 
@@ -108,5 +109,6 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		RegistryMode:        stringHelper.GetTheBooleanValueOf(*registryMode),
 		RegistryPath:        *registryPath,
 		AdminRegistryToken:  *adminRegistryToken,
+		PrivateRegistryToken: *privateRegistryToken,
 	}, "") // no config key
 }

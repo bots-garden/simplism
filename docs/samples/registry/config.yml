@@ -3,9 +3,7 @@ tiny-registry-config:
   wasm-function: handle
   http-port: 9090
   log-level: info
-  service-name: tiny-registry
   registry-mode: true
-  admin-registry-token: morrison-hotel
+  admin-registry-token: morrison-hotel # /push + /remove
+  private-registry-token: people-are-strange # /pull + /discover
   registry-path: ./wasm-files
-  information: 👋 I'm the registry service 🐳
-

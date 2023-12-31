@@ -32,11 +32,12 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
-		authorised := httpHelper.CheckRegistryToken(request, wasmArgs)
+		adminRegistryAuthorised := httpHelper.CheckAdminRegistryToken(request, wasmArgs)
+		privateRegistryAuthorised := httpHelper.CheckPrivateRegistryToken(request, wasmArgs)
 
 		switch { // /registry
-		// upload
-		case request.Method == http.MethodPost && authorised == true:
+		// upload: /registry/push
+		case request.Method == http.MethodPost && adminRegistryAuthorised == true:
 			// Maximum upload of 10 MB files
 			request.ParseMultipartForm(10 << 20)
 
@@ -75,8 +76,8 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			response.WriteHeader(http.StatusOK)
 			response.Write([]byte("🎉 Successfully Uploaded File\n"))
 
-		// download
-		case request.Method == http.MethodGet && authorised == true:
+		// download: /registry/pull/wasmfilename
+		case request.Method == http.MethodGet && privateRegistryAuthorised == true:
 			//fmt.Printf("👋 downloading...")
 
 			filename := chi.URLParam(request, "wasmfilename")
@@ -107,6 +108,9 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			log.Printf("📝 wasm file written : %d", n)
 
 		/*
+			/registry/remove
+			/registry/discover
+
 			case request.Method == http.MethodPut && authorised == true:
 				response.WriteHeader(http.StatusOK)
 				response.Write([]byte("🙂 PUT"))
@@ -116,7 +120,7 @@ func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.Write([]byte("🙂 DELETE"))
 		*/
 
-		case authorised == false:
+		case adminRegistryAuthorised == false || privateRegistryAuthorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
 			response.Write([]byte("😡 You're not authorized"))
 
