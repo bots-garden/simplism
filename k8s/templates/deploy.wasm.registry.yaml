@@ -26,33 +26,26 @@ spec:
       labels:
         app: ${APPLICATION_NAME}
     spec:
-      # BEGIN:volume part
       volumes:
-        - name: task-pv-storage
+        - name: wasm-registry-storage
           persistentVolumeClaim:
-            claimName: task-pv-claim
-      # END:volume part
+            claimName: task-pv-wasm-registry-claim
       containers:
       - name: ${APPLICATION_NAME}
         image: ${IMAGE_NAME}:${IMAGE_TAG}
         command: ["/simplism"]
-        args: ["listen", "${WASM_FILE}", "${FUNCTION_NAME}", "--wasm-url", "${WASM_URL}"]
+        args: ["listen", "?", "handle", "--registry-mode", "true", "--registry-path", "wasm-registry-files"]
         ports:
           - containerPort: 8080
-        #imagePullPolicy: Never
         imagePullPolicy: IfNotPresent
-        #imagePullPolicy: Always
-        #env:
-        #- name: MESSAGE
-        #  value: "Hello World"
-        #- name: TOKEN
-        #  value: "kfrinvinrknksc"
-        # BEGIN:volume part
+        env:
+        - name: PRIVATE_REGISTRY_TOKEN
+          value: "${PRIVATE_REGISTRY_TOKEN}"
+        - name: ADMIN_REGISTRY_TOKEN
+          value: "${ADMIN_REGISTRY_TOKEN}"
         volumeMounts:
-          - mountPath: /data
-            name: task-pv-storage
-        # END:volume part
-
+          - mountPath: /wasm-registry-files
+            name: wasm-registry-storage
 ---
 # Ingress
 apiVersion: networking.k8s.io/v1
