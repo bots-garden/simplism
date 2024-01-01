@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+
 	//"net/http"
 	"os"
 	"os/signal"
@@ -13,7 +14,12 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+
+	"embed"
 )
+
+//go:embed embedded
+var fs embed.FS
 
 var currentSimplismProcess = simplismTypes.SimplismProcess{}
 
@@ -25,6 +31,19 @@ var router = chi.NewRouter()
 // The function does not return anything.
 func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
+	// if you don't want to serve a wasm file use "?" instead of the path to the wasm file
+	// then at start, Simplism will provide a scratch.wasm file in the root directory
+	if wasmArgs.FilePath == "?" {
+		wasmScratchfile, _ := fs.ReadFile("embedded/scratch.wasm")
+		// copy this file to the root directory
+		err := os.WriteFile("scratch.wasm", wasmScratchfile, 0644)
+		if err != nil {
+			fmt.Println("😡 Error copying file to root directory:", err)
+			return
+		}
+		wasmArgs.FilePath = "scratch.wasm"
+	}
+
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()
 	currentSimplismProcess.FilePath = wasmArgs.FilePath
@@ -33,7 +52,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	currentSimplismProcess.Information = wasmArgs.Information
 	currentSimplismProcess.ServiceName = wasmArgs.ServiceName
-
 
 	currentSimplismProcess.StartTime = time.Now()
 

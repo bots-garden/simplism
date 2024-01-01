@@ -6,4 +6,5 @@ use (
   ./samples/golang/hello-plugin
   ./benchmarks/hello-spin
   ./benchmarks/hello-wws
+  ./scratch
 )

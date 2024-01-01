@@ -1,5 +1,6 @@
 tiny-registry-config:
   wasm-file: ./tiny-registry.wasm
+  #wasm-file: "?"
   wasm-function: handle
   http-port: 9090
   log-level: info
