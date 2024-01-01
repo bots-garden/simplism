@@ -1,0 +1,3 @@
+- create a volume on kubernetes
+- copy a wasm file on it
+- use it from a pod with simplism
