@@ -20,7 +20,6 @@ set -o allexport; source .env; set +o allexport
 kubectl create namespace ${KUBE_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f ./manifests/wasm-files-volume.yaml -n ${KUBE_NAMESPACE}
 ```
-> deletion: `kubectl delete -f ./manifests/wasm-files-volume.yaml -n ${KUBE_NAMESPACE}`
 
 ### Check the wasm storage
 
@@ -74,7 +73,6 @@ set -o allexport; source .env; set +o allexport
 kubectl create namespace ${KUBE_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f ./manifests/wasm-registry-volume.yaml -n ${KUBE_NAMESPACE}
 ```
-> deletion: `kubectl delete -f ./manifests/wasm-registry-volume.yaml -n ${KUBE_NAMESPACE}`
 
 #### Check the wasm registry storage
 
@@ -82,7 +80,6 @@ kubectl apply -f ./manifests/wasm-registry-volume.yaml -n ${KUBE_NAMESPACE}
 kubectl exec -n ${KUBE_NAMESPACE} -it wasm-registry-store -- /bin/sh
 ls wasm-registry-files
 ```
-> deletion: `kubectl delete -f ./manifests/wasm-registry-volume.yaml -n ${KUBE_NAMESPACE}`
 
 ### Create a Simplism registry pod
 
