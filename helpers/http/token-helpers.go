@@ -118,6 +118,14 @@ func CheckSpawnToken(request *http.Request, wasmArgs simplismTypes.WasmArguments
 	return authorised
 }
 
+// CheckStoreToken checks if the provided token is authorized to access the store.
+//
+// Parameters:
+// - request: the HTTP request object.
+// - wasmArgs: the Wasm arguments.
+//
+// Returns:
+// - true if the token is authorized, false otherwise.
 func CheckStoreToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
 	var authorised bool = false
 	// read the header admin-store-token
@@ -141,6 +149,84 @@ func CheckStoreToken(request *http.Request, wasmArgs simplismTypes.WasmArguments
 			authorised = false
 		}
 	case wasmArgs.AdminStoreToken == "" && envAdminStoreToken == "":
+		authorised = true
+	default:
+		authorised = false
+	}
+
+	return authorised
+}
+
+// CheckAdminRegistryToken checks if the provided request and wasm arguments have an authorized admin registry token.
+//
+// Parameters:
+// - request: *http.Request - The HTTP request object that contains the admin registry token in the header.
+// - wasmArgs: simplismTypes.WasmArguments - The Wasm arguments object that contains the admin registry token.
+//
+// Returns:
+// - bool - True if the provided tokens are authorized, false otherwise.
+func CheckAdminRegistryToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
+	var authorised bool = false
+	// read the header admin-registry-token
+	adminRegistryToken := request.Header.Get("admin-registry-token")
+
+	envAdminRegistryToken := os.Getenv("ADMIN_REGISTRY_TOKEN")
+
+	switch {
+	// a token is awaited
+	case wasmArgs.AdminRegistryToken != "":
+		if wasmArgs.AdminRegistryToken == adminRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	// a token is awaited
+	case wasmArgs.AdminRegistryToken == "" && envAdminRegistryToken != "":
+		if envAdminRegistryToken == adminRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	case wasmArgs.AdminRegistryToken == "" && envAdminRegistryToken == "":
+		authorised = true
+	default:
+		authorised = false
+	}
+
+	return authorised
+}
+
+// CheckPrivateRegistryToken checks if the provided private registry token is authorized for the given request.
+//
+// Parameters:
+// - request: the HTTP request object containing the private-registry-token header.
+// - wasmArgs: the WasmArguments struct containing the private registry token.
+//
+// Return type:
+// - bool: a boolean value indicating whether the token is authorized or not.
+func CheckPrivateRegistryToken(request *http.Request, wasmArgs simplismTypes.WasmArguments) bool {
+	var authorised bool = false
+	// read the header private-registry-token
+	privateRegistryToken := request.Header.Get("private-registry-token")
+
+	envPrivateRegistryToken := os.Getenv("PRIVATE_REGISTRY_TOKEN")
+
+	switch {
+	// a token is awaited
+	case wasmArgs.PrivateRegistryToken != "":
+		if wasmArgs.PrivateRegistryToken == privateRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	// a token is awaited
+	case wasmArgs.PrivateRegistryToken == "" && envPrivateRegistryToken != "":
+		if envPrivateRegistryToken == privateRegistryToken {
+			authorised = true
+		} else {
+			authorised = false
+		}
+	case wasmArgs.PrivateRegistryToken == "" && envPrivateRegistryToken == "":
 		authorised = true
 	default:
 		authorised = false

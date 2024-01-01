@@ -14,7 +14,7 @@
 
 ```bash
 SIMPLISM_DISTRO="Linux_arm64" # 👀 https://github.com/bots-garden/simplism/releases
-VERSION="0.0.7"
+VERSION="0.0.8"
 wget https://github.com/bots-garden/simplism/releases/download/v${VERSION}/simplism_${SIMPLISM_DISTRO}.tar.gz -O simplism.tar.gz 
 tar -xf simplism.tar.gz -C /usr/bin
 rm simplism.tar.gz
@@ -78,46 +78,56 @@ Available Commands:
               Arguments: [yaml file path] [config key]
 
 Flags for listen command:
-  --http-port             string   HTTP port of the Simplism server (default: 8080)
-  --log-level             string   Log level to print message
-                                   Possible values: error, warn, info, debug, trace
-  --allow-hosts           string   Hosts for HTTP request (json array) 
-                                   Default: ["*"]
-  --allow-paths           string   Allowed paths to write and read files (json string) 
-                                   Default: {}
-  --config                string   Configuration data (json string)
-                                   Default: {}
-  --env                   string   Environment variables to forward to the wasm plug-in
-                                   Default: []
-  --wasi                  bool     Default: true
-  --wasm-url              string   Url to download the wasm file
-  --wasm-url-auth-header  string   Authentication header to download the wasm file, ex: "PRIVATE-TOKEN=IlovePandas"
-                                   Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
-  --cert-file             string   Path to certificate file (https)
-  --key-file              string   Path to key file (https)
-  --admin-reload-token    string   Admin token to be authorized to reload the wasm-plugin
-                                   Or use this environment variable: ADMIN_RELOAD_TOKEN
-                                   Use the /reload endpoint to reload the wasm-plugin
-  --service-discovery     bool     The current Simplism server is a service discovery server
-                                   Default: false
-  --discovery-endpoint    string   The endpoint of the service discovery server
-                                   It always ends with /discovery
-                                   Example: http://localhost:9000/discovery
-  --admin-discovery-token string   Admin token to be authorized to post information to the service discovery server
-                                   Or use this environment variable: ADMIN_DISCOVERY_TOKEN
-                                   Use the /discovery endpoint to post information to the service discovery server
-  --service-name          string   Name of the service (it can be useful with the service discovery mode)
-  --information           string   Information about the service (it can be useful with the service discovery mode)
-  --spawn-mode            bool     The current Simplism server is in spawn mode (it can create new simplism servers with the /spawn endpoint)
-                                   Default: false
-  --admin-spawn-token     string   Admin token to be authorized to spawn a new Simplism server
-                                   Or use this environment variable: ADMIN_SPAWN_TOKEN
-                                   Use the /spawn endpoint to spawn a new Simplism server
-  --store-mode.           bool     The current Simplism server exposes a store api to save data in a bbolt database
-                                   Use the /store endpoint (see documentation)
-                                   Default: false
-  --admin-store-token     string   Admin token to be authorized to use the store API of a Simplism server
-                                   Or use this environment variable: ADMIN_STORE_TOKEN                                   
+  --http-port              string   HTTP port of the Simplism server (default: 8080)
+  --log-level              string   Log level to print message
+                                    Possible values: error, warn, info, debug, trace
+  --allow-hosts            string   Hosts for HTTP request (json array) 
+                                    Default: ["*"]
+  --allow-paths            string   Allowed paths to write and read files (json string) 
+                                    Default: {}
+  --config                 string   Configuration data (json string)
+                                    Default: {}
+  --env                    string   Environment variables to forward to the wasm plug-in
+                                    Default: []
+  --wasi                   bool     Default: true
+  --wasm-url               string   Url to download the wasm file
+  --wasm-url-auth-header   string   Authentication header to download the wasm file, ex: "PRIVATE-TOKEN=IlovePandas"
+                                    Or use this environment variable: WASM_URL_AUTH_HEADER='PRIVATE-TOKEN=IlovePandas'
+  --cert-file              string   Path to certificate file (https)
+  --key-file               string   Path to key file (https)
+  --admin-reload-token     string   Admin token to be authorized to reload the wasm-plugin
+                                    Or use this environment variable: ADMIN_RELOAD_TOKEN
+                                    Use the /reload endpoint to reload the wasm-plugin
+  --service-discovery      bool     The current Simplism server is a service discovery server
+                                    Default: false
+  --discovery-endpoint     string   The endpoint of the service discovery server
+                                    It always ends with /discovery
+                                    Example: http://localhost:9000/discovery
+  --admin-discovery-token  string   Admin token to be authorized to post information to the service discovery server
+                                    Or use this environment variable: ADMIN_DISCOVERY_TOKEN
+                                    Use the /discovery endpoint to post information to the service discovery server
+  --service-name           string   Name of the service (it can be useful with the service discovery mode)
+  --information            string   Information about the service (it can be useful with the service discovery mode)
+  --spawn-mode             bool     The current Simplism server is in spawn mode (it can create new simplism servers with the /spawn endpoint)
+                                    Default: false
+  --admin-spawn-token      string   Admin token to be authorized to spawn a new Simplism server
+                                    Or use this environment variable: ADMIN_SPAWN_TOKEN
+                                    Use the /spawn endpoint to spawn a new Simplism server
+  --store-mode             bool     The current Simplism server exposes a store api to save data in a bbolt database
+                                    Use the /store endpoint (see documentation)
+                                    Default: false
+  --store-path             string   File path of the store db file  
+                                    Default: file path of the wasm file + file name + ".store.db"
+  --admin-store-token      string   Admin token to be authorized to use the store API of a Simplism server
+                                    Or use this environment variable: ADMIN_STORE_TOKEN
+  --registry-mode          bool     The current Simplism server exposes a registry api to upload wasm files
+                                    Use the /registry endpoint (see documentation)
+                                    Default: false
+  --registry-path          string   File path of the uploaded wasm files  
+  --admin-registry-token   string   Admin token to be authorized to use the registry API: POST(`/push`) and DELETE(`/remove`)
+                                    Or use this environment variable: ADMIN_REGISTRY_TOKEN
+  --private-registry-token string   Private registry token to be authorized to use the registry API: GET(`/pull`) and GET(`/discover`)
+                                    Or use this environment variable: PRIVATE_REGISTRY_TOKEN
 ```
 > *Remarks: look at the `./samples` directory*
 
@@ -381,6 +391,7 @@ You can use **Simplism** to generate a project skeleton of an **Extism** plug-in
 
 - Golang
 - Rustlang
+- JavaScript
 
 ### Generate a Golang project
 
@@ -389,11 +400,15 @@ simplism generate golang hello my-projects
 ```
 This command will create this tree structure:
 ```bash
-├── my-projects
-│  ├── hello
-│  │  ├── go.mod
-│  │  ├── main.go
-│  │  └── README.md
+my-projects
+└── hello
+   ├── build.sh
+   ├── Dockerfile
+   ├── go.mod
+   ├── main.go
+   ├── query.sh
+   ├── README.md
+   └── run.sh
 ```
 
 ### Generate a Rustlang project
@@ -403,15 +418,37 @@ simplism generate rustlang hello my-projects
 ```
 This command will create this tree structure:
 ```bash
-├── my-projects
-│  ├── hello
-│  │  ├── src
-│  │  │  └── lib.rs
-│  │  ├── Cargo.toml
-│  │  └── README.md
+my-projects
+└── hello
+   ├── build.sh
+   ├── Cargo.toml
+   ├── Dockerfile
+   ├── query.sh
+   ├── README.md
+   ├── run.sh
+   └── src
+      └── lib.rs
 ```
 
-✋ more languages to come very soon
+### Generate a JavaScript project
+
+```bash
+simplism generate js hello my-projects
+```
+This command will create this tree structure:
+```bash
+my-projects
+└── hello
+   ├── build.sh
+   ├── Dockerfile
+   ├── index.d.ts
+   ├── index.js
+   ├── query.sh
+   ├── README.md
+   └── run.sh
+```
+
+✋ more languages to come
 
 ## How is Simplism developed?
 

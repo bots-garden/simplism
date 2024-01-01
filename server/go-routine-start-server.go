@@ -31,7 +31,9 @@ func goRoutineStartServer(configKey string, wasmArgs simplismTypes.WasmArguments
 		keyFile := wasmArgs.KeyFile
 
 		fmt.Println(message)
-		err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, nil)
+		err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, router)
+		//err := http.ListenAndServeTLS(":"+wasmArgs.HTTPPort, certFile, keyFile, nil)
+
 
 		//currentSimplismProcess.Host = 
 
@@ -47,7 +49,8 @@ func goRoutineStartServer(configKey string, wasmArgs simplismTypes.WasmArguments
 			message = "🌍 [" + configKey + "] http(s) server is listening on: " + wasmArgs.HTTPPort
 		}
 		fmt.Println(message)
-		err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
+		err := http.ListenAndServe(":"+wasmArgs.HTTPPort, router)
+		//err := http.ListenAndServe(":"+wasmArgs.HTTPPort, nil)
 		
 		if err != nil {
 			log.Fatal("😡", err)

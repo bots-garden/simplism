@@ -105,7 +105,9 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 					//fmt.Println("🔥🔥🔥", simplismProcess.PID, simplismProcess.ServiceName)
 
-					http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+					//http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+
+					router.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 
 						host, _, _ := net.SplitHostPort(request.Host)
 
@@ -148,6 +150,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.WriteHeader(http.StatusInternalServerError)
 			} else {
 				response.WriteHeader(http.StatusOK)
+				response.Header().Set("Content-Type", "application/json; charset=utf-8")
 				response.Write(jsonString)
 			}
 

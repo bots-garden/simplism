@@ -46,6 +46,7 @@ func Parse(command string, args []string) error {
 
 	case "listen":
 		wasmFilePath := flag.Args()[1]     // path of the wasm file
+
 		wasmFunctionName := flag.Args()[2] // function name
 
 		flagSet := flag.NewFlagSet("listen", flag.ExitOnError)

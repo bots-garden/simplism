@@ -188,7 +188,6 @@ func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
 	if counter == poolSize {
 		counter = 0
 	}
-	
 
 	wasmPlugin.Protection.Lock()
 
@@ -224,8 +223,6 @@ func DownloadWasmFile(wasmArgs simplismTypes.WasmArguments) error {
 	// Example: "PRIVATE-TOKEN: ${GITLAB_WASM_TOKEN}"
 	client := resty.New()
 
-	//fmt.Println("🚧 downloading", wasmArgs.FilePath, "...")
-
 	if wasmArgs.WasmURLAuthHeader != "" {
 		authHeaderName, authHeaderValue := httpHelper.GetHeaderFromString(wasmArgs.WasmURLAuthHeader)
 		client.SetHeader(authHeaderName, authHeaderValue)
@@ -245,7 +242,7 @@ func DownloadWasmFile(wasmArgs simplismTypes.WasmArguments) error {
 		Get(wasmArgs.URL)
 
 	if resp.IsError() {
-		return errors.New("😡 error while downloading the wasm file")
+		return errors.New("😡 error while downloading the wasm file, you should check the authentication token")
 	}
 
 	if err != nil {

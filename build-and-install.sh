@@ -8,5 +8,6 @@ echo -n $TAG > generators/simplism.version.txt
 
 
 go build
+ls -lh simplism
 #cp simplism /usr/bin
 sudo cp simplism /usr/bin
