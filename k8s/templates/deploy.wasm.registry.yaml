@@ -1,0 +1,66 @@
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  selector:
+    app: ${APPLICATION_NAME}
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${APPLICATION_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      volumes:
+        - name: wasm-registry-storage
+          persistentVolumeClaim:
+            claimName: task-pv-wasm-registry-claim
+      containers:
+      - name: ${APPLICATION_NAME}
+        image: ${IMAGE_NAME}:${IMAGE_TAG}
+        command: ["/simplism"]
+        args: ["listen", "?", "handle", "--registry-mode", "true", "--registry-path", "wasm-registry-files"]
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PRIVATE_REGISTRY_TOKEN
+          value: "${PRIVATE_REGISTRY_TOKEN}"
+        - name: ADMIN_REGISTRY_TOKEN
+          value: "${ADMIN_REGISTRY_TOKEN}"
+        volumeMounts:
+          - mountPath: /wasm-registry-files
+            name: wasm-registry-storage
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  rules:
+    - host: ${APPLICATION_NAME}.${DNS} # 🤚
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: ${APPLICATION_NAME}
+              port: 
+                number: 80

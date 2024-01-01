@@ -1,0 +1,61 @@
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  selector:
+    app: ${APPLICATION_NAME}
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${APPLICATION_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      volumes:
+        - name: wasm-storage
+          persistentVolumeClaim:
+            claimName: task-pv-wasm-claim
+      containers:
+      - name: ${APPLICATION_NAME}
+        image: ${IMAGE_NAME}:${IMAGE_TAG}
+        command: ["/simplism"]
+        args: ["listen", "wasm-files/${WASM_FILE}", "${FUNCTION_NAME}"]
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: /wasm-files
+            name: wasm-storage
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  rules:
+    - host: ${APPLICATION_NAME}.${DNS} # 🤚
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: ${APPLICATION_NAME}
+              port: 
+                number: 80
