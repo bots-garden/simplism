@@ -457,16 +457,11 @@ Simplism is developed in Go with **[Wazero](https://wazero.io/)**[^1] as the Was
 ### Prerequisites
 > 🚧 work in progress
 
-To develop on the Simplism project and/or create Extism plug-ins, look at `docker-dev-environment/Dockerfile`, you will find the list of the necessary softwares, libraries, tools...
+To develop on the Simplism project and/or create Extism plug-ins, look at `.docker/compose/Dockerfile`, you will find the list of the necessary softwares, libraries, tools...
 
 ### 👋 Or you can use ready to use environments
 
-- [🍊 Open it with Gitpod](https://gitpod.io/#https://github.com/bots-garden/simplism)
-- [🐳 Open it with Docker Dev Environment (**✋ arm version**)](https://open.docker.com/dashboard/dev-envs?url=https://github.com/bots-garden/simplism/tree/main)
-  - Prerequisites:
-    - https://docs.docker.com/desktop/dev-environments/create-dev-env/#prerequisites
-    - [Visual Studio Code Remote Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-
+[🍊 Open it with Gitpod](https://gitpod.io/#https://github.com/bots-garden/simplism)
 
 ### Build Simplism
 
