@@ -1,0 +1,52 @@
+# k8s/manifests/wasm-files-volume.yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-wasm-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/wasm-files"
+---
+# A cluster running on Civo will have civo-volume as the default storage class. 
+# This can be confirmed by viewing the storageclass resources on your cluster:
+# kubectl get sc
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-wasm-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+# Create a pod to copy manualy files to the PersistentVolume
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wasm-store
+spec:
+  volumes:
+    - name: wasm-storage
+      persistentVolumeClaim:
+        claimName: task-pv-wasm-claim
+  containers:
+    - name: wasm-files-container
+      image: busybox:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - "3600"
+      volumeMounts:
+        - mountPath: /wasm-files
+          name: wasm-storage
