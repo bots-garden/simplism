@@ -33,7 +33,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	// if you don't want to serve a wasm file use "?" instead of the path to the wasm file
 	// then at start, Simplism will provide a scratch.wasm file in the root directory
-	if wasmArgs.FilePath == "?" {
+	if wasmArgs.FilePath == "?" && wasmArgs.FunctionName == "?" {
 		wasmScratchfile, _ := fs.ReadFile("embedded/scratch.wasm")
 		// copy this file to the root directory
 		err := os.WriteFile("scratch.wasm", wasmScratchfile, 0644)
@@ -42,7 +42,14 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 			return
 		}
 		wasmArgs.FilePath = "scratch.wasm"
+		wasmArgs.FunctionName = "handle"
 	}
+
+	if wasmArgs.FilePath == "?" && wasmArgs.FunctionName != "?" {
+		fmt.Println("😡 You have to use ? for the wasm file path and the function name")
+		os.Exit(1)
+	}
+
 
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()

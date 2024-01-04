@@ -31,6 +31,28 @@ The "registry mode" activate 3 endpoints:
   - `/registry/remove` to remove a wasm file
   - `/registry/discover` to discover wasm files
 
+> If you don't want to specify a wasm file, use this:
+
+```bash
+simplism listen ? ? \
+  --http-port 9090 \
+  --log-level info \
+  --registry-mode true \
+  --registry-path ./wasm-files
+```
+
+or:
+
+```yaml
+tiny-registry-config:
+  wasm-file: "?"
+  wasm-function: "?"
+  http-port: 9090
+  log-level: info
+  registry-mode: true
+  registry-path: ./wasm-files
+```
+
 ### Upload a wasm file to the registry
 
 ```bash
