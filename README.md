@@ -78,7 +78,7 @@ Available Commands:
               Arguments: [yaml file path] [config key]
 
 Flags for listen command:
-  --http-port              string   HTTP port of the Simplism server (default: 8080)
+  --http-port              int      HTTP port of the Simplism server (default: 8080)
   --log-level              string   Log level to print message
                                     Possible values: error, warn, info, debug, trace
   --allow-hosts            string   Hosts for HTTP request (json array) 
@@ -113,6 +113,8 @@ Flags for listen command:
   --admin-spawn-token      string   Admin token to be authorized to spawn a new Simplism server
                                     Or use this environment variable: ADMIN_SPAWN_TOKEN
                                     Use the /spawn endpoint to spawn a new Simplism server
+  --http-port-auto         bool     Automatically find an available port (only works in spawn mode)
+                                    Default: false
   --store-mode             bool     The current Simplism server exposes a store api to save data in a bbolt database
                                     Use the /store endpoint (see documentation)
                                     Default: false

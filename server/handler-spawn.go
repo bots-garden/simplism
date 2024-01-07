@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	httpHelper "simplism/helpers/http"
 	simplismTypes "simplism/types"
@@ -12,12 +13,23 @@ import (
 	stringHelper "simplism/helpers/stringHelper"
 )
 
+// GetNewHTTPPort returns a unique http port
+func getNewHTTPPort() string {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		panic(err)
+	}
+	httpPort := strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
+	listener.Close()
+	return httpPort
+}
+
 // spawnHandler returns an http.HandlerFunc that handles requests to spawn a new instance.
 //
 // It takes wasmArgs simplismTypes.WasmArguments as a parameter.
 // It returns an http.HandlerFunc.
 func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
-	
+
 	return func(response http.ResponseWriter, request *http.Request) {
 
 		authorised := httpHelper.CheckSpawnToken(request, wasmArgs)
@@ -51,6 +63,8 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.WriteHeader(http.StatusInternalServerError)
 				response.Write([]byte("😡 " + err.Error()))
 			} else {
+				// ✋ right now, you cannot spawn a new spaner process
+
 				response.WriteHeader(http.StatusOK)
 				response.Write([]byte("🚀 spawning process...")) // TODO: should be changed
 				// ! Start the new process here
@@ -60,7 +74,14 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				wasmArgsFromJsonPayload.FunctionName = bodyMap["wasm-function"]
 				wasmArgsFromJsonPayload.URL = bodyMap["wasm-url"]
 				wasmArgsFromJsonPayload.WasmURLAuthHeader = bodyMap["wasm-url-auth-header"]
-				wasmArgsFromJsonPayload.HTTPPort = bodyMap["http-port"]
+
+				// Automatically assign an HTTP port number to the new process
+				if wasmArgs.HttpPortAuto == true {
+					wasmArgsFromJsonPayload.HTTPPort = getNewHTTPPort()
+				} else {
+					wasmArgsFromJsonPayload.HTTPPort = bodyMap["http-port"]
+				}
+
 				wasmArgsFromJsonPayload.LogLevel = bodyMap["log-level"]
 				wasmArgsFromJsonPayload.AllowHosts = bodyMap["allow-hosts"]
 				wasmArgsFromJsonPayload.AllowPaths = bodyMap["allow-paths"]

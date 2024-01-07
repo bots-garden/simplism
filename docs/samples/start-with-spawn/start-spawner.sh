@@ -1,5 +1,5 @@
 #!/bin/bash
-rm ../service-discovery/*.db
+#rm ../service-discovery/*.db
 simplism listen \
 ../service-discovery/service-discovery.wasm handle \
 --http-port 9000 \
@@ -8,4 +8,5 @@ simplism listen \
 --admin-discovery-token people-are-strange \
 --information "👋 I'm the spawner service" \
 --spawn-mode true \
+--http-port-auto true
 --admin-spawn-token michael-burnham-rocks

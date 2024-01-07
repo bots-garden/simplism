@@ -62,6 +62,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	adminDiscoveryToken := flagSet.String("admin-discovery-token", "", "Admin discovery token")
 
 	spawnMode := flagSet.String("spawn-mode", "false", "")
+	httpPortAuto := flagSet.String("http-port-auto", "false", "")
 	adminSpawnToken := flagSet.String("admin-spawn-token", "", "Admin spawn token")
 
 	information := flagSet.String("information", "", "Information about the simplism service (useful for the discovery mode)")
@@ -100,6 +101,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		DiscoveryEndpoint:   *discoveryEndpoint,
 		AdminDiscoveryToken: *adminDiscoveryToken,
 		SpawnMode:           stringHelper.GetTheBooleanValueOf(*spawnMode),
+		HttpPortAuto:        stringHelper.GetTheBooleanValueOf(*httpPortAuto), // only for spawn mode
 		AdminSpawnToken:     *adminSpawnToken,
 		Information:         *information,
 		ServiceName:         *serviceName,
