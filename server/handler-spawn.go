@@ -200,9 +200,21 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 						if errKill != nil {
 							fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
 						} else {
-							fmt.Println("🙂 Process killed successfully")
 
-							errKillNotification := NotifyDiscoveryServiceOfKillingProcess(pid)
+							foundProcess, errKillNotification := NotifyDiscoveryServiceOfKillingProcess(pid)
+
+							// Update the recovery file (remove the entry for the killed process)
+							delete(spawnedProcesses, foundProcess.HTTPPort)
+							yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+
+							// Change the handler
+							router.HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+								response.WriteHeader(http.StatusNotFound)
+								response.Write([]byte("(Not found) Simplism processe killed"))
+							}) 
+
+							fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
+
 							if errKillNotification != nil {
 								fmt.Println("😡 handler-spawn/NotifyDiscoveryServiceOfKillingProcess", errKillNotification)
 							} else {
