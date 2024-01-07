@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	configHelper "simplism/helpers/config"
 	wasmHelper "simplism/helpers/wasm"
+	yamlHelper "simplism/helpers/yaml"
 	simplismTypes "simplism/types"
 	"syscall"
 	"time"
@@ -110,6 +111,13 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// The current Simplism process is responsible for handling the list of the other Simplism processes.
 	if wasmArgs.ServiceDiscovery == true {
 		fmt.Println("🤖 this service is a service discovery")
+
+		// Delete the db file
+		err := os.Remove(wasmArgs.FilePath + ".processes.db")
+		if err != nil {
+			fmt.Println("😡 Error deleting the db file:", err)
+		}
+
 		router.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 		//http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
@@ -126,9 +134,24 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// This handler is responsible for spawning other services
 	// That means that the current simplism process can spawn other simplism processes
 	if wasmArgs.SpawnMode == true {
+
 		fmt.Println("🚀 this service can spawn other services")
 		router.HandleFunc("/spawn", spawnHandler(wasmArgs))
-		//http.HandleFunc("/spawn", spawnHandler(wasmArgs))
+
+		// TODO: check if a recovery file is existing
+		// Read the recovery file and rename it
+		if wasmArgs.RecoveryMode == true {
+			
+			formerProcessesArguments, err := yamlHelper.ReadYamlFile(wasmArgs.RecoveryPath)
+			if err == nil {
+				NotifySpawnServiceForRecovery(formerProcessesArguments)
+				// then delete the recovery file ?
+				// no because the map of the current running processes is empty at start
+				// so the content of the recovery file will be erased anyway
+			} else {
+				fmt.Println("😡", err)
+			}
+		}
 	}
 
 	// https://github.com/etcd-io/bbolt

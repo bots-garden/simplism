@@ -7,7 +7,6 @@ import (
 	simplismTypes "simplism/types"
 )
 
-
 // startListening initializes a server to listen for requests and executes a WebAssembly function.
 //
 // Parameters:
@@ -18,11 +17,11 @@ import (
 func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet, args []string) {
 
 	/* How to add flags:
-		1. add a field to the structure of WasmArguments in types/server-argument.go
-		2. add the flag to the flagSet (here)
-		3. update the flagSet in server/handler-spawn.go
-		4. if you can set the flag value with an environment variable, update http/token-helpers.go
-		5. update the cmds/help.txt file (and the appropriate section into README.md)
+	1. add a field to the structure of WasmArguments in types/server-argument.go
+	2. add the flag to the flagSet (here)
+	3. update the flagSet in server/handler-spawn.go
+	4. if you can set the flag value with an environment variable, update http/token-helpers.go
+	5. update the cmds/help.txt file (and the appropriate section into README.md)
 	*/
 
 	httpPort := flagSet.String("http-port", "8080", "http port")
@@ -64,6 +63,8 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 	spawnMode := flagSet.String("spawn-mode", "false", "")
 	httpPortAuto := flagSet.String("http-port-auto", "false", "")
 	adminSpawnToken := flagSet.String("admin-spawn-token", "", "Admin spawn token")
+	recoveryMode := flagSet.String("recovery-mode", "true", "activate or not the recovery mode")
+	recoveryPath := flagSet.String("recovery-path", "recovery.yaml", "Path of the recovery yaml file")
 
 	information := flagSet.String("information", "", "Information about the simplism service (useful for the discovery mode)")
 	serviceName := flagSet.String("service-name", "", "Simplism service name (useful for the discovery mode)")
@@ -74,7 +75,7 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 
 	registryMode := flagSet.String("registry-mode", "false", "")
 	registryPath := flagSet.String("registry-path", "", "Path of wasm files")
-	adminRegistryToken := flagSet.String("admin-registry-token", "", "Admin registry token") // for upload and delete
+	adminRegistryToken := flagSet.String("admin-registry-token", "", "Admin registry token")       // for upload and delete
 	privateRegistryToken := flagSet.String("private-registry-token", "", "Private registry token") // for download and discover
 
 	flagSet.Parse(args[2:])
@@ -94,23 +95,25 @@ func startListening(wasmFilePath, wasmFunctionName string, flagSet *flag.FlagSet
 		WasmURLAuthHeader: *wasmURLAuthHeader,
 		//AuthHeaderName:  *authHeaderName,
 		//AuthHeaderValue: *authHeaderValue,
-		CertFile:            *certFile,
-		KeyFile:             *keyFile,
-		AdminReloadToken:    *adminReloadToken,
-		ServiceDiscovery:    stringHelper.GetTheBooleanValueOf(*serviceDiscovery),
-		DiscoveryEndpoint:   *discoveryEndpoint,
-		AdminDiscoveryToken: *adminDiscoveryToken,
-		SpawnMode:           stringHelper.GetTheBooleanValueOf(*spawnMode),
-		HttpPortAuto:        stringHelper.GetTheBooleanValueOf(*httpPortAuto), // only for spawn mode
-		AdminSpawnToken:     *adminSpawnToken,
-		Information:         *information,
-		ServiceName:         *serviceName,
-		StoreMode:           stringHelper.GetTheBooleanValueOf(*storeMode),
-		StorePath:           *storePath,
-		AdminStoreToken:     *adminStoreToken,
-		RegistryMode:        stringHelper.GetTheBooleanValueOf(*registryMode),
-		RegistryPath:        *registryPath,
-		AdminRegistryToken:  *adminRegistryToken,
+		CertFile:             *certFile,
+		KeyFile:              *keyFile,
+		AdminReloadToken:     *adminReloadToken,
+		ServiceDiscovery:     stringHelper.GetTheBooleanValueOf(*serviceDiscovery),
+		DiscoveryEndpoint:    *discoveryEndpoint,
+		AdminDiscoveryToken:  *adminDiscoveryToken,
+		SpawnMode:            stringHelper.GetTheBooleanValueOf(*spawnMode),
+		HttpPortAuto:         stringHelper.GetTheBooleanValueOf(*httpPortAuto), // only for spawn mode
+		AdminSpawnToken:      *adminSpawnToken,
+		RecoveryMode:         stringHelper.GetTheBooleanValueOf(*recoveryMode),
+		RecoveryPath:         *recoveryPath,
+		Information:          *information,
+		ServiceName:          *serviceName,
+		StoreMode:            stringHelper.GetTheBooleanValueOf(*storeMode),
+		StorePath:            *storePath,
+		AdminStoreToken:      *adminStoreToken,
+		RegistryMode:         stringHelper.GetTheBooleanValueOf(*registryMode),
+		RegistryPath:         *registryPath,
+		AdminRegistryToken:   *adminRegistryToken,
 		PrivateRegistryToken: *privateRegistryToken,
 	}, "") // no config key
 }

@@ -50,6 +50,10 @@ Flags for listen command:
                                     Default: false
   --http-port-auto         bool     Automatically find an available port (only works in spawn mode)
                                     Default: false
+  --recovery-path          string   Path of the recovery file (only works in spawn mode)
+                                    Default: "recovery.yaml"
+  --recovery-mode          bool     The current Simplism server is in recovery mode
+                                    Default: true
   --admin-spawn-token      string   Admin token to be authorized to spawn a new Simplism server
                                     Or use this environment variable: ADMIN_SPAWN_TOKEN
                                     Use the /spawn endpoint to spawn a new Simplism server
