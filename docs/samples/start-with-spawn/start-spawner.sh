@@ -12,3 +12,4 @@ simplism listen \
 --admin-spawn-token michael-burnham-rocks
 #--recovery-mode false
 # ../service-discovery/service-discovery.wasm handle \
+
