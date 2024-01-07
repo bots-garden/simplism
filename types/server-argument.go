@@ -21,6 +21,7 @@ type WasmArguments struct {
 	DiscoveryEndpoint    string `yaml:"discovery-endpoint,omitempty"`
 	AdminDiscoveryToken  string `yaml:"admin-discovery-token,omitempty"`
 	SpawnMode            bool   `yaml:"spawn-mode,omitempty"`
+	HttpPortAuto         bool   `yaml:"http-port-auto,omitempty"` // only for spawn mode
 	AdminSpawnToken      string `yaml:"admin-spawn-token,omitempty"`
 	Information          string `yaml:"information,omitempty"`
 	ServiceName          string `yaml:"service-name,omitempty"`
