@@ -126,9 +126,18 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// This handler is responsible for spawning other services
 	// That means that the current simplism process can spawn other simplism processes
 	if wasmArgs.SpawnMode == true {
+
 		fmt.Println("🚀 this service can spawn other services")
 		router.HandleFunc("/spawn", spawnHandler(wasmArgs))
-		//http.HandleFunc("/spawn", spawnHandler(wasmArgs))
+
+		/* 
+			Try to load and start the previous wasm plug-ins
+			only if discovery mode is activated 
+		*/
+
+
+
+
 	}
 
 	// https://github.com/etcd-io/bbolt
