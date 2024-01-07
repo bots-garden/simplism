@@ -142,6 +142,8 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		// Read the recovery file and rename it
 		if wasmArgs.RecoveryMode == true {
 			
+			fmt.Println("🛟 recovery mode activated", wasmArgs.RecoveryPath)
+
 			formerProcessesArguments, err := yamlHelper.ReadYamlFile(wasmArgs.RecoveryPath)
 			if err == nil {
 				NotifySpawnServiceForRecovery(formerProcessesArguments)

@@ -1,0 +1,21 @@
+spawner-config:
+  wasm-file: "?"
+  wasm-function: "?"
+  http-port: 9000
+  log-level: info
+  service-discovery: true
+  admin-discovery-token: people-are-strange
+  information: "👋 I'm the spawner service"
+  spawn-mode: true
+  http-port-auto: true
+  recovery-mode: true
+  admin-spawn-token: michael-burnham-rocks
+
+
+registry-config:
+  wasm-file: "?"
+  wasm-function: "?"
+  http-port: 9000
+  log-level: info
+  registry-mode: true
+  registry-path: ./wasm-files
