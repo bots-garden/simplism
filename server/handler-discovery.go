@@ -18,6 +18,12 @@ var NotifyDiscoveryServiceOfKillingProcess func(pid int) error
 
 var wasmFunctionHandlerList = map[string]int{}
 
+// This variable is initialized at start if the server is in discovery mode
+// It stores the processes that was previously running
+// Then we can restart them in spawn mode
+// TODO: use this to restart after a crash?
+//var formerProcesses  map[string]simplismTypes.SimplismProcess
+
 // discoveryHandler handles the /discovery endpoint in the API.
 //
 // It takes a WasmArguments object as a parameter and returns an http.HandlerFunc.
@@ -36,6 +42,8 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	db, _ := initializeProcessesDB(wasmArgs)
 	// TODO: look at old records and delete old ones
 
+	//formerProcesses = getSimplismProcessesListFromDB(db)
+	
 	// This function is called by the spawn handler (DELETE method), see handle-spawn.go
 	notifyForKill := func(pid int) error {
 		simplismProcess := getSimplismProcessByPiD(db, pid)

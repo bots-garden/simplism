@@ -115,6 +115,10 @@ Flags for listen command:
                                     Use the /spawn endpoint to spawn a new Simplism server
   --http-port-auto         bool     Automatically find an available port (only works in spawn mode)
                                     Default: false
+  --recovery-path          string   Path of the recovery file (only works in spawn mode)
+                                    Default: "recovery.yaml"
+  --recovery-mode          bool     The current Simplism server is in recovery mode
+                                    Default: true
   --store-mode             bool     The current Simplism server exposes a store api to save data in a bbolt database
                                     Use the /store endpoint (see documentation)
                                     Default: false

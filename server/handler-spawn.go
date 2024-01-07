@@ -6,12 +6,19 @@ import (
 	"net"
 	"net/http"
 	httpHelper "simplism/helpers/http"
+	yamlHelper "simplism/helpers/yaml"
 	simplismTypes "simplism/types"
 	"strconv"
 
 	processesHelper "simplism/helpers/processes"
 	stringHelper "simplism/helpers/stringHelper"
 )
+
+// This map will store the spawned processes
+// It will be used to generate a recovery yam file
+var spawnedProcesses = map[string]simplismTypes.WasmArguments{}
+
+var NotifySpawnServiceForRecovery func(formerProcessesArguments map[string]simplismTypes.WasmArguments)
 
 // GetNewHTTPPort returns a unique http port
 func getNewHTTPPort() string {
@@ -24,11 +31,38 @@ func getNewHTTPPort() string {
 	return httpPort
 }
 
+func restartWasmProcess(processArgs simplismTypes.WasmArguments) {
+	go func() {
+		processesHelper.SpawnSimplismProcess(processArgs)
+	}()
+}
+
 // spawnHandler returns an http.HandlerFunc that handles requests to spawn a new instance.
 //
 // It takes wasmArgs simplismTypes.WasmArguments as a parameter.
 // It returns an http.HandlerFunc.
 func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+
+	notifyForRecovery := func(formerProcessesArguments map[string]simplismTypes.WasmArguments) {
+		fmt.Println("⏳ [recovery] restarting the previous processes")
+		//fmt.Println(formerProcessesArguments)
+		// Loop through the map
+		for _, processArgs := range formerProcessesArguments {
+		    fmt.Println("🏁 starting:", processArgs.ServiceName, "...")
+
+			if wasmArgs.HttpPortAuto == true {
+				processArgs.HTTPPort = getNewHTTPPort()
+			}
+
+			spawnedProcesses[processArgs.HTTPPort] = processArgs
+			// save the spawned processes to the recovery file
+			yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+
+			restartWasmProcess(processArgs)
+		}
+
+	}
+	NotifySpawnServiceForRecovery = notifyForRecovery
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
@@ -36,6 +70,9 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 		switch { // /spawn
 		case request.Method == http.MethodPost && authorised == true:
+
+			//TODO: if the service name already exists, change the name by name + http port
+
 			/* Request: Create a new Simplism process:
 
 			curl -X POST \
@@ -111,6 +148,12 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 				// for debugging
 				//fmt.Println("🤓", wasmArgsFromJsonPayload.Information, wasmArgsFromJsonPayload.ServiceName)
+
+				spawnedProcesses[wasmArgsFromJsonPayload.HTTPPort] = wasmArgsFromJsonPayload
+
+				// TODO: handle the error(s) here
+				// save the spawned processes to the recovery file
+				yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
 
 				// TODO: send the status, only if the process is started (if it's possible)
 				go func() {

@@ -3,15 +3,16 @@ package cmds
 import (
 	"fmt"
 	"os"
+	yamlHelper "simplism/helpers/yaml"
 	simplismTypes "simplism/types"
-
-	"gopkg.in/yaml.v3"
 )
 
 // readYamlFile reads a YAML file and returns a map of server.WasmArguments and an error.
 //
 // It takes a string parameter called yamlFilePath, which represents the path to the YAML file.
 // The function returns a map[string]server.WasmArguments, which is a map of server.WasmArguments objects, and an error.
+
+/*
 func readYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, error) {
 
 	yamlFile, err := os.ReadFile(yamlFilePath)
@@ -29,14 +30,14 @@ func readYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, 
 	}
 	return data, nil
 }
-
+*/
 
 // getWasmArgumentsMap returns a map of WasmArguments based on the provided configFilepath.
 //
 // configFilepath: The filepath of the YAML config file.
 // map[string]server.WasmArguments: The map of WasmArguments.
 func getWasmArgumentsMap(configFilepath string) map[string]simplismTypes.WasmArguments {
-	wasmArgumentsMap, err := readYamlFile(configFilepath)
+	wasmArgumentsMap, err := yamlHelper.ReadYamlFile(configFilepath)
 	if err != nil {
 		fmt.Println("😡 (getWasmArgumentsMap) reading the yaml config file:", err)
 		os.Exit(1)

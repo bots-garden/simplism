@@ -23,6 +23,8 @@ type WasmArguments struct {
 	SpawnMode            bool   `yaml:"spawn-mode,omitempty"`
 	HttpPortAuto         bool   `yaml:"http-port-auto,omitempty"` // only for spawn mode
 	AdminSpawnToken      string `yaml:"admin-spawn-token,omitempty"`
+	RecoveryMode         bool   `yaml:"recovery-mode,omitempty"`
+	RecoveryPath         string `yaml:"recovery-path,omitempty"`
 	Information          string `yaml:"information,omitempty"`
 	ServiceName          string `yaml:"service-name,omitempty"`
 	StoreMode            bool   `yaml:"store-mode,omitempty"`
