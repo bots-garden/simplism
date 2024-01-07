@@ -100,6 +100,10 @@ func ApplyDefaultValuesIfMissing(wasmArguments simplismTypes.WasmArguments) simp
 		wasmArguments.LogLevel = "info"
 	}
 
+	if wasmArguments.RecoveryPath == "" {
+		wasmArguments.RecoveryPath = "recovery.yaml"
+	}
+
 	return wasmArguments
 
 }
