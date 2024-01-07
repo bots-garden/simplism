@@ -1,1 +1,1 @@
-k33g/simplism:0.0.9
+k33g/simplism:0.1.1
