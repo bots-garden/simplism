@@ -14,7 +14,7 @@ import (
 	simplismTypes "simplism/types"
 )
 
-var NotifyDiscoveryServiceOfKillingProcess func(pid int) error
+var NotifyDiscoveryServiceOfKillingProcess func(pid int) (simplismTypes.SimplismProcess, error)
 
 var wasmFunctionHandlerList = map[string]int{}
 
@@ -45,7 +45,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	//formerProcesses = getSimplismProcessesListFromDB(db)
 	
 	// This function is called by the spawn handler (DELETE method), see handle-spawn.go
-	notifyForKill := func(pid int) error {
+	notifyForKill := func(pid int) (simplismTypes.SimplismProcess, error) {
 		simplismProcess := getSimplismProcessByPiD(db, pid)
 
 		// test simplismProcess.StopTime
@@ -57,17 +57,19 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			if err != nil {
 				fmt.Println("😡 When updating bucket with the Stop Time", err)
 
+				return simplismTypes.SimplismProcess{}, err
+
 			} else {
 				fmt.Println("🙂 Bucket updated with the Stop Time")
 			}
-			return err
+			
 
 		} else {
 			fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
 			fmt.Println("✋ This process is already killed")
 		}
 
-		return nil
+		return simplismProcess,  nil
 
 	}
 	NotifyDiscoveryServiceOfKillingProcess = notifyForKill
@@ -110,10 +112,6 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 				if wasmFunctionHandlerList[simplismProcess.ServiceName] == 0 {
 					wasmFunctionHandlerList[simplismProcess.ServiceName] = simplismProcess.PID
-
-					//fmt.Println("🔥🔥🔥", simplismProcess.PID, simplismProcess.ServiceName)
-
-					//http.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 
 					router.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 
