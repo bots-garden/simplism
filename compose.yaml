@@ -2,7 +2,10 @@
 services:
   app:
     container_name: ${CONTAINER_NAME}
-    entrypoint: ["code-server", "--auth", "none", "--host", "0.0.0.0", "--port", "${CODER_HTTP_PORT}", "/${WORKDIR}"]
+    # https
+    entrypoint: ["code-server", "--cert", "/${WORKDIR}/certs/${TLS_CERT}", "--cert-key", "/${WORKDIR}/certs/${TLS_CERT_KEY}", "--auth", "none", "--host", "0.0.0.0", "--port", "${CODER_HTTP_PORT}", "/${WORKDIR}"]
+    # http
+    #entrypoint: ["code-server", "--auth", "none", "--host", "0.0.0.0", "--port", "${CODER_HTTP_PORT}", "/${WORKDIR}"]    
     environment:
       - ABOUT="Simplism Environment with Coder"
       - XDG_DATA_HOME=/${WORKDIR}/.config
