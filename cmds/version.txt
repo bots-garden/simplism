@@ -1,1 +1,1 @@
-simplism v0.1.1 🐋 [whale]
+simplism v0.1.0 🐋 [whale]
