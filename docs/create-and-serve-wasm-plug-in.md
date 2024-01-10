@@ -127,6 +127,6 @@ curl http://localhost:8080 \
 docker run \
 -p 8080:8080 \
 -v $(pwd):/app \
---rm k33g/simplism:0.0.7 \
+--rm k33g/simplism:0.1.1 \
 /simplism listen ./app/hello.wasm handle --http-port 8080 --log-level info
 ```
