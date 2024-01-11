@@ -1,4 +1,4 @@
-package server
+package spawn
 
 import (
 	"encoding/json"
@@ -43,7 +43,7 @@ func restartWasmProcess(processArgs simplismTypes.WasmArguments) {
 //
 // It takes wasmArgs simplismTypes.WasmArguments as a parameter.
 // It returns an http.HandlerFunc.
-func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	notifyForRecovery := func(formerProcessesArguments map[string]simplismTypes.WasmArguments) {
 		fmt.Println("⏳ [recovery] restarting the previous processes")

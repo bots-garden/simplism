@@ -1,4 +1,4 @@
-package server
+package store
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	data "simplism/server/data"
 )
 
-func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	db, err := data.InitializeStoreDB(wasmArgs, wasmArgs.StorePath) // default path == ""
 	if err != nil {

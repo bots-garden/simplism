@@ -4,26 +4,32 @@ import (
 	"context"
 	"fmt"
 
-	//"net/http"
 	"os"
 	"os/signal"
+
 	configHelper "simplism/helpers/config"
 	wasmHelper "simplism/helpers/wasm"
 	yamlHelper "simplism/helpers/yaml"
 	simplismTypes "simplism/types"
+
 	"syscall"
 	"time"
 
 	"embed"
 
-	discovery "simplism/server/discovery"
+	"simplism/server/discovery"
+	"simplism/server/processes"
+	"simplism/server/reload"
+	wasmfunction "simplism/server/wasm-function"
+
+	"simplism/server/registry"
 	"simplism/server/router"
+	"simplism/server/spawn"
+	"simplism/server/store"
 )
 
 //go:embed embedded
 var fs embed.FS
-
-var currentSimplismProcess = simplismTypes.SimplismProcess{}
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
@@ -51,15 +57,27 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	}
 
 	// Store information about the current simplism process
-	currentSimplismProcess.PID = os.Getpid()
-	currentSimplismProcess.FilePath = wasmArgs.FilePath
-	currentSimplismProcess.FunctionName = wasmArgs.FunctionName
-	currentSimplismProcess.HTTPPort = wasmArgs.HTTPPort
 
-	currentSimplismProcess.Information = wasmArgs.Information
-	currentSimplismProcess.ServiceName = wasmArgs.ServiceName
+	/*
+	processes.SetCurrentProcessPID(os.Getpid())
+	processes.SetCurrentProcessFilePath(wasmArgs.FilePath)
+	processes.SetCurrentProcessFunctionName(wasmArgs.FunctionName)
+	processes.SetCurrentProcessHTTPPort(wasmArgs.HTTPPort)
+	processes.SetCurrentProcessInformation(wasmArgs.Information)
+	processes.SetCurrentProcessServiceName(wasmArgs.ServiceName)
+	processes.SetCurrentProcessStartTime(time.Now())
+	*/
 
-	currentSimplismProcess.StartTime = time.Now()
+	processes.SetCurrentProcessData(simplismTypes.SimplismProcess{
+		PID: os.Getpid(),
+		FilePath: wasmArgs.FilePath,
+		FunctionName: wasmArgs.FunctionName,
+		HTTPPort: wasmArgs.HTTPPort,
+		Information: wasmArgs.Information,
+		ServiceName: wasmArgs.ServiceName,
+		StartTime: time.Now(),
+	})
+
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
 		fmt.Println("🌍 downloading", wasmArgs.URL, "...")
@@ -84,7 +102,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 	level := wasmHelper.GetLevel(wasmArgs.LogLevel)
 
-	//ctx := context.Background()
 	// Create context that listens for the interrupt signal from the OS.
 	// This context will be used for function calls.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -98,12 +115,10 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		- handling HTTP requests and,
 		- calling the WebAssembly function.
 	*/
-	router.GetRouter().HandleFunc("/", mainHandler(wasmArgs))
-	//http.HandleFunc("/", mainHandler(wasmArgs))
+	router.GetRouter().HandleFunc("/", wasmfunction.Handler(wasmArgs))
 
 	// This handler is responsible for reloading the WebAssembly file,
-	router.GetRouter().HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
-	//http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
+	router.GetRouter().HandleFunc("/reload", reload.Handler(ctx, wasmArgs))
 
 	// This handler is responsible for listening for the other Simplism processes,
 	// The current Simplism process is responsible for handling the list of the other Simplism processes.
@@ -117,7 +132,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		}
 
 		router.GetRouter().HandleFunc("/discovery", discovery.Handler(wasmArgs))
-		//http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 
 	//Every N seconds, send information about the current simplism process to the discovery simplism process.
@@ -125,7 +139,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	if wasmArgs.DiscoveryEndpoint != "" {
 		fmt.Println("👋 this service is discoverable")
 		go func() {
-			goRoutineSimplismProcess(currentSimplismProcess, wasmArgs)
+			goRoutineSimplismProcess(processes.GetCurrentSimplismProcess(), wasmArgs)
 		}()
 	}
 
@@ -134,7 +148,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	if wasmArgs.SpawnMode == true {
 
 		fmt.Println("🚀 this service can spawn other services")
-		router.GetRouter().HandleFunc("/spawn", spawnHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/spawn", spawn.Handler(wasmArgs))
 
 		// TODO: check if a recovery file is existing
 		// Read the recovery file and rename it
@@ -144,12 +158,12 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 			formerProcessesArguments, err := yamlHelper.ReadYamlFile(wasmArgs.RecoveryPath)
 			if err == nil {
-				NotifySpawnServiceForRecovery(formerProcessesArguments)
+				spawn.NotifySpawnServiceForRecovery(formerProcessesArguments)
 				// then delete the recovery file ?
 				// no because the map of the current running processes is empty at start
 				// so the content of the recovery file will be erased anyway
 			} else {
-				fmt.Println("😡", err)
+				fmt.Println("😡 reading the recovery file:", err)
 			}
 		}
 	}
@@ -157,22 +171,19 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// https://github.com/etcd-io/bbolt
 	if wasmArgs.StoreMode == true {
 		fmt.Println("📦 this service can store data")
-		router.GetRouter().HandleFunc("/store", storeHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/store", store.Handler(wasmArgs))
 		//http.HandleFunc("/store", storeHandler(wasmArgs))
 	}
 
-	// this does not really work
+	// this is a 🚧 WIP
 	if wasmArgs.RegistryMode == true {
 		fmt.Println("🐳 small wasm registry activated")
-		router.GetRouter().HandleFunc("/registry/push", registryHandler(wasmArgs))
-		router.GetRouter().HandleFunc("/registry/pull/{wasmfilename}", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/push", registry.Handler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/pull/{wasmfilename}", registry.Handler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/discover", registry.Handler(wasmArgs))
 
 		// TODO: to be implemented in the future 🚧 (soon)
-		router.GetRouter().HandleFunc("/registry/remove/{wasmfilename}", registryHandler(wasmArgs))
-		router.GetRouter().HandleFunc("/registry/discover", registryHandler(wasmArgs))
-		//router.HandleFunc("/registry/discover/{filter}r", registryHandler(wasmArgs))
-
-		//http.HandleFunc("/registry", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/remove/{wasmfilename}", registry.Handler(wasmArgs))
 	}
 
 	// Start the Simplism HTTP server

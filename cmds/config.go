@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"simplism/server"
 	configHelper "simplism/helpers/config"
+	"simplism/server"
+	//"simplism/server"
 )
 
 // startConfigMode is a function that starts the configuration mode.
@@ -24,7 +25,7 @@ func startConfigMode(configFilepath string) {
 		configKey := flag.Args()[2]
 
 		// Start the server with the specified wasm plugin in the config
-		wasmArguments := wasmArgumentsMap[configKey]	
+		wasmArguments := wasmArgumentsMap[configKey]
 
 		wasmArguments = configHelper.ApplyDefaultValuesIfMissing(wasmArguments)
 

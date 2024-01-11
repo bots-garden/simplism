@@ -1,4 +1,4 @@
-package server
+package reload
 
 import (
 	"context"
@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	configHelper "simplism/helpers/config"
 	httpHelper "simplism/helpers/http"
 	wasmHelper "simplism/helpers/wasm"
+	"simplism/server/processes"
 	simplismTypes "simplism/types"
-	configHelper "simplism/helpers/config"
 )
 
 /*
@@ -30,7 +31,7 @@ import (
 //
 // Return type:
 // - http.HandlerFunc
-func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		// wait for:
 		// - POST request
@@ -48,7 +49,7 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 			if err != nil {
 				// send response http code error
 				response.WriteHeader(http.StatusInternalServerError)
-				response.Write([]byte("😡 "+err.Error()))
+				response.Write([]byte("😡 " + err.Error()))
 				//fmt.Fprintln(response, "😡 "+err.Error())
 			} else {
 
@@ -89,8 +90,8 @@ func reloadHandler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) ht
 				response.Write([]byte("🙂 new wasm plug-in reloaded"))
 
 				// Update information about the current simplism process
-				currentSimplismProcess.FilePath = wasmArgs.FilePath
-				currentSimplismProcess.FunctionName = wasmArgs.FunctionName
+				processes.SetCurrentProcessFilePath(wasmArgs.FilePath)
+				processes.SetCurrentProcessFunctionName(wasmArgs.FunctionName)
 
 			}
 

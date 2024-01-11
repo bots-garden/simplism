@@ -1,4 +1,4 @@
-package server
+package registry
 
 import (
 	"encoding/json"
@@ -67,7 +67,7 @@ func convertFileInfoToJSON(files []FileInfo) (string, error) {
 	return string(jsonData), nil
 }
 
-func registryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	return func(response http.ResponseWriter, request *http.Request) {
 

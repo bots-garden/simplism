@@ -1,4 +1,4 @@
-package server
+package wasmfunction
 
 import (
 	"encoding/json"
@@ -37,7 +37,7 @@ import (
 //
 // Return Type:
 // - http.HandlerFunc: The handler function for HTTP requests.
-func mainHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
