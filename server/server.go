@@ -14,17 +14,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-
 	"embed"
+
+	discovery "simplism/server/discovery"
+	"simplism/server/router"
 )
 
 //go:embed embedded
 var fs embed.FS
 
 var currentSimplismProcess = simplismTypes.SimplismProcess{}
-
-var router = chi.NewRouter()
 
 // Listen is a function that listens for incoming HTTP requests and processes them using WebAssembly.
 //
@@ -50,7 +49,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		fmt.Println("😡 You have to use ? for the wasm file path and the function name")
 		os.Exit(1)
 	}
-
 
 	// Store information about the current simplism process
 	currentSimplismProcess.PID = os.Getpid()
@@ -100,11 +98,11 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		- handling HTTP requests and,
 		- calling the WebAssembly function.
 	*/
-	router.HandleFunc("/", mainHandler(wasmArgs))
+	router.GetRouter().HandleFunc("/", mainHandler(wasmArgs))
 	//http.HandleFunc("/", mainHandler(wasmArgs))
 
 	// This handler is responsible for reloading the WebAssembly file,
-	router.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
+	router.GetRouter().HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 	//http.HandleFunc("/reload", reloadHandler(ctx, wasmArgs))
 
 	// This handler is responsible for listening for the other Simplism processes,
@@ -118,7 +116,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 			fmt.Println("😡 Error deleting the db file:", err)
 		}
 
-		router.HandleFunc("/discovery", discoveryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/discovery", discovery.Handler(wasmArgs))
 		//http.HandleFunc("/discovery", discoveryHandler(wasmArgs))
 	}
 
@@ -136,12 +134,12 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	if wasmArgs.SpawnMode == true {
 
 		fmt.Println("🚀 this service can spawn other services")
-		router.HandleFunc("/spawn", spawnHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/spawn", spawnHandler(wasmArgs))
 
 		// TODO: check if a recovery file is existing
 		// Read the recovery file and rename it
 		if wasmArgs.RecoveryMode == true {
-			
+
 			fmt.Println("🛟 recovery mode activated", wasmArgs.RecoveryPath)
 
 			formerProcessesArguments, err := yamlHelper.ReadYamlFile(wasmArgs.RecoveryPath)
@@ -159,19 +157,19 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// https://github.com/etcd-io/bbolt
 	if wasmArgs.StoreMode == true {
 		fmt.Println("📦 this service can store data")
-		router.HandleFunc("/store", storeHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/store", storeHandler(wasmArgs))
 		//http.HandleFunc("/store", storeHandler(wasmArgs))
 	}
 
 	// this does not really work
 	if wasmArgs.RegistryMode == true {
 		fmt.Println("🐳 small wasm registry activated")
-		router.HandleFunc("/registry/push", registryHandler(wasmArgs))
-		router.HandleFunc("/registry/pull/{wasmfilename}", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/push", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/pull/{wasmfilename}", registryHandler(wasmArgs))
 
 		// TODO: to be implemented in the future 🚧 (soon)
-		router.HandleFunc("/registry/remove/{wasmfilename}", registryHandler(wasmArgs))
-		router.HandleFunc("/registry/discover", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/remove/{wasmfilename}", registryHandler(wasmArgs))
+		router.GetRouter().HandleFunc("/registry/discover", registryHandler(wasmArgs))
 		//router.HandleFunc("/registry/discover/{filter}r", registryHandler(wasmArgs))
 
 		//http.HandleFunc("/registry", registryHandler(wasmArgs))

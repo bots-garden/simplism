@@ -7,11 +7,13 @@ import (
 	httpHelper "simplism/helpers/http"
 	jsonHelper "simplism/helpers/json"
 	simplismTypes "simplism/types"
+
+	data "simplism/server/data"
 )
 
 func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
-	db, err := initializeStoreDB(wasmArgs, wasmArgs.StorePath) // default path == ""
+	db, err := data.InitializeStoreDB(wasmArgs, wasmArgs.StorePath) // default path == ""
 	if err != nil {
 		panic(err) // TODO: handle error in a better way
 	} else {
@@ -32,7 +34,7 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				response.WriteHeader(http.StatusInternalServerError)
 			} else {
 
-				err = saveToStore(db, record.Key, record.Value)
+				err = data.SaveToStore(db, record.Key, record.Value)
 				if err != nil {
 					fmt.Println("😡 Error when saving record to DB:", err)
 					response.WriteHeader(http.StatusInternalServerError)
@@ -52,7 +54,7 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			if present {
 
 				key := keyList[0]
-				record := getFromStore(db, key)
+				record := data.GetFromStore(db, key)
 				jsonString, err := json.Marshal(record)
 				if err != nil {
 					fmt.Println("😡 When marshalling", err)
@@ -68,7 +70,7 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				prefixList, present := query["prefix"]
 				if !present {
 					// get all records
-					records := getAllFromStore(db)
+					records := data.GetAllFromStore(db)
 					jsonString, err := json.Marshal(records)
 					if err != nil {
 						fmt.Println("😡 When marshalling", err)
@@ -82,7 +84,7 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				} else {
 					// get records with prefix
 					prefix := prefixList[0]
-					records := getAllWitPrefixFromStore(db, prefix)
+					records := data.GetAllWitPrefixFromStore(db, prefix)
 					jsonString, err := json.Marshal(records)
 	
 					if err != nil {
@@ -117,7 +119,7 @@ func storeHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			} else {
 
 				key := keyList[0]
-				err := deleteFromStore(db, key)
+				err := data.DeleteFromStore(db, key)
 				if err != nil {
 					fmt.Println("😡 When deleting", err)
 					response.WriteHeader(http.StatusInternalServerError)

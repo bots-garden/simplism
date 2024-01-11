@@ -1,4 +1,4 @@
-package server
+package data
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func initializeStoreDB(wasmArgs simplismTypes.WasmArguments, dbPath string) (*bolt.DB, error) {
+func InitializeStoreDB(wasmArgs simplismTypes.WasmArguments, dbPath string) (*bolt.DB, error) {
 	//! we can use dbPath in the future to store the data in a different location
 	//👀 https://github.com/etcd-io/bbolt?tab=readme-ov-file#database-backups
 	//? or find a way to save the data to a S3 bucket (recurrent backup)
@@ -36,7 +36,7 @@ func initializeStoreDB(wasmArgs simplismTypes.WasmArguments, dbPath string) (*bo
 	return db, err
 }
 
-func saveToStore(db *bolt.DB, key, value string) error {
+func SaveToStore(db *bolt.DB, key, value string) error {
 	// Save data
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("simplism-store-bucket"))
@@ -46,7 +46,7 @@ func saveToStore(db *bolt.DB, key, value string) error {
 	return err
 }
 
-func getFromStore(db *bolt.DB, key string) string { // 🤔 should I return an error?
+func GetFromStore(db *bolt.DB, key string) string { // 🤔 should I return an error?
 
 	var strReturnValue string
 
@@ -64,7 +64,7 @@ func getFromStore(db *bolt.DB, key string) string { // 🤔 should I return an e
 	return strReturnValue
 }
 
-func getAllFromStore(db *bolt.DB) map[string]string {
+func GetAllFromStore(db *bolt.DB) map[string]string {
 	records := map[string]string{}
 
 	db.View(func(tx *bolt.Tx) error {
@@ -80,7 +80,7 @@ func getAllFromStore(db *bolt.DB) map[string]string {
 	return records
 }
 
-func getAllWitPrefixFromStore(db *bolt.DB, prefix string) map[string]string {
+func GetAllWitPrefixFromStore(db *bolt.DB, prefix string) map[string]string {
 	records := map[string]string{}
 
 	db.View(func(tx *bolt.Tx) error {
@@ -97,7 +97,7 @@ func getAllWitPrefixFromStore(db *bolt.DB, prefix string) map[string]string {
 	return records
 }
 
-func deleteFromStore(db *bolt.DB, key string) error {
+func DeleteFromStore(db *bolt.DB, key string) error {
 	// Save data
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("simplism-store-bucket"))
