@@ -163,22 +163,16 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				sendTableResponse(response, data, err)
 			}
 
-		case request.Method == http.MethodPut && authorised == true:
-			// TODO update the Information field of the service
-			// if the token is propagated, the service will be able to PUT information
-
-		// to kill a service, see the admin handler
+		//case request.Method == http.MethodPut && authorised == true:
+		// TODO update the Information field of the service
 
 		case authorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
-			//fmt.Println("😡 You're not authorized")
-			//fmt.Fprintln(response, "😡 You're not authorized")
 			response.Write([]byte("😡 You're not authorized"))
 
 		default:
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			response.Write([]byte("😡 Method not allowed"))
-			//fmt.Fprintln(response, "😡 Method not allowed")
 		}
 
 	}

@@ -1,13 +1,11 @@
 package registry
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	httpHelper "simplism/helpers/http"
 	simplismTypes "simplism/types"
 	"strconv"
@@ -15,57 +13,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 )
-
-func setHeaders(response http.ResponseWriter, name, len string) {
-	//Represents binary file
-	response.Header().Set("Content-Type", "application/octet-stream")
-	//Tells client what filename should be used.
-	response.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, name))
-	//The length of the data.
-	response.Header().Set("Content-Length", len)
-	//No cache headers.
-	response.Header().Set("Cache-Control", "private")
-	//No cache headers.
-	response.Header().Set("Pragma", "private")
-	//No cache headers.
-	response.Header().Set("Expires", "Mon, 26 Jul 1997 05:00:00 GMT")
-}
-
-type FileInfo struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
-	//FileType    string     `json:"fileType"`
-}
-
-func fetchFileInfo(directory string) ([]FileInfo, error) {
-	var files []FileInfo
-	if err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() { // Only process files, not directories
-			fileInfo := FileInfo{
-				Name: info.Name(),
-				Path: path,
-				//FileType: info.IsDir() == true ? "directory" : "file",
-			}
-			files = append(files, fileInfo)
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-func convertFileInfoToJSON(files []FileInfo) (string, error) {
-	jsonData, err := json.Marshal(files)
-	if err != nil {
-		return "", err
-	}
-	return string(jsonData), nil
-}
 
 func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
@@ -155,27 +102,16 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			strings.HasPrefix(request.RequestURI, "/registry/discover") &&
 			privateRegistryAuthorised == true:
 
-			files, err := fetchFileInfo(wasmArgs.RegistryPath)
-			//fmt.Println(files)
-			if err != nil {
-				response.WriteHeader(http.StatusInternalServerError)
-				response.Write([]byte("😡 Error reading directory"))
-				return
+			switch {
+			case httpHelper.IsJsonContent(request):
+				jsonData, err := getJSONListOfFiles(wasmArgs.RegistryPath)
+				sendJSonResponse(response, jsonData, err)
+
+			case httpHelper.IsTextContent(request):
+				data, err := getTableListOfFiles(wasmArgs.RegistryPath)
+				sendTableResponse(response, data, err)
 			}
 
-			jsonString, err := convertFileInfoToJSON(files)
-			//fmt.Println(jsonString)
-			if err != nil {
-				//fmt.Println("😡 Error writing wasm file")
-				response.WriteHeader(http.StatusInternalServerError)
-				response.Write([]byte("😡 Error when converting directory list to JSON"))
-				return
-			}
-
-			response.WriteHeader(http.StatusOK)
-			response.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-			response.Write([]byte(jsonString))
 
 		// /registry/remove/{wasmfilename}
 		case request.Method == http.MethodDelete &&
@@ -196,8 +132,6 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			response.WriteHeader(http.StatusOK)
 			//response.Header().Set("Content-Type", "application/json; charset=utf-8")
 			response.Write([]byte("🙂 " + chi.URLParam(request, "wasmfilename") + " removed"))
-
-
 
 		case adminRegistryAuthorised == false || privateRegistryAuthorised == false:
 			response.WriteHeader(http.StatusUnauthorized)

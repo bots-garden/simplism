@@ -51,6 +51,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 
 	for _, process := range processes {
 
+		/*
 		isStopped := func() string {
 			if process.StopTime.IsZero() {
 				return ""
@@ -66,6 +67,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 				return "x"
 			}
 		}
+		*/
 
 		data = append(data, []string{
 			strconv.Itoa(process.PID),
@@ -74,9 +76,11 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 			process.FunctionName,
 			process.FilePath,
 			process.Information,
-			isStarted(),
-			isStopped(),
-			//process.StartTime.Local().String(),
+			//isStarted(),
+			//isStopped(),
+			process.StartTime.Format("2006-01-02 15:04:05"),
+			process.StopTime.Format("2006-01-02 15:04:05"),
+
 			//process.StopTime.Local().String(),
 			//process.RecordTime.Local().String(),
 
