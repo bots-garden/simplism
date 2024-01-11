@@ -172,6 +172,9 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			response.WriteHeader(http.StatusOK)
 			response.Write([]byte("👋 Hello [PUT]"))
 
+		// kill process by name or pid
+		// /spawn?pid=42
+		// /spawn?name=foo
 		case request.Method == http.MethodDelete && authorised == true:
 			/* Request: Kill a Simplism process:
 			curl -X DELETE \
