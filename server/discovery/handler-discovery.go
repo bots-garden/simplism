@@ -2,7 +2,6 @@ package discovery
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -17,6 +16,7 @@ import (
 
 	data "simplism/server/data"
 	"simplism/server/router"
+	//"github.com/go-chi/chi/v5"
 )
 
 var NotifyDiscoveryServiceOfKillingProcess func(pid int) (simplismTypes.SimplismProcess, error)
@@ -151,17 +151,16 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 		case request.Method == http.MethodGet && authorised == true:
 
-			// get the list of the services that are running
-			processes := data.GetSimplismProcessesListFromDB(db)
-			jsonString, err := json.Marshal(processes)
+			switch {
+			case httpHelper.IsJsonContent(request):
 
-			if err != nil {
-				fmt.Println("😡 When marshalling", err)
-				response.WriteHeader(http.StatusInternalServerError)
-			} else {
-				response.WriteHeader(http.StatusOK)
-				response.Header().Set("Content-Type", "application/json; charset=utf-8")
-				response.Write(jsonString)
+				jsonData, err := getJSONProcesses(db)
+				sendJSonResponse(response, jsonData, err)
+
+			case httpHelper.IsTextContent(request):
+
+				data, err := getTableProcesses(db)
+				sendTableResponse(response, data, err)
 			}
 
 		case request.Method == http.MethodPut && authorised == true:

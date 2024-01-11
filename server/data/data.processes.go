@@ -85,10 +85,10 @@ func GetSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess
 	return simplismProcess // if nil, return an empty simplismProcess
 }
 
-func GetSimplismProcessesListFromDB(db *bolt.DB) map[string]simplismTypes.SimplismProcess {
+func GetSimplismProcessesListFromDB(db *bolt.DB) (map[string]simplismTypes.SimplismProcess, error) { // map[string]simplismTypes.SimplismProcess {
 	processes := map[string]simplismTypes.SimplismProcess{}
 
-	db.View(func(tx *bolt.Tx) error {
+	dbErr := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("simplism-bucket"))
 
@@ -102,5 +102,5 @@ func GetSimplismProcessesListFromDB(db *bolt.DB) map[string]simplismTypes.Simpli
 
 		return nil
 	})
-	return processes
+	return processes, dbErr
 }
