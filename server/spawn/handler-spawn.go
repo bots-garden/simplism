@@ -1,4 +1,4 @@
-package server
+package spawn
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 	"net/http"
 	httpHelper "simplism/helpers/http"
 	yamlHelper "simplism/helpers/yaml"
+	"simplism/server/discovery"
+	"simplism/server/router"
 	simplismTypes "simplism/types"
 	"strconv"
 
@@ -41,14 +43,14 @@ func restartWasmProcess(processArgs simplismTypes.WasmArguments) {
 //
 // It takes wasmArgs simplismTypes.WasmArguments as a parameter.
 // It returns an http.HandlerFunc.
-func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	notifyForRecovery := func(formerProcessesArguments map[string]simplismTypes.WasmArguments) {
 		fmt.Println("⏳ [recovery] restarting the previous processes")
 		//fmt.Println(formerProcessesArguments)
 		// Loop through the map
 		for _, processArgs := range formerProcessesArguments {
-		    fmt.Println("🏁 starting:", processArgs.ServiceName, "...")
+			fmt.Println("🏁 starting:", processArgs.ServiceName, "...")
 
 			if wasmArgs.HttpPortAuto == true {
 				processArgs.HTTPPort = getNewHTTPPort()
@@ -201,17 +203,17 @@ func spawnHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 							fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
 						} else {
 
-							foundProcess, errKillNotification := NotifyDiscoveryServiceOfKillingProcess(pid)
+							foundProcess, errKillNotification := discovery.NotifyDiscoveryServiceOfKillingProcess(pid)
 
 							// Update the recovery file (remove the entry for the killed process)
 							delete(spawnedProcesses, foundProcess.HTTPPort)
 							yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
 
 							// Change the handler
-							router.HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+							router.GetRouter().HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 								response.WriteHeader(http.StatusNotFound)
 								response.Write([]byte("(Not found) Simplism processe killed"))
-							}) 
+							})
 
 							fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
 

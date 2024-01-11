@@ -1,4 +1,4 @@
-package server
+package data
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 //
 // It takes a single parameter, wasmArgs, of type simplismTypes.WasmArguments.
 // It returns a *bolt.DB and an error.
-func initializeProcessesDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, error) {
+func InitializeProcessesDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, error) {
 
 	/*
 		go install go.etcd.io/bbolt/cmd/bbolt@latest
@@ -48,7 +48,7 @@ func initializeProcessesDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, erro
 // - simplismProcess: the simplism process to be saved.
 //
 // It returns an error.
-func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.SimplismProcess) error {
+func SaveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.SimplismProcess) error {
 	simplismProcess.RecordTime = time.Now()
 	// convert PID to string
 	pidStr := strconv.Itoa(simplismProcess.PID)
@@ -67,7 +67,7 @@ func saveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 	return err
 }
 
-func getSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess {
+func GetSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess {
 
 	var simplismProcess simplismTypes.SimplismProcess
 
@@ -85,10 +85,10 @@ func getSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess
 	return simplismProcess // if nil, return an empty simplismProcess
 }
 
-func getSimplismProcessesListFromDB(db *bolt.DB) map[string]simplismTypes.SimplismProcess {
+func GetSimplismProcessesListFromDB(db *bolt.DB) (map[string]simplismTypes.SimplismProcess, error) { // map[string]simplismTypes.SimplismProcess {
 	processes := map[string]simplismTypes.SimplismProcess{}
 
-	db.View(func(tx *bolt.Tx) error {
+	dbErr := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("simplism-bucket"))
 
@@ -102,5 +102,5 @@ func getSimplismProcessesListFromDB(db *bolt.DB) map[string]simplismTypes.Simpli
 
 		return nil
 	})
-	return processes
+	return processes, dbErr
 }

@@ -1,8 +1,7 @@
-package server
+package discovery
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -11,7 +10,13 @@ import (
 
 	httpHelper "simplism/helpers/http"
 	jsonHelper "simplism/helpers/json"
+
+	//"simplism/server"
 	simplismTypes "simplism/types"
+
+	data "simplism/server/data"
+	"simplism/server/router"
+	//"github.com/go-chi/chi/v5"
 )
 
 var NotifyDiscoveryServiceOfKillingProcess func(pid int) (simplismTypes.SimplismProcess, error)
@@ -24,7 +29,7 @@ var wasmFunctionHandlerList = map[string]int{}
 // TODO: use this to restart after a crash?
 //var formerProcesses  map[string]simplismTypes.SimplismProcess
 
-// discoveryHandler handles the /discovery endpoint in the API.
+// DiscoveryHandler handles the /discovery endpoint in the API.
 //
 // It takes a WasmArguments object as a parameter and returns an http.HandlerFunc.
 // The WasmArguments object contains information about the HTTP port.
@@ -36,24 +41,24 @@ var wasmFunctionHandlerList = map[string]int{}
 // If the request is not authorized, it returns a 401 Unauthorized response.
 // If the request method is not allowed, it returns a 405 Method Not Allowed response.
 // This function is a work in progress and handles GET, DELETE, and PUT requests.
-func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
+func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	fmt.Println("🔎 discovery mode activated: /discovery  (", wasmArgs.HTTPPort, ")")
 
-	db, _ := initializeProcessesDB(wasmArgs)
+	db, _ := data.InitializeProcessesDB(wasmArgs)
 	// TODO: look at old records and delete old ones
 
 	//formerProcesses = getSimplismProcessesListFromDB(db)
-	
+
 	// This function is called by the spawn handler (DELETE method), see handle-spawn.go
 	notifyForKill := func(pid int) (simplismTypes.SimplismProcess, error) {
-		simplismProcess := getSimplismProcessByPiD(db, pid)
+		simplismProcess := data.GetSimplismProcessByPiD(db, pid)
 
 		// test simplismProcess.StopTime
 		if simplismProcess.StopTime.IsZero() {
 			fmt.Println("⏳ Stop time is not set")
 			simplismProcess.StopTime = time.Now()
 
-			err := saveSimplismProcessToDB(db, simplismProcess)
+			err := data.SaveSimplismProcessToDB(db, simplismProcess)
 			if err != nil {
 				fmt.Println("😡 When updating bucket with the Stop Time", err)
 
@@ -62,14 +67,13 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			} else {
 				fmt.Println("🙂 Bucket updated with the Stop Time")
 			}
-			
 
 		} else {
 			fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
 			fmt.Println("✋ This process is already killed")
 		}
 
-		return simplismProcess,  nil
+		return simplismProcess, nil
 
 	}
 	NotifyDiscoveryServiceOfKillingProcess = notifyForKill
@@ -86,7 +90,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 			// store the process information in the database
 			simplismProcess, _ := jsonHelper.GetSimplismProcesseFromJSONBytes(body)
-			err := saveSimplismProcessToDB(db, simplismProcess)
+			err := data.SaveSimplismProcessToDB(db, simplismProcess)
 
 			//simplismProcess.ServiceName
 
@@ -113,7 +117,7 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				if wasmFunctionHandlerList[simplismProcess.ServiceName] == 0 {
 					wasmFunctionHandlerList[simplismProcess.ServiceName] = simplismProcess.PID
 
-					router.HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+					router.GetRouter().HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 
 						host, _, _ := net.SplitHostPort(request.Host)
 
@@ -147,35 +151,28 @@ func discoveryHandler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 		case request.Method == http.MethodGet && authorised == true:
 
-			// get the list of the services that are running
-			processes := getSimplismProcessesListFromDB(db)
-			jsonString, err := json.Marshal(processes)
+			switch {
+			case httpHelper.IsJsonContent(request):
 
-			if err != nil {
-				fmt.Println("😡 When marshalling", err)
-				response.WriteHeader(http.StatusInternalServerError)
-			} else {
-				response.WriteHeader(http.StatusOK)
-				response.Header().Set("Content-Type", "application/json; charset=utf-8")
-				response.Write(jsonString)
+				jsonData, err := getJSONProcesses(db)
+				sendJSonResponse(response, jsonData, err)
+
+			case httpHelper.IsTextContent(request):
+
+				data, err := getTableProcesses(db)
+				sendTableResponse(response, data, err)
 			}
 
-		case request.Method == http.MethodPut && authorised == true:
-			// TODO update the Information field of the service
-			// if the token is propagated, the service will be able to PUT information
-
-		// to kill a service, see the admin handler
+		//case request.Method == http.MethodPut && authorised == true:
+		// TODO update the Information field of the service
 
 		case authorised == false:
 			response.WriteHeader(http.StatusUnauthorized)
-			//fmt.Println("😡 You're not authorized")
-			//fmt.Fprintln(response, "😡 You're not authorized")
 			response.Write([]byte("😡 You're not authorized"))
 
 		default:
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			response.Write([]byte("😡 Method not allowed"))
-			//fmt.Fprintln(response, "😡 Method not allowed")
 		}
 
 	}

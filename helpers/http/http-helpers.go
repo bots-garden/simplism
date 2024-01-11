@@ -31,3 +31,13 @@ func GetHeaderFromString(headerNameAndValue string) (string, string) {
 	headerValue := strings.Join(splitHeader[1:], "")
 	return headerName, headerValue
 }
+
+func IsJsonContent(request *http.Request) bool {
+	return strings.HasPrefix(request.Header.Get("content-type"), "application/json") ||
+		strings.HasPrefix(request.Header.Get("Content-Type"), "application/json") 
+}
+
+func IsTextContent(request *http.Request) bool {
+	return strings.HasPrefix(request.Header.Get("content-type"), "text/plain") ||
+		strings.HasPrefix(request.Header.Get("Content-Type"), "text/plain") 
+}
