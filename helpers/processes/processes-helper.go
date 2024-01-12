@@ -67,6 +67,7 @@ func SpawnSimplismProcess(wasmArguments simplismTypes.WasmArguments) {
 		os.Exit(1) // exit with an error 🤔
 		// TODO: return something instead of exiting
 	}
+	fmt.Println("🚀", wasmArguments.ServiceName, "spawned [", cmd.Process.Pid, "]")
 }
 
 func KillSimplismProcess(pid int) error {
