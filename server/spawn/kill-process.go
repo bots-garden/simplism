@@ -9,7 +9,6 @@ import (
 	"simplism/server/discovery"
 	"simplism/server/router"
 	simplismTypes "simplism/types"
-
 )
 
 // killProcess kills a process with the given PID.
@@ -25,11 +24,13 @@ func killProcess(pid int) (simplismTypes.SimplismProcess, error) {
 
 		foundProcess, err := discovery.NotifyProcessKilled(pid)
 
-		// Update the recovery file (remove the entry for the killed process)
+		// Update the recovery file (remove the entry for the killed process) from the map
 		delete(spawnedProcesses, foundProcess.HTTPPort)
+
 		yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
 
 		// Change the handler
+
 		router.GetRouter().HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 			response.WriteHeader(http.StatusNotFound)
 			response.Write([]byte("(Not found) Simplism processe killed"))
@@ -44,5 +45,5 @@ func killProcess(pid int) (simplismTypes.SimplismProcess, error) {
 		}
 		return foundProcess, err
 	}
-	
+
 }

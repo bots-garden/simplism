@@ -1,0 +1,53 @@
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-hello-simplism
+spec:
+  selector:
+    app: demo-hello-simplism
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-hello-simplism
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-hello-simplism
+  template:
+    metadata:
+      labels:
+        app: demo-hello-simplism
+    spec:
+      containers:
+        - name: demo-hello-simplism
+          image: k33g/hello-simplism:0.0.0
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-hello-simplism
+spec:
+  rules:
+    - host: demo-hello-simplism.89ff64fe-3673-4ce6-82f7-9bc17793af6d.k8s.civo.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: demo-hello-simplism
+              port: 
+                number: 80
