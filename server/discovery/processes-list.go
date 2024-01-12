@@ -50,28 +50,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
     }
 
 	for _, process := range processes {
-
-		
-		isStopped := func() string {
-			if process.StopTime.IsZero() {
-				return ""
-			} else {
-				return "x"
-			}
-		}
-
-		isStarted := func() string {
-			if process.StartTime.IsZero() {
-				return ""
-			} else {
-				if process.StopTime.IsZero() != true {
-					return ""
-				}
-				return "x"
-			}
-		}
-		
-
+				
 		data = append(data, []string{
 			strconv.Itoa(process.PID),
 			process.ServiceName,
@@ -79,11 +58,8 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 			process.FunctionName,
 			process.FilePath,
 			//process.Information,
-			isStarted(),
-			isStopped(),
-			//process.StartTime.Format("2006-01-02 15:04:05"),
+			process.StartTime.Format("2006-01-02 15:04:05"),
 			//process.StopTime.Format("2006-01-02 15:04:05"),
-
 			//process.StopTime.Local().String(),
 			//process.RecordTime.Local().String(),
 
@@ -101,7 +77,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 // The function returns a pointer to a tablewriter.Table object.
 func getProcessesTableWriter(response http.ResponseWriter, data [][]string) *tablewriter.Table {
 	table := tablewriter.NewWriter(response)
-	table.SetHeader([]string{"pid", "name", "http", "function", "path", "started", "stopped"})
+	table.SetHeader([]string{"pid", "name", "http", "function", "path", "started"})
 	for _, v := range data {
 		table.Append(v)
 	}

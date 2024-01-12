@@ -88,6 +88,16 @@ func GetSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess
 	return simplismProcess // if nil, return an empty simplismProcess
 }
 
+func DeleteSimplismProcessByPiD(db *bolt.DB, pid int) error {
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("simplism-bucket"))
+		err := b.Delete([]byte(strconv.Itoa(pid)))
+		return err
+	})
+	return err
+}
+
 func GetSimplismProcessByName(db *bolt.DB, serviceName string) (simplismTypes.SimplismProcess) {
 
 	var simplismProcess simplismTypes.SimplismProcess

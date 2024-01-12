@@ -7,7 +7,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"time"
 
 	httpHelper "simplism/helpers/http"
 	jsonHelper "simplism/helpers/json"
@@ -58,25 +57,38 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		if simplismProcess.PID == 0 {
 			return simplismTypes.SimplismProcess{}, errors.New("😡 Process not found")
 		} else {
-			// test simplismProcess.StopTime
-			if simplismProcess.StopTime.IsZero() {
-				fmt.Println("⏳ Stop time is not set")
-				simplismProcess.StopTime = time.Now()
+			/*
+				if simplismProcess.StopTime.IsZero() {
+					fmt.Println("⏳ Stop time is not set")
+					simplismProcess.StopTime = time.Now()
 
-				err := data.SaveSimplismProcessToDB(db, simplismProcess)
-				if err != nil {
-					fmt.Println("😡 When updating bucket with the Stop Time", err)
-					return simplismTypes.SimplismProcess{}, err
+					err := data.SaveSimplismProcessToDB(db, simplismProcess)
+					if err != nil {
+						fmt.Println("😡 When updating bucket with the Stop Time", err)
+						return simplismTypes.SimplismProcess{}, err
+
+					} else {
+						fmt.Println("🙂 Bucket updated with the Stop Time")
+					}
 
 				} else {
-					fmt.Println("🙂 Bucket updated with the Stop Time")
+					fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
+					fmt.Println("✋ This process is already killed")
 				}
+			*/
+
+			// delete from the memory map
+			delete(wasmFunctionHandlerList, simplismProcess.ServiceName)
+			// delete from database
+			err := data.DeleteSimplismProcessByPiD(db, pid)
+			if err != nil {
+				fmt.Println("😡 When updating bucket for process deletions", err)
+				return simplismTypes.SimplismProcess{}, err
 
 			} else {
-				fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
-				fmt.Println("✋ This process is already killed")
-			}
 
+				fmt.Println("🙂 Bucket updated: process deleted")
+			}
 			return simplismProcess, nil
 		}
 
@@ -86,7 +98,7 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	notifyGetProcessInformation := func(serviceName string) (simplismTypes.SimplismProcess, error) {
 
 		simplismProcess := data.GetSimplismProcessByName(db, serviceName)
-		
+
 		if simplismProcess.PID == 0 {
 			return simplismTypes.SimplismProcess{}, errors.New("😡 Process not found")
 		}
@@ -100,6 +112,9 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 		switch {
 		// triggered when a simplism process contacts the discovery endpoint
+		// a simplism process has been found
+		// and try to register to the discovery service
+		// see go-routine-simplism-process.go
 		case request.Method == http.MethodPost && authorised == true:
 
 			body := httpHelper.GetBody(request) // process information from simplism POST request
@@ -107,8 +122,6 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			// store the process information in the database
 			simplismProcess, _ := jsonHelper.GetSimplismProcesseFromJSONBytes(body)
 			err := data.SaveSimplismProcessToDB(db, simplismProcess)
-
-			//simplismProcess.ServiceName
 
 			if err != nil {
 				fmt.Println("😡 When updating bucket", err)
@@ -125,12 +138,13 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 					if the process service name is "hello" and listening on port 9090
 					if the process spawaner is listening on port 8080
 
-					when you call http://localhost:8080/function/hello
-					a request will be sent to http://localhost:9090/function/hello
+					when you call http://localhost:8080/service/hello
+					a request will be sent to http://localhost:9090/service/hello
 
 				*/
 
 				if wasmFunctionHandlerList[simplismProcess.ServiceName] == 0 {
+
 					wasmFunctionHandlerList[simplismProcess.ServiceName] = simplismProcess.PID
 
 					router.GetRouter().HandleFunc("/service/"+simplismProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
