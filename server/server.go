@@ -59,25 +59,24 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	// Store information about the current simplism process
 
 	/*
-	processes.SetCurrentProcessPID(os.Getpid())
-	processes.SetCurrentProcessFilePath(wasmArgs.FilePath)
-	processes.SetCurrentProcessFunctionName(wasmArgs.FunctionName)
-	processes.SetCurrentProcessHTTPPort(wasmArgs.HTTPPort)
-	processes.SetCurrentProcessInformation(wasmArgs.Information)
-	processes.SetCurrentProcessServiceName(wasmArgs.ServiceName)
-	processes.SetCurrentProcessStartTime(time.Now())
+		processes.SetCurrentProcessPID(os.Getpid())
+		processes.SetCurrentProcessFilePath(wasmArgs.FilePath)
+		processes.SetCurrentProcessFunctionName(wasmArgs.FunctionName)
+		processes.SetCurrentProcessHTTPPort(wasmArgs.HTTPPort)
+		processes.SetCurrentProcessInformation(wasmArgs.Information)
+		processes.SetCurrentProcessServiceName(wasmArgs.ServiceName)
+		processes.SetCurrentProcessStartTime(time.Now())
 	*/
 
 	processes.SetCurrentProcessData(simplismTypes.SimplismProcess{
-		PID: os.Getpid(),
-		FilePath: wasmArgs.FilePath,
+		PID:          os.Getpid(),
+		FilePath:     wasmArgs.FilePath,
 		FunctionName: wasmArgs.FunctionName,
-		HTTPPort: wasmArgs.HTTPPort,
-		Information: wasmArgs.Information,
-		ServiceName: wasmArgs.ServiceName,
-		StartTime: time.Now(),
+		HTTPPort:     wasmArgs.HTTPPort,
+		Information:  wasmArgs.Information,
+		ServiceName:  wasmArgs.ServiceName,
+		StartTime:    time.Now(),
 	})
-
 
 	if wasmArgs.URL != "" { // we need to download the wasm file
 		fmt.Println("🌍 downloading", wasmArgs.URL, "...")
@@ -152,6 +151,9 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		fmt.Println("🚀 this service can spawn other services")
 		router.GetRouter().HandleFunc("/spawn", spawn.Handler(wasmArgs))
 
+		router.GetRouter().HandleFunc("/spawn/name/{name}", spawn.Handler(wasmArgs))
+		router.GetRouter().HandleFunc("/spawn/pid/{pid}", spawn.Handler(wasmArgs))
+
 		// TODO: check if a recovery file is existing
 		// Read the recovery file and rename it
 		if wasmArgs.RecoveryMode == true {
@@ -160,7 +162,7 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 
 			formerProcessesArguments, err := yamlHelper.ReadYamlFile(wasmArgs.RecoveryPath)
 			if err == nil {
-				spawn.NotifySpawnServiceForRecovery(formerProcessesArguments)
+				spawn.NotifyStartRecovery(formerProcessesArguments)
 				// then delete the recovery file ?
 				// no because the map of the current running processes is empty at start
 				// so the content of the recovery file will be erased anyway
