@@ -1,6 +1,10 @@
 #!/bin/bash
-#curl http://localhost:9000/discovery \
-#-H 'admin-discovery-token:people-are-strange'
 
-curl -X DELETE http://localhost:9000/spawn?simplismid=8807 \
+#curl -X DELETE http://localhost:9000/spawn/pid/87277 \
+#-H 'admin-spawn-token: michael-burnham-rocks'
+
+curl -X DELETE http://localhost:9000/spawn/name/hello \
+-H 'admin-spawn-token: michael-burnham-rocks'
+
+curl -X DELETE http://localhost:9000/spawn/name/hello-people \
 -H 'admin-spawn-token: michael-burnham-rocks'

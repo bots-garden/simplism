@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -19,7 +20,8 @@ import (
 	//"github.com/go-chi/chi/v5"
 )
 
-var NotifyDiscoveryServiceOfKillingProcess func(pid int) (simplismTypes.SimplismProcess, error)
+var NotifyProcessKilled func(pid int) (simplismTypes.SimplismProcess, error)
+var NotifyGetProcesseInformation func(serviceName string) (simplismTypes.SimplismProcess, error)
 
 var wasmFunctionHandlerList = map[string]int{}
 
@@ -50,33 +52,47 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 	//formerProcesses = getSimplismProcessesListFromDB(db)
 
 	// This function is called by the spawn handler (DELETE method), see handle-spawn.go
-	notifyForKill := func(pid int) (simplismTypes.SimplismProcess, error) {
+	notifyProcessKilled := func(pid int) (simplismTypes.SimplismProcess, error) {
 		simplismProcess := data.GetSimplismProcessByPiD(db, pid)
 
-		// test simplismProcess.StopTime
-		if simplismProcess.StopTime.IsZero() {
-			fmt.Println("⏳ Stop time is not set")
-			simplismProcess.StopTime = time.Now()
+		if simplismProcess.PID == 0 {
+			return simplismTypes.SimplismProcess{}, errors.New("😡 Process not found")
+		} else {
+			// test simplismProcess.StopTime
+			if simplismProcess.StopTime.IsZero() {
+				fmt.Println("⏳ Stop time is not set")
+				simplismProcess.StopTime = time.Now()
 
-			err := data.SaveSimplismProcessToDB(db, simplismProcess)
-			if err != nil {
-				fmt.Println("😡 When updating bucket with the Stop Time", err)
+				err := data.SaveSimplismProcessToDB(db, simplismProcess)
+				if err != nil {
+					fmt.Println("😡 When updating bucket with the Stop Time", err)
+					return simplismTypes.SimplismProcess{}, err
 
-				return simplismTypes.SimplismProcess{}, err
+				} else {
+					fmt.Println("🙂 Bucket updated with the Stop Time")
+				}
 
 			} else {
-				fmt.Println("🙂 Bucket updated with the Stop Time")
+				fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
+				fmt.Println("✋ This process is already killed")
 			}
 
-		} else {
-			fmt.Println("⏳ Stop time:", simplismProcess.StopTime)
-			fmt.Println("✋ This process is already killed")
+			return simplismProcess, nil
 		}
 
-		return simplismProcess, nil
-
 	}
-	NotifyDiscoveryServiceOfKillingProcess = notifyForKill
+	NotifyProcessKilled = notifyProcessKilled
+
+	notifyGetProcessInformation := func(serviceName string) (simplismTypes.SimplismProcess, error) {
+
+		simplismProcess := data.GetSimplismProcessByName(db, serviceName)
+		
+		if simplismProcess.PID == 0 {
+			return simplismTypes.SimplismProcess{}, errors.New("😡 Process not found")
+		}
+		return simplismProcess, nil
+	}
+	NotifyGetProcesseInformation = notifyGetProcessInformation
 
 	return func(response http.ResponseWriter, request *http.Request) {
 

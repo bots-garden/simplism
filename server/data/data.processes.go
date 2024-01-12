@@ -52,6 +52,9 @@ func SaveSimplismProcessToDB(db *bolt.DB, simplismProcess simplismTypes.Simplism
 	simplismProcess.RecordTime = time.Now()
 	// convert PID to string
 	pidStr := strconv.Itoa(simplismProcess.PID)
+
+	// TODO: make some investigations: what if key == "key-service_name"
+
 	// convert the process information to JSON
 	jsonProcess, _ := jsonhelper.GetJSONBytesFromSimplismProcess(simplismProcess)
 
@@ -84,6 +87,28 @@ func GetSimplismProcessByPiD(db *bolt.DB, pid int) simplismTypes.SimplismProcess
 	// TODO handle error return value
 	return simplismProcess // if nil, return an empty simplismProcess
 }
+
+func GetSimplismProcessByName(db *bolt.DB, serviceName string) (simplismTypes.SimplismProcess) {
+
+	var simplismProcess simplismTypes.SimplismProcess
+
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("simplism-bucket"))
+
+		c := b.Cursor()
+		for pid, processValue := c.First(); pid != nil; pid, processValue = c.Next() {
+			simplismProcess, _ = jsonhelper.GetSimplismProcesseFromJSONBytes(processValue)
+
+			if simplismProcess.ServiceName == serviceName {
+				return nil
+			}
+		}
+		return nil
+	})
+	// TODO handle error return value
+	return simplismProcess // if nil, return an empty simplismProcess
+}
+
 
 func GetSimplismProcessesListFromDB(db *bolt.DB) (map[string]simplismTypes.SimplismProcess, error) { // map[string]simplismTypes.SimplismProcess {
 	processes := map[string]simplismTypes.SimplismProcess{}

@@ -8,19 +8,21 @@ import (
 	httpHelper "simplism/helpers/http"
 	yamlHelper "simplism/helpers/yaml"
 	"simplism/server/discovery"
-	"simplism/server/router"
 	simplismTypes "simplism/types"
 	"strconv"
+	"strings"
 
 	processesHelper "simplism/helpers/processes"
 	stringHelper "simplism/helpers/stringHelper"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // This map will store the spawned processes
 // It will be used to generate a recovery yam file
 var spawnedProcesses = map[string]simplismTypes.WasmArguments{}
 
-var NotifySpawnServiceForRecovery func(formerProcessesArguments map[string]simplismTypes.WasmArguments)
+var NotifyStartRecovery func(formerProcessesArguments map[string]simplismTypes.WasmArguments)
 
 // GetNewHTTPPort returns a unique http port
 func getNewHTTPPort() string {
@@ -45,7 +47,7 @@ func restartWasmProcess(processArgs simplismTypes.WasmArguments) {
 // It returns an http.HandlerFunc.
 func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
-	notifyForRecovery := func(formerProcessesArguments map[string]simplismTypes.WasmArguments) {
+	notifyStartRecovery := func(formerProcessesArguments map[string]simplismTypes.WasmArguments) {
 		fmt.Println("⏳ [recovery] restarting the previous processes")
 		//fmt.Println(formerProcessesArguments)
 		// Loop through the map
@@ -64,7 +66,7 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		}
 
 	}
-	NotifySpawnServiceForRecovery = notifyForRecovery
+	NotifyStartRecovery = notifyStartRecovery
 
 	return func(response http.ResponseWriter, request *http.Request) {
 
@@ -164,6 +166,7 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 			}
 
+		/*
 		case request.Method == http.MethodGet && authorised == true:
 			response.WriteHeader(http.StatusOK)
 			response.Write([]byte("👋 Hello [GET]"))
@@ -171,67 +174,62 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 		case request.Method == http.MethodPut && authorised == true:
 			response.WriteHeader(http.StatusOK)
 			response.Write([]byte("👋 Hello [PUT]"))
+		*/
 
-		// kill process by name or pid
-		// /spawn?pid=42
-		// /spawn?name=foo
+		
+		//--------------------------------------------------------------
+		// Kill a Simplism process by pid or name: 
+		//--------------------------------------------------------------
 		case request.Method == http.MethodDelete && authorised == true:
-			/* Request: Kill a Simplism process:
-			curl -X DELETE \
-			http://localhost:8080/spawn?simplismid=42 \
-			-H 'admin-spawn-token:michael-burnham-rocks'
 
-			or
+			switch {
+			/*
 			curl -X DELETE \
-			http://localhost:8080/spawn?simplismid=42&simplismid=34&simplismid=78 \
+			http://localhost:8080/spawn/name/hello \
 			-H 'admin-spawn-token:michael-burnham-rocks'
-
 			*/
-			query := request.URL.Query()
+			case strings.HasPrefix(request.RequestURI, "/spawn/name/"):
+				serviceName := chi.URLParam(request, "name")
 
-			simplismIdList, present := query["simplismid"]
-			if !present || len(simplismIdList) == 0 {
-				response.WriteHeader(http.StatusNotFound)
-				response.Write([]byte("simplismid not present"))
-			} else {
-				//pid, err := strconv.Atoi(s)
-				for _, simplismId := range simplismIdList {
-					pid, err := strconv.Atoi(simplismId)
-					if err != nil {
-						// do nothing
-					} else {
-						// kill the process
-						errKill := processesHelper.KillSimplismProcess(pid)
-						if errKill != nil {
-							fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
-						} else {
+				foundProcess, err := discovery.NotifyGetProcesseInformation(serviceName)
 
-							foundProcess, errKillNotification := discovery.NotifyDiscoveryServiceOfKillingProcess(pid)
-
-							// Update the recovery file (remove the entry for the killed process)
-							delete(spawnedProcesses, foundProcess.HTTPPort)
-							yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
-
-							// Change the handler
-							router.GetRouter().HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
-								response.WriteHeader(http.StatusNotFound)
-								response.Write([]byte("(Not found) Simplism processe killed"))
-							})
-
-							fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
-
-							if errKillNotification != nil {
-								fmt.Println("😡 handler-spawn/NotifyDiscoveryServiceOfKillingProcess", errKillNotification)
-							} else {
-								fmt.Println("🙂 Notification for process killed sent for db update")
-							}
-						}
-					}
-					//? Question: kill only one process (? 🤔)
+				if err != nil {
+					response.WriteHeader(http.StatusNotFound)
+					response.Write([]byte("service not found"))
+				}
+				// kill the process
+				_, errKill := killProcess(foundProcess.PID)
+				if errKill != nil {
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write([]byte(err.Error()))
 				}
 
 				response.WriteHeader(http.StatusOK)
-				response.Write([]byte("Simplism processe(s) killed"))
+				response.Write([]byte(foundProcess.ServiceName + "["+strconv.Itoa(foundProcess.PID)+"]"+" killed"))
+
+			/*
+			curl -X DELETE \
+			http://localhost:8080/spawn/pid/42 \
+			-H 'admin-spawn-token:michael-burnham-rocks'
+			*/
+			case strings.HasPrefix(request.RequestURI, "/spawn/pid/"):
+				spid := chi.URLParam(request, "pid")
+				pid, err := strconv.Atoi(spid)
+
+				if err != nil {
+					response.WriteHeader(http.StatusNotFound)
+					response.Write([]byte("pid not present"))
+				} else {
+					// kill the process
+					foundProcess, errKill := killProcess(pid)
+					if errKill != nil {
+						response.WriteHeader(http.StatusInternalServerError)
+						response.Write([]byte(errKill.Error()))
+					}
+					response.WriteHeader(http.StatusOK)
+					response.Write([]byte(foundProcess.ServiceName + "["+strconv.Itoa(foundProcess.PID)+"]"+" killed"))
+				}
+
 			}
 
 		case authorised == false:
