@@ -131,7 +131,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		}
 
 		router.GetRouter().HandleFunc("/discovery", discovery.Handler(wasmArgs))
-		//router.GetRouter().HandleFunc("/discovery/{option}", discovery.Handler(wasmArgs))
 
 	}
 

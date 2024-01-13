@@ -167,31 +167,30 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			}
 
 		/*
-		case request.Method == http.MethodGet && authorised == true:
-			response.WriteHeader(http.StatusOK)
-			response.Write([]byte("👋 Hello [GET]"))
+			case request.Method == http.MethodGet && authorised == true:
+				response.WriteHeader(http.StatusOK)
+				response.Write([]byte("👋 Hello [GET]"))
 
-		case request.Method == http.MethodPut && authorised == true:
-			response.WriteHeader(http.StatusOK)
-			response.Write([]byte("👋 Hello [PUT]"))
+			case request.Method == http.MethodPut && authorised == true:
+				response.WriteHeader(http.StatusOK)
+				response.Write([]byte("👋 Hello [PUT]"))
 		*/
 
-		
 		//--------------------------------------------------------------
-		// Kill a Simplism process by pid or name: 
+		// Kill a Simplism process by pid or name:
 		//--------------------------------------------------------------
 		case request.Method == http.MethodDelete && authorised == true:
 
 			switch {
 			/*
-			curl -X DELETE \
-			http://localhost:8080/spawn/name/hello \
-			-H 'admin-spawn-token:michael-burnham-rocks'
+				curl -X DELETE \
+				http://localhost:8080/spawn/name/hello \
+				-H 'admin-spawn-token:michael-burnham-rocks'
 			*/
 			case strings.HasPrefix(request.RequestURI, "/spawn/name/"):
 				serviceName := chi.URLParam(request, "name")
 
-				foundProcess, err := discovery.NotifyGetProcesseInformation(serviceName)
+				foundProcess, err := discovery.NotifyProcesseInformation(serviceName)
 
 				if err != nil {
 					response.WriteHeader(http.StatusNotFound)
@@ -205,12 +204,12 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 				}
 
 				response.WriteHeader(http.StatusOK)
-				response.Write([]byte(foundProcess.ServiceName + "["+strconv.Itoa(foundProcess.PID)+"]"+" killed"))
+				response.Write([]byte(foundProcess.ServiceName + "[" + strconv.Itoa(foundProcess.PID) + "]" + " killed"))
 
 			/*
-			curl -X DELETE \
-			http://localhost:8080/spawn/pid/42 \
-			-H 'admin-spawn-token:michael-burnham-rocks'
+				curl -X DELETE \
+				http://localhost:8080/spawn/pid/42 \
+				-H 'admin-spawn-token:michael-burnham-rocks'
 			*/
 			case strings.HasPrefix(request.RequestURI, "/spawn/pid/"):
 				spid := chi.URLParam(request, "pid")
@@ -227,7 +226,7 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 						response.Write([]byte(errKill.Error()))
 					}
 					response.WriteHeader(http.StatusOK)
-					response.Write([]byte(foundProcess.ServiceName + "["+strconv.Itoa(foundProcess.PID)+"]"+" killed"))
+					response.Write([]byte(foundProcess.ServiceName + "[" + strconv.Itoa(foundProcess.PID) + "]" + " killed"))
 				}
 
 			}

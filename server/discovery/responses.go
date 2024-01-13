@@ -43,3 +43,9 @@ func sendTableResponse(response http.ResponseWriter, data [][]string ,err error)
         table.Render()
     }
 }
+
+func sendInternalServerErrorResponse(response http.ResponseWriter, err error) {
+	fmt.Println("😡 When updating bucket", err)
+	response.WriteHeader(http.StatusInternalServerError)
+	response.Write([]byte("😡 When updating bucket"))
+}
