@@ -106,8 +106,6 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			} else {
 				// ✋ right now, you cannot spawn a new spaner process
 
-				response.WriteHeader(http.StatusOK)
-				response.Write([]byte("🚀 spawning process...")) // TODO: should be changed
 				// ! Start the new process here
 				wasmArgsFromJsonPayload := simplismTypes.WasmArguments{}
 
@@ -164,6 +162,9 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 					processesHelper.SpawnSimplismProcess(wasmArgsFromJsonPayload)
 				}()
 
+				response.WriteHeader(http.StatusOK)
+				response.Write([]byte("🚀 process spawned: "+wasmArgsFromJsonPayload.ServiceName))
+				// TODO: return json?
 			}
 
 		/*

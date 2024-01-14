@@ -1,0 +1,265 @@
+#!/bin/bash
+set -o allexport; source .simplismconfig.env; set +o allexport
+
+: <<'COMMENT'
+# POC of a Simplism CLI
+
+## Get list of the simplism processes
+
+- ./simplismctl discovery list --table
+- ./simplismctl discovery list --json
+
+## Registry
+
+### Discover wasm files
+
+- ./simplismctl registry discover --table
+- ./simplismctl registry discover --json
+
+### Push a wasm file
+
+- ./simplismctl registry push <local_wasm_file>
+
+### Remove a wasm file
+
+- ./simplismctl registry remove <wasm_file_to_remove>
+
+### Pull a wasm file
+
+- ./simplismctl registry pull <wasm_file_to_download> <wasm_file_output>
+
+## Call a function (service)
+
+`./simplismctl service call <service_name> <data> [--json | --text]`
+
+- ./simplismctl service call hello bob --text
+- ./simplismctl service call hello bob --json
+
+- ./simplismctl service call hello-people '{"firstName":"Bob","lastName":"Morane"}' --json
+
+## Kill a service
+
+- ./simplismctl service kill <service_name>
+- ./simplismctl service kill-pid <service_pid>
+
+## Spawn a service
+
+- ./simplismctl service spawn <service_name> <local_wasm_file>
+- ./simplismctl service spawn <service_name> <local_wasm_file> <wasm_url_to_pull> <waml_url_token>
+
+example:
+- ./simplismctl service spawn hello-bis ./hello-bis.wasm http://localhost:9090/registry/pull/hello.wasm "private-registry-token:people-are-strange"
+
+COMMENT
+
+deploy_with_file() {
+service_name="$1"
+wasm_file="$2"
+curl -X POST \
+${SPAWN_SERVICE_URL} \
+-H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}" \
+-H "content-type: application/json; charset=utf-8" \
+--data-binary @- << EOF
+{
+  "wasm-file":"${wasm_file}", 
+  "wasm-function":"handle", 
+  "discovery-endpoint":"${DISCOVERY_SERVICE_URL}", 
+  "admin-discovery-token":"${ADMIN_DISCOVERY_TOKEN}",
+  "admin-spawn-token":"${ADMIN_SPAWN_TOKEN}",
+  "information": "🚀 ${service_name}",
+  "service-name": "${service_name}"
+}
+EOF
+}
+
+deploy_with_url() {
+service_name="$1"
+wasm_file="$2"
+wasm_url="$3"
+wasm_url_token="$4"
+curl -X POST \
+${SPAWN_SERVICE_URL} \
+-H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}" \
+-H "content-type: application/json; charset=utf-8" \
+--data-binary @- << EOF
+{
+  "wasm-file":"${wasm_file}", 
+  "wasm-function":"handle", 
+  "wasm-url":"${wasm_url}",
+  "wasm-url-auth-header":"${wasm_url_token}",
+  "discovery-endpoint":"${DISCOVERY_SERVICE_URL}", 
+  "admin-discovery-token":"${ADMIN_DISCOVERY_TOKEN}",
+  "admin-spawn-token":"${ADMIN_SPAWN_TOKEN}",
+  "information": "🚀 ${service_name}",
+  "service-name": "${service_name}"
+}
+EOF
+}
+
+
+if [[ "$1" == "version" ]]; then
+  simplism version 
+  exit 0
+fi
+
+# -------------------------------
+# Service Discovery
+# -------------------------------
+if [[ "$1" == "discovery" ]]; then
+  # services list
+  if [[ "$2" == "list" ]]; then
+
+    content_type="$3"
+    header_content_type="text/plain; charset=UTF-8"
+
+    if [[ "$content_type" == "--json" ]]; then
+        header_content_type="application/json; charset=UTF-8"
+    fi
+    
+    if [[ "$content_type" == "--table" ]]; then
+        header_content_type="text/plain; charset=UTF-8"
+    fi
+
+    curl ${DISCOVERY_SERVICE_URL} \
+    -H "content-type:${header_content_type}" \
+    -H "admin-discovery-token:${ADMIN_DISCOVERY_TOKEN}"
+    exit 0
+  fi
+
+fi
+
+# -------------------------------
+#  services
+# -------------------------------
+if [[ "$1" == "service" ]]; then
+
+  # -------------------------------
+  #  Call a function
+  # -------------------------------
+  if [[ "$2" == "call" ]]; then
+    service_name="$3"
+    data="$4"
+    content_type="$5"
+    
+    header_content_type="text/plain; charset=UTF-8"
+
+    if [[ "$content_type" == "--json" ]]; then
+        header_content_type="application/json; charset=UTF-8"
+    fi
+    
+    if [[ "$content_type" == "--text" ]]; then
+        header_content_type="text/plain; charset=UTF-8"
+    fi
+
+    curl ${CALL_SERVICE_URL}/${service_name} \
+    -H "content-type:${header_content_type}" \
+    -d "${data}"
+    exit 0
+    
+  fi
+
+  # -------------------------------
+  #  kill a process
+  # -------------------------------
+  if [[ "$2" == "kill" ]]; then
+      service_name="$3"
+      curl -X DELETE ${SPAWN_SERVICE_URL}/name/${service_name} \
+      -H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}"
+      exit 0
+  fi
+
+  if [[ "$2" == "kill-pid" ]]; then
+      service_pid="$3"
+      curl -X DELETE ${SPAWN_SERVICE_URL}/pid/${service_pid} \
+      -H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}"
+      exit 0
+  fi
+
+  # -------------------------------
+  #  deploy a service
+  # -------------------------------
+  if [[ "$2" == "spawn" ]]; then
+      service_name="$3"
+      wasm_file="$4"
+      wasm_url="$5"
+      wasm_url_token="$6"
+
+    if [[ -z "$wasm_url" ]]; then
+      # empty
+      # echo "deploy: ${service_name} ${wasm_file}"
+      # ./simplismctl service spawn hello /cloud.simplism.dev/tools/../docs/samples/hello/hello.wasm 
+      deploy_with_file ${service_name} ${wasm_file}
+      exit 0
+    else
+      # not empty
+      # ./simplismctl service spawn hello-bis ./hello-bis.wasm http://localhost:9090/registry/pull/hello.wasm "private-registry-token:people-are-strange"
+      # REGISTRY_SERVICE_URL="http://localhost:9090/registry"
+      # PRIVATE_REGISTRY_TOKEN="private-registry-token: people-are-strange"
+      # ./simplismctl service spawn hello-bis ./hello-bis.wasm ${REGISTRY_SERVICE_URL}/pull/hello.wasm ${PRIVATE_REGISTRY_TOKEN}
+
+      deploy_with_url ${service_name} ${wasm_file} ${wasm_url} ${wasm_url_token}
+      exit 0
+    fi
+
+  fi
+  #echo "😡 command unknown"
+  #exit 1
+fi
+
+
+# -------------------------------
+# Service Registry
+# -------------------------------
+if [[ "$1" == "registry" ]]; then
+  # services list
+  if [[ "$2" == "discover" ]]; then
+
+    content_type="$3"
+    header_content_type="text/plain; charset=UTF-8"
+
+    if [[ "$content_type" == "--json" ]]; then
+        header_content_type="application/json; charset=UTF-8"
+    fi
+    
+    if [[ "$content_type" == "--table" ]]; then
+        header_content_type="text/plain; charset=UTF-8"
+    fi
+
+    curl ${REGISTRY_SERVICE_URL}/discover \
+    -H "content-type:${header_content_type}" \
+    -H "private-registry-token:${PRIVATE_REGISTRY_TOKEN}"
+    exit 0
+    
+  fi
+
+  # ./simplismctl registry push ./yo.wasm
+  if [[ "$2" == "push" ]]; then
+    wasm_file="$3"
+    curl ${REGISTRY_SERVICE_URL}/push \
+    -H "admin-registry-token:${ADMIN_REGISTRY_TOKEN}" \
+    -F "file=@${wasm_file}"
+    exit 0
+  fi
+
+  # ./simplismctl registry pull hello.wasm ./hello-pulled.wasm
+  if [[ "$2" == "pull" ]]; then
+    wasm_file="$3"
+    wasm_file_output="$4"
+    curl ${REGISTRY_SERVICE_URL}/pull/${wasm_file} \
+    -o ${wasm_file_output} \
+    -H "private-registry-token: ${PRIVATE_REGISTRY_TOKEN}"
+    exit 0
+
+  fi
+
+  # ./simplismctl registry remove yo.wasm 
+  if [[ "$2" == "remove" ]]; then
+    wasm_file="$3"
+    curl -X DELETE ${REGISTRY_SERVICE_URL}/remove/${wasm_file} \
+    -H "admin-registry-token:${ADMIN_REGISTRY_TOKEN}"
+
+    exit 0
+
+  fi
+
+fi
