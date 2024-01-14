@@ -1,54 +1,83 @@
 #!/bin/bash
 set -o allexport; source .simplismconfig.env; set +o allexport
 
+VERSION="0.1.1"
+
 : <<'COMMENT'
 # POC of a Simplism CLI
 
+## Install SimplismCtl
+
+```bash
+sudo cp simplismctl /usr/bin
+```
+
 ## Get list of the simplism processes
 
-- ./simplismctl discovery list --table
-- ./simplismctl discovery list --json
+```bash
+simplismctl discovery list --table
+simplismctl discovery list --json
+```
 
 ## Registry
 
 ### Discover wasm files
 
-- ./simplismctl registry discover --table
-- ./simplismctl registry discover --json
+```bash
+simplismctl registry discover --table
+simplismctl registry discover --json
+```
 
 ### Push a wasm file
 
-- ./simplismctl registry push <local_wasm_file>
+```bash
+simplismctl registry push <local_wasm_file>
+simplismctl registry push <local_wasm_file> <new_wasm_file_name>
+```
 
 ### Remove a wasm file
 
-- ./simplismctl registry remove <wasm_file_to_remove>
+```bash
+simplismctl registry remove <wasm_file_to_remove>
+```
 
 ### Pull a wasm file
 
-- ./simplismctl registry pull <wasm_file_to_download> <wasm_file_output>
+```bash
+simplismctl registry pull <wasm_file_to_download> <wasm_file_output>
+```
 
 ## Call a function (service)
 
 `./simplismctl service call <service_name> <data> [--json | --text]`
 
-- ./simplismctl service call hello bob --text
-- ./simplismctl service call hello bob --json
+```bash
+simplismctl service call hello bob --text
+simplismctl service call hello bob --json
 
-- ./simplismctl service call hello-people '{"firstName":"Bob","lastName":"Morane"}' --json
+simplismctl service call hello-people '{"firstName":"Bob","lastName":"Morane"}' --json
+```
 
 ## Kill a service
 
-- ./simplismctl service kill <service_name>
-- ./simplismctl service kill-pid <service_pid>
+```bash
+simplismctl service kill <service_name>
+simplismctl service kill-pid <service_pid>
+```
 
 ## Spawn a service
 
-- ./simplismctl service spawn <service_name> <local_wasm_file>
-- ./simplismctl service spawn <service_name> <local_wasm_file> <wasm_url_to_pull> <waml_url_token>
+```bash
+simplismctl service spawn <service_name> <local_wasm_file>
+simplismctl service spawn <service_name> <local_wasm_file> <wasm_url_to_pull> <waml_url_token>
+```
 
 example:
-- ./simplismctl service spawn hello-bis ./hello-bis.wasm http://localhost:9090/registry/pull/hello.wasm "private-registry-token:people-are-strange"
+
+```bash
+simplismctl service spawn hello-one ./hello-one.wasm \
+http://localhost:9090/registry/pull/hello.wasm "private-registry-token:people-are-strange"
+```
 
 COMMENT
 
@@ -98,7 +127,67 @@ EOF
 
 
 if [[ "$1" == "version" ]]; then
-  simplism version 
+  echo "simplismctl v${VERSION}"
+  exit 0
+fi
+
+read -r -d '' HELP << EOM
+------------------
+Discovery service:
+------------------
+
+* Get list of the simplism processes (services)
+
+- simplismctl discovery list --table
+- simplismctl discovery list --json
+
+------------------
+Registry service:
+------------------
+
+* Get the list of the wasm files
+
+- simplismctl registry discover --table
+- simplismctl registry discover --json
+
+* Push a wasm file
+
+- simplismctl registry push <local_wasm_file>
+- simplismctl registry push <local_wasm_file> <new_wasm_file_name>
+
+* Remove a wasm file
+
+- simplismctl registry remove <wasm_file_to_remove>
+
+* Pull a wasm file
+
+- simplismctl registry pull <wasm_file_to_download> <wasm_file_output>
+
+------------------
+Spawn mode:
+------------------
+
+* Call a function (service)
+
+- simplismctl service call <service_name> <data> [--json | --text]
+- simplismctl service call hello bob --text
+- simplismctl service call hello bob --json
+- simplismctl service call hello-people '{"firstName":"Bob","lastName":"Morane"}' --json
+
+* Kill a service
+
+- simplismctl service kill <service_name>
+- simplismctl service kill-pid <service_pid>
+
+* Spawn a service
+
+- simplismctl service spawn <service_name> <local_wasm_file>
+- simplismctl service spawn <service_name> <local_wasm_file> <wasm_url_to_pull> <waml_url_token>
+
+EOM
+
+if [[ "$1" == "help" ]]; then
+  echo "${HELP}"
   exit 0
 fi
 
@@ -211,7 +300,10 @@ fi
 # Service Registry
 # -------------------------------
 if [[ "$1" == "registry" ]]; then
-  # services list
+  
+  # -------------------------------
+  # Get the list of the wasm files
+  # -------------------------------
   if [[ "$2" == "discover" ]]; then
 
     content_type="$3"
@@ -232,15 +324,32 @@ if [[ "$1" == "registry" ]]; then
     
   fi
 
+  # -------------------------------
+  # Upload a wasm file
+  # -------------------------------
   # ./simplismctl registry push ./yo.wasm
+  # ./simplismctl registry push ./yo.wasm yo.0.0.0.wasm
   if [[ "$2" == "push" ]]; then
     wasm_file="$3"
-    curl ${REGISTRY_SERVICE_URL}/push \
-    -H "admin-registry-token:${ADMIN_REGISTRY_TOKEN}" \
-    -F "file=@${wasm_file}"
-    exit 0
+    new_name="$4"
+
+    if [[ -z "$new_name" ]]; then
+      curl ${REGISTRY_SERVICE_URL}/push \
+      -H "admin-registry-token:${ADMIN_REGISTRY_TOKEN}" \
+      -F "file=@${wasm_file}"
+      exit 0
+    else 
+      curl ${REGISTRY_SERVICE_URL}/push \
+      -H "admin-registry-token:${ADMIN_REGISTRY_TOKEN}" \
+      -F "file=@${wasm_file};filename=${new_name}"
+      exit 0
+    fi
+
   fi
 
+  # -------------------------------
+  # Download a wasm file
+  # -------------------------------
   # ./simplismctl registry pull hello.wasm ./hello-pulled.wasm
   if [[ "$2" == "pull" ]]; then
     wasm_file="$3"
@@ -252,6 +361,9 @@ if [[ "$1" == "registry" ]]; then
 
   fi
 
+  # -------------------------------
+  # Remove a wasm file
+  # -------------------------------
   # ./simplismctl registry remove yo.wasm 
   if [[ "$2" == "remove" ]]; then
     wasm_file="$3"

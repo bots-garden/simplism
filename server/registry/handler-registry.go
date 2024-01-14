@@ -47,7 +47,6 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			if err != nil {
 				response.WriteHeader(http.StatusInternalServerError)
 				response.Write([]byte("😡 Error creating wasm file"))
-				//http.Error(response, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -55,20 +54,17 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 			if _, err := io.Copy(dst, file); err != nil {
 				response.WriteHeader(http.StatusInternalServerError)
 				response.Write([]byte("😡 Error copying wasm file"))
-				//http.Error(response, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			response.WriteHeader(http.StatusOK)
-			response.Write([]byte("🎉 Successfully Uploaded File\n"))
+			response.Write([]byte("🎉 "+ handler.Filename +" successfully uploaded!\n"))
 
 		// download: /registry/pull/{wasmfilename}
 		case request.Method == http.MethodGet &&
 			strings.HasPrefix(request.RequestURI, "/registry/pull/") &&
 			strings.HasSuffix(request.RequestURI, ".wasm") &&
 			privateRegistryAuthorised == true:
-
-			//fmt.Println("👋 downloading...", request.RequestURI, request.URL)
 
 			filename := chi.URLParam(request, "wasmfilename")
 

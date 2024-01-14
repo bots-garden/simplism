@@ -124,6 +124,15 @@ curl http://localhost:9090/registry/push \
 -F 'file=@hello.wasm'
 ```
 
+### Upload a wasm file to the registry with a new name
+> useful if you want to "tag" the wasm file
+
+```bash
+curl http://localhost:9090/registry/push \
+-H 'admin-registry-token: morrison-hotel' \
+-F 'file=@hello-people.wasm;filename=hello-people.0.0.0.wasm'
+```
+
 ### Download a wasm file from the registry
 
 ```bash
