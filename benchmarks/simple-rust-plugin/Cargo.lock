@@ -21,6 +21,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35636a1494ede3b646cc98f74f8e62c773a38a659ebc777a2cf26b9b74171df9"
 
 [[package]]
+name = "bytemuck"
+version = "1.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "374d28ec25809ee0e23827c2ab573d729e293f281dfe393500e7ad618baa61c6"
+
+[[package]]
 name = "byteorder"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -40,12 +46,13 @@ checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
 name = "extism-convert"
-version = "0.2.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74ab6cd70509e6d74b7c3587f823a2061cfb65b111b4173bd882858eaa87e4a3"
+checksum = "389563033064477066d6beb9c321cf066f9080878421ae969d354b3b461cc26a"
 dependencies = [
  "anyhow",
  "base64",
+ "bytemuck",
  "prost",
  "rmp-serde",
  "serde",
@@ -54,19 +61,20 @@ dependencies = [
 
 [[package]]
 name = "extism-manifest"
-version = "0.5.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22b0e600ec289630715ffdc11aca36a26297c3ab7908f14d5bbf3770d102bce7"
+checksum = "713caa4f88b485d8e03a969f5ccd41cf173194fc1a7f5617688cc51efdc724f6"
 dependencies = [
  "base64",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
 name = "extism-pdk"
-version = "1.0.0-rc1"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ef5a26316dcd0a963eb9904675417c39a1fcf25d4630385a5a1099f7f123458"
+checksum = "38ac12d16e778ccf351f39a45efb65c0bbdb45bc9928c557507e808efafa51cf"
 dependencies = [
  "anyhow",
  "base64",
@@ -79,9 +87,9 @@ dependencies = [
 
 [[package]]
 name = "extism-pdk-derive"
-version = "1.0.0-rc1"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5640b8d57f1900efc413c8c608c1ec86dbb623df73de0b151e7debc5c9aaccfd"
+checksum = "61a79239414de9041626020530854cef77027a28d92bf542c7854e271101e9aa"
 dependencies = [
  "proc-macro2",
  "quote",

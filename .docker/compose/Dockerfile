@@ -203,6 +203,11 @@ WORKDIR /home/${USER_NAME}
 # Set the user as the owner of the working directory
 RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
 
+RUN <<EOF
+groupadd docker
+usermod -aG docker ${USER_NAME}
+EOF
+
 # Switch to the regular user
 USER ${USER_NAME}
 

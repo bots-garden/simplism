@@ -9,7 +9,7 @@ docker buildx build \
 --build-arg="GO_VERSION=1.21.3" \
 --build-arg="TINYGO_ARCH=amd64" \
 --build-arg="TINYGO_VERSION=0.30.0" \
---build-arg="EXTISM_VERSION=0.3.3" \
+--build-arg="EXTISM_VERSION=1.0.2" \
 --build-arg="EXTISM_ARCH=amd64" \
 --build-arg="EXTISM_JS_VERSION=1.0.0-rc3" \
 --build-arg="EXTISM_JS_ARCH=x86_64" \
