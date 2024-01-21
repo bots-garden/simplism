@@ -7,7 +7,7 @@
 ```bash
 KUBE_NAMESPACE="simplism-faas"
 IMAGE_NAME="k33g/simplism"
-IMAGE_TAG="0.1.1"
+IMAGE_TAG="0.1.2"
 DNS="1f833ec8-f509-46f5-98ad-9e57465fde32.k8s.civo.com"
 ```
 

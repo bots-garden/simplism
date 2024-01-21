@@ -13,7 +13,7 @@ Todo:
   - GITPOD_IMAGE_TAG (only if needed)
 - update of README.md
 - update of generators/docker.image.txt
-- update of generators/version.txt
+- update of generators/simplism.version.txt
 - update of k8S/.env
 - update of k8S/README.md
 COMMENT
