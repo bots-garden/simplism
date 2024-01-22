@@ -19,7 +19,7 @@ func main() {
 
 	if len(flag.Args()) < 1 {
 		fmt.Println("😡 invalid command")
-		os.Exit(0)
+		os.Exit(1)
 	}
 
 	command := flag.Args()[0]
