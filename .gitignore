@@ -24,3 +24,4 @@ linux
 k3s.yaml
 
 .config
+debug

@@ -9,7 +9,7 @@ function handle() {
 	let response = {
 		header: {
 			"Content-Type":["text/plain; charset=utf-8"],
-			"simplism-version": ["0.1.1"]
+			"simplism-version": ["0.1.3"]
 		},
 		body: text,
 		code: 200

@@ -22,6 +22,16 @@ import (
 // It will be used to generate a recovery yam file
 var spawnedProcesses = map[string]simplismTypes.WasmArguments{}
 
+// Default
+var recoveryPath string = "recovery.yaml"
+
+func GetRecoveryPath() string {
+	return recoveryPath
+}
+func SetRecoveryPath(path string) {
+	recoveryPath = path
+}
+
 var NotifyStartRecovery func(formerProcessesArguments map[string]simplismTypes.WasmArguments)
 
 // GetNewHTTPPort returns a unique http port
@@ -60,7 +70,12 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 			spawnedProcesses[processArgs.HTTPPort] = processArgs
 			// save the spawned processes to the recovery file
-			yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+
+			//fmt.Println("🟠📝 I will write to the yaml file")
+
+			//yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+			yamlHelper.WriteYamlFile(GetRecoveryPath(), spawnedProcesses)
+
 
 			restartWasmProcess(processArgs)
 		}
@@ -155,7 +170,8 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 				// TODO: handle the error(s) here
 				// save the spawned processes to the recovery file
-				yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+				//yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+				yamlHelper.WriteYamlFile(GetRecoveryPath(), spawnedProcesses)
 
 				// TODO: send the status, only if the process is started (if it's possible)
 				go func() {

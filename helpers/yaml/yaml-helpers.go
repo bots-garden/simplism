@@ -14,6 +14,8 @@ import (
 // The function returns a map[string]server.WasmArguments, which is a map of server.WasmArguments objects, and an error.
 func ReadYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, error) {
 
+	//fmt.Println("🔴📝 ReadYamlFile -> yamlFilePath:", yamlFilePath)
+
 	yamlFile, err := os.ReadFile(yamlFilePath)
 
 	if err != nil {
@@ -30,8 +32,12 @@ func ReadYamlFile(yamlFilePath string) (map[string]simplismTypes.WasmArguments, 
 	return data, nil
 }
 
-func WriteYamlFile(yamlFilepath string, wasmArgumentsMap map[string]simplismTypes.WasmArguments) {
-	yamlFile, err := os.Create(yamlFilepath)
+func WriteYamlFile(yamlFilePath string, wasmArgumentsMap map[string]simplismTypes.WasmArguments) {
+
+	fmt.Println("🔴📝 WriteYamlFile -> yamlFilePath:", yamlFilePath)
+
+
+	yamlFile, err := os.Create(yamlFilePath)
 	if err != nil {
 		fmt.Println("😡 (writeYamlFile) creating the yaml config file:", err)
 		return
