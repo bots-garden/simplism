@@ -9,7 +9,7 @@ import (
 func handle() {
 
 	mem := pdk.AllocateBytes([]byte(
-		`{"body":"🖖 Live long and prosper 🤗","header":{"Content-Type":["text/plain; charset=utf-8"]},"code":200}`,
+		`{"body":"🖖 Live long and prosper 🤗 | simplism v0.1.3","header":{"Content-Type":["text/plain; charset=utf-8"]},"code":200}`,
 	))
 	pdk.OutputMemory(mem)
 
