@@ -25,3 +25,4 @@ k3s.yaml
 
 .config
 debug
+ha-setup
