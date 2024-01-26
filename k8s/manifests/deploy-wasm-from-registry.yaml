@@ -3,10 +3,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${APPLICATION_NAME}
+  name: ${SERVICE_NAME}
+  labels:
+    component: simplism-function
 spec:
   selector:
-    app: ${APPLICATION_NAME}
+    app: ${SERVICE_NAME}
   ports:
     - port: 80
       targetPort: 8080
@@ -15,19 +17,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${APPLICATION_NAME}
+  name: ${SERVICE_NAME}
+  labels:
+    component: simplism-function
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${APPLICATION_NAME}
+      app: ${SERVICE_NAME}
   template:
     metadata:
       labels:
-        app: ${APPLICATION_NAME}
+        app: ${SERVICE_NAME}
     spec:
       containers:
-      - name: ${APPLICATION_NAME}
+      - name: ${SERVICE_NAME}
         image: ${IMAGE_NAME}:${IMAGE_TAG}
         command: ["/simplism"]
         args: ["listen", "${WASM_FILE}", "${FUNCTION_NAME}", "--wasm-url", "${WASM_URL}"]
@@ -36,22 +40,24 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: WASM_URL_AUTH_HEADER
-          value: "${WASM_URL_AUTH_HEADER}"
+          value: "private-registry-token=${PRIVATE_REGISTRY_TOKEN}"        
 ---
 # Ingress
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ${APPLICATION_NAME}
+  name: ${SERVICE_NAME}
+  labels:
+    component: simplism-function
 spec:
   rules:
-    - host: ${APPLICATION_NAME}.${DNS} # 🤚
+    - host: ${KUBE_NAMESPACE}.${SERVICE_NAME}.${DNS}
       http:
         paths:
         - path: /
           pathType: Prefix
           backend:
             service: 
-              name: ${APPLICATION_NAME}
+              name: ${SERVICE_NAME}
               port: 
                 number: 80

@@ -17,6 +17,9 @@ Todo:
 - update of generators/simplism.version.txt
 - update of k8S/.env
 - update of k8S/README.md
+- update the kubernetes manifest (docker image)
+- update tag in 02-wasm-registry-with-two-pods.md
+- update tag in 01-wasm-function-in-a-pod.md
 COMMENT
 
 cd ./scratch
@@ -39,5 +42,10 @@ git push origin ${TAG}
 
 #goreleaser release --snapshot --clean
 goreleaser release --clean
+
+gh release upload ${TAG} ./k8s/manifests/deploy-wasm-from-remote.yaml
+gh release upload ${TAG} ./k8s/manifests/deploy-wasm-registry.yaml
+gh release upload ${TAG} ./k8s/manifests/deploy-wasm-from-registry.yaml
+gh release upload ${TAG} ./k8s/manifests/wasm-registry-volume.yaml
 
 echo "👋 Create the 🐳 image manually with dockerize-simplism.sh"

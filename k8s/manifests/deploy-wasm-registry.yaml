@@ -3,10 +3,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${APPLICATION_NAME}
+  name: wasm-registry
+  labels:
+    component: simplism-registry
 spec:
   selector:
-    app: ${APPLICATION_NAME}
+    app: wasm-registry
   ports:
     - port: 80
       targetPort: 8080
@@ -15,34 +17,37 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${APPLICATION_NAME}
+  name: wasm-registry
+  labels:
+    component: simplism-registry
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${APPLICATION_NAME}
+      app: wasm-registry
   template:
     metadata:
       labels:
-        app: ${APPLICATION_NAME}
+        app: wasm-registry
     spec:
       volumes:
         - name: wasm-registry-storage
           persistentVolumeClaim:
             claimName: task-pv-wasm-registry-claim
       containers:
-      - name: ${APPLICATION_NAME}
+      - name: wasm-registry
         image: ${IMAGE_NAME}:${IMAGE_TAG}
         command: ["/simplism"]
-        args: ["listen", "?", "handle", "--registry-mode", "true", "--registry-path", "wasm-registry-files"]
+        args: ["listen", "?", "?", "--registry-mode", "true", "--registry-path", "wasm-registry-files"]
         ports:
           - containerPort: 8080
         imagePullPolicy: IfNotPresent
+        #imagePullPolicy: Always        
         env:
         - name: PRIVATE_REGISTRY_TOKEN
-          value: "${PRIVATE_REGISTRY_TOKEN}"
+          value: ${PRIVATE_REGISTRY_TOKEN}
         - name: ADMIN_REGISTRY_TOKEN
-          value: "${ADMIN_REGISTRY_TOKEN}"
+          value: ${ADMIN_REGISTRY_TOKEN}
         volumeMounts:
           - mountPath: /wasm-registry-files
             name: wasm-registry-storage
@@ -51,16 +56,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ${APPLICATION_NAME}
+  name: wasm-registry
+  labels:
+    component: simplism-registry
 spec:
   rules:
-    - host: ${APPLICATION_NAME}.${DNS} # 🤚
+    - host: ${KUBE_NAMESPACE}.registry.${DNS}
       http:
         paths:
         - path: /
           pathType: Prefix
           backend:
             service: 
-              name: ${APPLICATION_NAME}
+              name: wasm-registry
               port: 
                 number: 80
