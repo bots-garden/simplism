@@ -215,9 +215,8 @@ curl http://${KUBE_NAMESPACE}.${SERVICE_NAME}.${DNS} -d '✋ Hey people 🤗'
 
 Get the list of the deployed Wasm functions:
 ```bash
-kubectl get service -l component=simplism-function --namespace simplism-faas
 kubectl get ingress -l component=simplism-function --namespace simplism-faas
+kubectl get service -l component=simplism-function --namespace simplism-faas
 kubectl get deployment -l component=simplism-function --namespace simplism-faas
-
 ```
 

@@ -107,7 +107,6 @@ First we need these manifest files:
 ```bash
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/wasm-files-volume.yaml
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/deploy-wasm-from-volume.yaml
-
 ```
 
 Then, to create the volume:
@@ -171,4 +170,13 @@ And now you can call the function:
 curl http://${KUBE_NAMESPACE}.${SERVICE_NAME}.${DNS} -d 'Bob Morane'
 # you should get: 
 🤗 Hello Bob Morane
+```
+
+Get the list of the deployed Wasm functions:
+```bash
+set -o allexport; source .env; set +o allexport
+
+kubectl get ingress -l component=simplism-function --namespace simplism-faas
+kubectl get service -l component=simplism-function --namespace simplism-faas
+kubectl get deployment -l component=simplism-function --namespace simplism-faas
 ```
