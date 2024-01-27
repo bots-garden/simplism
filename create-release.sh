@@ -44,8 +44,11 @@ git push origin ${TAG}
 goreleaser release --clean
 
 gh release upload ${TAG} ./k8s/manifests/deploy-wasm-from-remote.yaml
+gh release upload ${TAG} ./k8s/manifests/deploy-wasm-from-volume.yaml
 gh release upload ${TAG} ./k8s/manifests/deploy-wasm-registry.yaml
 gh release upload ${TAG} ./k8s/manifests/deploy-wasm-from-registry.yaml
 gh release upload ${TAG} ./k8s/manifests/wasm-registry-volume.yaml
+gh release upload ${TAG} ./k8s/manifests/wasm-files-volume.yaml
+
 
 echo "👋 Create the 🐳 image manually with dockerize-simplism.sh"

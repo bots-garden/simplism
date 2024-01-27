@@ -9,7 +9,7 @@ metadata:
 spec:
   storageClassName: manual
   capacity:
-    storage: 10Mi
+    storage: ${REGISTRY_SIZE}
   accessModes:
     - ReadWriteOnce
   hostPath:
