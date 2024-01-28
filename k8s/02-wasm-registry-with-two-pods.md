@@ -1,4 +1,4 @@
-# Deploy a Wasm Simplism Registry on Kubernetes
+## Deploy a Simplism Wasm Registry on Kubernetes
 
 > Disclaimer: the registry mode of Simplism is a worl in progress (at the beginning of the project, it was a facility to do some tests) and is not ready entirely for production use yet. (== it's not battle tested)
 
@@ -17,7 +17,7 @@ wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/wasm-regis
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/deploy-wasm-registry.yaml
 ```
 
-## Create a space to store the Wasm files of the Registry
+### Create a space to store the Wasm files of the Registry
 
 ```bash
 set -o allexport; source .env; set +o allexport
@@ -38,7 +38,7 @@ persistentvolumeclaim/task-pv-wasm-registry-claim configured
 pod/wasm-registry-store configured
 ```
 
-## Deploy the Wasm Registry
+### Deploy the Wasm Registry
 
 ```bash
 set -o allexport; source .env; set +o allexport
@@ -73,7 +73,7 @@ curl http://${KUBE_NAMESPACE}.registry.${DNS}
 # yes I'm a Trekkie
 ```
 
-## Publish some Wasm plug-ins to the Registry
+### Publish some Wasm plug-ins to the Registry
 
 ```bash
 curl http://${KUBE_NAMESPACE}.registry.${DNS}/registry/push \
@@ -116,7 +116,7 @@ curl http://${KUBE_NAMESPACE}.registry.${DNS}/registry/pull/small-cow.wasm -o sm
 
 So, let's deploy the Wasm functions using the registry.
 
-## Deploy a Wasm function from the registry
+### Deploy a Wasm function from the registry
 
 Then, we need this manifest file:
 

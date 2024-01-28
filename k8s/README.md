@@ -20,16 +20,17 @@ You need some tools:
 > If you don't want to read the documentation
 I wrote a blog post series: [Simplism: the cloud-native runtime for Extism Wasm plug-ins](https://k33g.hashnode.dev/series/simplism)
 
+
 ## Connect to the cluster
 
-Once you get a Kubernete cluster, define the value of `KUBECONFIG` and you can connect to it with the following command:
+Once you get a Kubernetes cluster, define the value of `KUBECONFIG` and you can connect to it with the following command:
 
 ```bash
 export KUBECONFIG=$PWD/config/k3s.yaml
 kubectl get pods --all-namespaces
 ```
 
-You should get someting like this:
+You should get something like this:
 
 ```bash
 

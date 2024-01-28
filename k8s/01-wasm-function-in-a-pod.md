@@ -1,4 +1,4 @@
-# Deploy a Wasm Simplism function in a pod
+## Deploy a Wasm Simplism function in a pod
 > wasm function == simplism plug-in
 
 First we need a manifest file:
@@ -7,7 +7,7 @@ First we need a manifest file:
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/deploy-wasm-from-remote.yaml
 ```
 
-## Deploy functions from remote files
+### Deploy functions from remote files
 
 Simplism can download and execute Wasm plug-ins from remote URLs.
 
@@ -16,7 +16,7 @@ There are some Simplism plug-ins available here for demonstration purposes:
 - https://github.com/simplism-registry/small-ant/releases/tag/v0.0.0
 
 
-### Deploy a first function
+#### Deploy a first function
 
 ```bash
 set -o allexport; source .env; set +o allexport
@@ -59,7 +59,7 @@ curl http://${KUBE_NAMESPACE}.${SERVICE_NAME}.${DNS} -d '👋 Hello World 🌍'
 👋 Hello World 🌍
 ```
 
-### Let's try another function
+#### Let's try another function
 
 ```bash
 set -o allexport; source .env; set +o allexport
@@ -93,7 +93,7 @@ curl http://${KUBE_NAMESPACE}.${SERVICE_NAME}.${DNS} -d '✋ Hey people 🤗'
 ✋ Hey people 🤗
 ```
 
-## Deploy functions from local files
+### Deploy functions from local files
 
 In this case, we need to create a kubernetes volume to store the Wasm files. Then we will copy the wasm files on this volume, and then we will deploy the Wasm function from the volume.
 
@@ -108,6 +108,13 @@ First we need these manifest files:
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/wasm-files-volume.yaml
 wget https://github.com/bots-garden/simplism/releases/download/v0.1.3/deploy-wasm-from-volume.yaml
 ```
+
+We need some wasm files, let's download them from github:
+```bash
+wget https://raw.githubusercontent.com/bots-garden/simplism/main/k8s/wasm-files/hello-world.wasm -O ./wasm-files/hello-world.wasm
+wget https://raw.githubusercontent.com/bots-garden/simplism/main/k8s/wasm-files/small-cow.wasm -O ./wasm-files/small-cow.wasm
+wget https://raw.githubusercontent.com/bots-garden/simplism/main/k8s/wasm-files/small_ant.wasm -O ./wasm-files/small_ant.wasm
+``````
 
 Then, to create the volume:
 
