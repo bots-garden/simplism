@@ -33,7 +33,7 @@ func killProcess(pid int) (simplismTypes.SimplismProcess, error) {
 
 		router.GetRouter().HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
 			response.WriteHeader(http.StatusNotFound)
-			response.Write([]byte("(Not found) Simplism processe killed"))
+			response.Write([]byte("(Not found) Simplism process killed"))
 		})
 
 		fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
