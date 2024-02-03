@@ -18,7 +18,7 @@ import (
 func killProcess(pid int) (simplismTypes.SimplismProcess, error) {
 	errKill := processesHelper.KillSimplismProcess(pid)
 	if errKill != nil {
-		fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
+		fmt.Println("😡 when killing the process:", errKill)
 		return simplismTypes.SimplismProcess{}, errKill
 	} else {
 
@@ -39,7 +39,7 @@ func killProcess(pid int) (simplismTypes.SimplismProcess, error) {
 		fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
 
 		if err != nil {
-			fmt.Println("😡 handler-spawn/NotifyDiscoveryServiceOfKillingProcess", err)
+			fmt.Println("😡 handler-spawn/NotifyProcessKilled", err)
 		} else {
 			fmt.Println("🙂 Notification for process killed sent for db update")
 		}

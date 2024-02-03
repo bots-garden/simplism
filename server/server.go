@@ -151,7 +151,6 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		router.GetRouter().HandleFunc("/spawn", spawn.Handler(wasmArgs))
 
 
-		//TODO: /spawn/kill/name/{name} and /spawn/kill/pid/{pid}
 		//router.GetRouter().HandleFunc("/spawn/name/{name}", spawn.Handler(wasmArgs))
 		//router.GetRouter().HandleFunc("/spawn/pid/{pid}", spawn.Handler(wasmArgs))
 

@@ -33,6 +33,14 @@ func getJSONProcesses(db *bbolt.DB) ([]byte, error) {
 	}
 }
 
+func checkIfTrue(x bool) string {
+	if x {
+		return "x"
+	} else {
+		return ""
+	}
+}
+
 // getTableProcesses is a function that retrieves the list of processes from the provided bbolt.DB.
 //
 // It takes a single parameter:
@@ -59,6 +67,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 			process.FilePath,
 			//process.Information,
 			process.StartTime.Format("2006-01-02 15:04:05"),
+			//checkIfTrue(process.Asleep),
 			//process.StopTime.Format("2006-01-02 15:04:05"),
 			//process.StopTime.Local().String(),
 			//process.RecordTime.Local().String(),
@@ -67,6 +76,7 @@ func getTableProcesses(db *bbolt.DB) ([][]string, error) {
 	}
 	return data, nil
 }
+
 
 // getProcessesTableWriter returns a tablewriter.Table that displays the provided data in a tabular format.
 //

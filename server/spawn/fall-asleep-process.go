@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	processesHelper "simplism/helpers/processes"
-	yamlHelper "simplism/helpers/yaml"
 
 	"simplism/server/discovery"
 	"simplism/server/router"
+
+	//"simplism/server/spawn"
 	simplismTypes "simplism/types"
 )
 
@@ -18,30 +19,29 @@ import (
 func fallAsleepProcess(pid int) (simplismTypes.SimplismProcess, error) {
 	errKill := processesHelper.KillSimplismProcess(pid)
 	if errKill != nil {
-		fmt.Println("😡 handler-spawn/KillSimplismProcess", errKill)
+		fmt.Println("😡 when killing (fall asleep) the process:", errKill)
 		return simplismTypes.SimplismProcess{}, errKill
 	} else {
 
-		foundProcess, err := discovery.NotifyProcessKilled(pid)
+		foundProcess, err := discovery.NotifyProcessAsleep(pid)
 
-		// Update the recovery file (remove the entry for the killed process) from the map
-		delete(spawnedProcesses, foundProcess.HTTPPort)
-
-		yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
+		// Do not remove the entry from the recovery file
+		//delete(spawnedProcesses, foundProcess.HTTPPort)
+		//yamlHelper.WriteYamlFile("recovery.yaml", spawnedProcesses)
 
 		// Change the handler
-
 		router.GetRouter().HandleFunc("/service/"+foundProcess.ServiceName, func(response http.ResponseWriter, request *http.Request) {
+
 			response.WriteHeader(http.StatusNotFound)
-			response.Write([]byte("(Not found) Simplism process killed"))
+			response.Write([]byte("[" + foundProcess.HTTPPort + "]🚀(Not found) Simplism process asleep"))
 		})
 
-		fmt.Println("🙂 Process killed successfully:", foundProcess.ServiceName)
+		fmt.Println("😴 Process asleep successfully:", foundProcess.ServiceName)
 
 		if err != nil {
-			fmt.Println("😡 handler-spawn/NotifyDiscoveryServiceOfKillingProcess", err)
+			fmt.Println("😡 handler-spawn/NotifyProcessAsleep", err)
 		} else {
-			fmt.Println("🙂 Notification for process killed sent for db update")
+			fmt.Println("🙂 Notification for process asleep sent for db update")
 		}
 		return foundProcess, err
 	}

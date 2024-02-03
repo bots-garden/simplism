@@ -11,6 +11,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+var simplismProcessesDb *bolt.DB
+
+func GetSimplismProcessesDb() *bolt.DB {
+	return simplismProcessesDb
+}
+
 // initializeProcessesDB initializes the database for the given WasmArguments.
 //
 // It takes a single parameter, wasmArgs, of type simplismTypes.WasmArguments.
@@ -25,20 +31,20 @@ func InitializeProcessesDB(wasmArgs simplismTypes.WasmArguments) (*bolt.DB, erro
 
 	//db, err := bolt.Open("my.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
 
-	db, err := bolt.Open(wasmArgs.FilePath+".processes.db", 0600, nil)
+	simplismProcessesDb, err := bolt.Open(wasmArgs.FilePath+".processes.db", 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//defer db.Close()
 
-	db.Update(func(tx *bolt.Tx) error {
+	simplismProcessesDb.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("simplism-bucket"))
 		if err != nil {
 			return fmt.Errorf("😡 When creating bucket: %s", err)
 		}
 		return nil
 	})
-	return db, err
+	return simplismProcessesDb, err
 }
 
 // saveSimplismProcessToDB saves the simplism process to the database.
