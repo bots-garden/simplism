@@ -258,14 +258,14 @@ if [[ "$1" == "service" ]]; then
   # -------------------------------
   if [[ "$2" == "kill" ]]; then
       service_name="$3"
-      curl -X DELETE ${SPAWN_SERVICE_URL}/name/${service_name} \
+      curl -X DELETE ${SPAWN_SERVICE_URL}/kill/name/${service_name} \
       -H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}"
       exit 0
   fi
 
   if [[ "$2" == "kill-pid" ]]; then
       service_pid="$3"
-      curl -X DELETE ${SPAWN_SERVICE_URL}/pid/${service_pid} \
+      curl -X DELETE ${SPAWN_SERVICE_URL}/kill/pid/${service_pid} \
       -H "admin-spawn-token:${ADMIN_SPAWN_TOKEN}"
       exit 0
   fi
