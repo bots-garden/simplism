@@ -11,6 +11,7 @@ code-server --install-extension rust-lang.rust-analyzer
 code-server --install-extension aaron-bond.better-comments
 code-server --install-extension GitHub.github-vscode-theme
 code-server --install-extension huytd.github-light-monochrome
+code-server --install-extension pomdtr.excalidraw-editor
 
 echo "🌍 open: http://0.0.0.0:${CODER_HTTP_PORT}"
 echo "🔐 if you activated https mode:" 

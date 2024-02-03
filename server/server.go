@@ -150,8 +150,16 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 		fmt.Println("🚀 this service can spawn other services")
 		router.GetRouter().HandleFunc("/spawn", spawn.Handler(wasmArgs))
 
-		router.GetRouter().HandleFunc("/spawn/name/{name}", spawn.Handler(wasmArgs))
-		router.GetRouter().HandleFunc("/spawn/pid/{pid}", spawn.Handler(wasmArgs))
+
+		//router.GetRouter().HandleFunc("/spawn/name/{name}", spawn.Handler(wasmArgs))
+		//router.GetRouter().HandleFunc("/spawn/pid/{pid}", spawn.Handler(wasmArgs))
+
+		router.GetRouter().HandleFunc("/spawn/kill/name/{name}", spawn.Handler(wasmArgs))
+		router.GetRouter().HandleFunc("/spawn/kill/pid/{pid}", spawn.Handler(wasmArgs))
+
+		router.GetRouter().HandleFunc("/spawn/fall-asleep/name/{name}", spawn.Handler(wasmArgs))
+		router.GetRouter().HandleFunc("/spawn/fall-asleep/pid/{pid}", spawn.Handler(wasmArgs))
+
 
 		// TODO: check if a recovery file is existing
 		// Read the recovery file and rename it

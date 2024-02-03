@@ -10,6 +10,7 @@ import (
 )
 
 var NotifyProcessKilled func(pid int) (simplismTypes.SimplismProcess, error)
+var NotifyProcessAsleep func(pid int) (simplismTypes.SimplismProcess, error)
 var NotifyProcesseInformation func(serviceName string) (simplismTypes.SimplismProcess, error)
 
 func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
@@ -19,6 +20,7 @@ func Handler(wasmArgs simplismTypes.WasmArguments) http.HandlerFunc {
 
 	// Define listeners
 	NotifyProcessKilled = processKilledListener(db)
+	NotifyProcessAsleep = processAsleepListener(db)
 	NotifyProcesseInformation = processInformationListener(db)
 
 	// return the discovery handler
