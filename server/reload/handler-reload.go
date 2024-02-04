@@ -57,6 +57,35 @@ func Handler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) http.Han
 				wasmArgs.FilePath = bodyMap["wasm-file"]
 				wasmArgs.FunctionName = bodyMap["wasm-function"]
 
+				/*
+					wasmArgs.WasmURLAuthHeader = bodyMap["wasm-url-auth-header"]
+					wasmArgs.LogLevel = bodyMap["log-level"]
+					wasmArgs.AllowHosts = bodyMap["allow-hosts"]
+					wasmArgs.AllowPaths = bodyMap["allow-paths"]
+					wasmArgs.EnvVars = bodyMap["env"]
+					wasmArgs.Config = bodyMap["config"]
+					wasmArgs.Wasi = stringHelper.GetTheBooleanValueOf(bodyMap["wasi"])
+					wasmArgs.Input = bodyMap["input"]
+					wasmArgs.CertFile = bodyMap["cert-file"]
+					wasmArgs.KeyFile = bodyMap["key-file"]
+					wasmArgs.AdminReloadToken = bodyMap["admin-reload-token"]
+					wasmArgs.AdminDiscoveryToken = bodyMap["admin-discovery-token"]
+					wasmArgs.ServiceDiscovery = stringHelper.GetTheBooleanValueOf(bodyMap["service-discovery"])
+					wasmArgs.DiscoveryEndpoint = bodyMap["discovery-endpoint"]
+
+					wasmArgs.Information = bodyMap["information"]
+					wasmArgs.ServiceName = bodyMap["service-name"]
+
+					wasmArgs.StoreMode = stringHelper.GetTheBooleanValueOf(bodyMap["store-mode"])
+					wasmArgs.StorePath = bodyMap["store-path"]
+					wasmArgs.AdminStoreToken = bodyMap["admin-store-token"]
+
+					wasmArgs.RegistryMode = stringHelper.GetTheBooleanValueOf(bodyMap["registry-mode"])
+					wasmArgs.RegistryPath = bodyMap["registry-path"]
+					wasmArgs.AdminRegistryToken = bodyMap["admin-registry-token"]
+					wasmArgs.PrivateRegistryToken = bodyMap["private-registry-token"]
+				*/
+
 				fmt.Println("🚀 downloading", wasmArgs.URL, "...")
 				err := wasmHelper.DownloadWasmFile(wasmArgs)
 				if err != nil {
@@ -82,7 +111,7 @@ func Handler(ctx context.Context, wasmArgs simplismTypes.WasmArguments) http.Han
 
 				config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
 
-				wasmHelper.ReplacePluginInPool(0, ctx, config, manifest)
+				wasmHelper.StartWasmPlugin(ctx, config, manifest)
 				fmt.Println("🙂 new wasm plug-in reloaded")
 
 				response.WriteHeader(http.StatusOK)

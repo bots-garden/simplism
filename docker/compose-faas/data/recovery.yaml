@@ -1,0 +1,20 @@
+"36539":
+    wasm-file: /tmp/hello-bis.wasm
+    wasm-function: handle
+    http-port: "36539"
+    wasm-url: http://simplism-registry:9090/registry/pull/hello-bis.wasm
+    wasm-url-auth-header: private-registry-token=people-are-strange
+    discovery-endpoint: http://simplism-spawner:9000/discovery
+    admin-discovery-token: people-are-strange
+    information: ✋ I'm the hello-bis service
+    service-name: hello-bis
+"45225":
+    wasm-file: /tmp/hello.wasm
+    wasm-function: handle
+    http-port: "45225"
+    wasm-url: http://simplism-registry:9090/registry/pull/hello.wasm
+    wasm-url-auth-header: private-registry-token=people-are-strange
+    discovery-endpoint: http://simplism-spawner:9000/discovery
+    admin-discovery-token: people-are-strange
+    information: ✋ I'm the hello service
+    service-name: hello

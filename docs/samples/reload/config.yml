@@ -1,0 +1,29 @@
+01-service-registry:
+  wasm-file: "?"
+  wasm-function: "?"
+  http-port: 9090
+  log-level: info
+  registry-mode: true
+  admin-registry-token: morrison-hotel # /push + /remove
+  private-registry-token: people-are-strange # /pull + /discover
+  registry-path: ./wasm-files
+
+02-service-discovery:
+  wasm-file: "?"
+  wasm-function: "?"
+  http-port: 9000
+  log-level: info
+  service-discovery: true
+  admin-discovery-token: people-are-strange
+
+03-hello: 
+  wasm-file: ./hello.wasm
+  wasm-url: http://localhost:9090/registry/pull/hello.wasm
+  wasm-url-auth-header: private-registry-token=people-are-strange
+  wasm-function: handle
+  http-port: 8080
+  log-level: info
+  service-name: hello
+  admin-discovery-token: people-are-strange
+  discovery-endpoint: http://localhost:9000/discovery
+  admin-reload-token: "1234567890"

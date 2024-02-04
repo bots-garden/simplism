@@ -1,0 +1,37 @@
+# docker compose --env-file arm64.env build
+# docker compose --env-file arm64.env run
+services:
+  simplism-builder:
+    container_name: simplism-builder
+    platform: linux/${LINUX_ARCH}
+    image: local/simplism-builder
+    build:      
+      args:
+        - GO_ARCH=${GO_ARCH}
+        - GO_VERSION=${GO_VERSION}
+        - TINYGO_ARCH=${TINYGO_ARCH}
+        - TINYGO_VERSION=${TINYGO_VERSION}
+        - USER_NAME=simplism
+      context: .
+      dockerfile: Dockerfile.builder
+
+  build-hello-wasm-plug-in:
+    image: local/simplism-builder
+    container_name: build-hello-wasm-plug-in
+    depends_on:
+      - simplism-builder
+    entrypoint: ["/workspace/build.sh"]
+    volumes:
+      - ./projects/hello:/projects/hello
+      - .:/workspace
+
+  start-hello-wasm-plug-in:
+    # curl http://localhost:9999 -d 'Bob Morane'
+    image: k33g/simplism:${SIMPLISM_VERSION}
+    depends_on:
+      - build-hello-wasm-plug-in
+    entrypoint: ["/simplism", "listen", "/projects/hello/hello.wasm", "handle", "--http-port", "9999", "--log-level", "info"]
+    volumes:
+      - ./projects/hello:/projects/hello
+    ports:
+      - 9999:9999

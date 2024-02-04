@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	simplismTypes "simplism/types"
-	processesHelper "simplism/helpers/processes"
 	configHelper "simplism/helpers/config"
+	processesHelper "simplism/helpers/processes"
+	simplismTypes "simplism/types"
+	"time"
 )
 
 // startFlockMode activates flock mode.
@@ -36,6 +37,7 @@ func startFlockMode(configFilepath string) {
 
 		// Start a new server process with the specified wasm plugin in the config
 		go func(configKey string, wasmArguments simplismTypes.WasmArguments) {
+
 			cmd := &exec.Cmd{
 				Path:   simplismExecutablePath,
 				Args:   []string{"", "config", configFilepath, configKey},
@@ -49,6 +51,10 @@ func startFlockMode(configFilepath string) {
 			}
 
 		}(configKey, wasmArguments)
+
+		// this is not the appropriate solution, but it works
+		// how to start go routines sequentially?
+		time.Sleep(300 * time.Millisecond)
 
 	}
 

@@ -107,7 +107,9 @@ func Listen(wasmArgs simplismTypes.WasmArguments, configKey string) {
 	defer stop()
 
 	config, manifest := wasmHelper.GetConfigAndManifest(wasmArgs.FilePath, hosts, paths, manifestConfig, level)
-	wasmHelper.GeneratePluginsPool(ctx, config, manifest)
+	
+	//wasmHelper.GeneratePluginsPool(ctx, config, manifest)
+	wasmHelper.StartWasmPlugin(ctx, config, manifest)
 
 	/*
 		This handler is responsible for:

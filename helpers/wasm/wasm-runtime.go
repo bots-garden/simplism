@@ -25,11 +25,7 @@ type WasmPlugin struct {
 
 var (
 	wasmPlugins = make(map[string]*WasmPlugin)
-	counter     = 0
-	poolSize    = 1 //4 (this should be a parameter)
-	// if several wasm plugins are needed,
-	// you never know which memory you are using (eg: counters)
-	prefixPluginKey = "plugin"
+	pluginKey   = "plugin"
 )
 
 // GetLevel returns the corresponding extism.LogLevel based on the given log level string.
@@ -133,42 +129,9 @@ func getPluginInstance(ctx context.Context, config extism.PluginConfig, manifest
 	return &wasmPlugin
 }
 
-// GeneratePluginsPool generates a pool of plugins.
-//
-// It takes the following parameters:
-// - ctx: the context.Context object for cancellation and timeouts.
-// - config: the PluginConfig object containing the configuration for the plugins.
-// - manifest: the Manifest object containing the manifest of the plugins.
-//
-// This function does not return any value.
-func GeneratePluginsPool(ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) {
-	for i := 0; i <= poolSize; i++ {
-		wasmPlugin := getPluginInstance(ctx, config, manifest)
-
-		key := prefixPluginKey + strconv.Itoa(i)
-		storePlugin(key, wasmPlugin)
-	}
-}
-
-// ResetPluginsPool resets the plugins pool.
-//
-// No parameters.
-// No return types.
-func ResetPluginsPool() {
-	wasmPlugins = make(map[string]*WasmPlugin)
-}
-
-// ReplacePluginInPool replaces a plugin in the pool at the specified index.
-//
-// Parameters:
-// - index: the index of the plugin in the pool.
-// - ctx: the context for the function execution.
-// - config: the plugin configuration.
-// - manifest: the plugin manifest.
-func ReplacePluginInPool(index int, ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) {
+func StartWasmPlugin(ctx context.Context, config extism.PluginConfig, manifest extism.Manifest) {
 	wasmPlugin := getPluginInstance(ctx, config, manifest)
-	key := prefixPluginKey + strconv.Itoa(index)
-	storePlugin(key, wasmPlugin)
+	storePlugin(pluginKey, wasmPlugin)
 }
 
 // CallWasmFunction executes a WebAssembly function.
@@ -179,15 +142,8 @@ func ReplacePluginInPool(index int, ctx context.Context, config extism.PluginCon
 // encountered during the execution of the function.
 func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
 
-	//key := prefixPluginKey + "0"
-	//wasmPlugin := getPlugin(key)
-
-	key := prefixPluginKey + strconv.Itoa(counter)
+	key := pluginKey
 	wasmPlugin := getPlugin(key)
-	counter++
-	if counter == poolSize {
-		counter = 0
-	}
 
 	wasmPlugin.Protection.Lock()
 
@@ -204,7 +160,7 @@ func CallWasmFunction(wasmFunctionName string, params []byte) ([]byte, error) {
 }
 
 func GetPlugin(index int) *WasmPlugin {
-	return wasmPlugins[prefixPluginKey+strconv.Itoa(index)]
+	return wasmPlugins[pluginKey+strconv.Itoa(index)]
 }
 
 // downloadWasmFile downloads a WebAssembly (Wasm) file from a given URL and saves it to the specified file path.

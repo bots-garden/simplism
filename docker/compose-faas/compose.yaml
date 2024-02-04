@@ -1,0 +1,59 @@
+services:
+  simplism-registry:
+    container_name: simplism-registry
+    image: k33g/simplism:${SIMPLISM_VERSION}
+    entrypoint: 
+      - "/simplism"
+      - "listen"
+      - "?"
+      - "?"
+      - "--log-level"
+      - "info"
+      - "--http-port"
+      - "${REGISTRY_PORT}"
+      - "--registry-mode"
+      - "true"
+      - "--registry-path"
+      - "./wasm-files"
+      - "--admin-registry-token"
+      - "${ADMIN_REGISTRY_TOKEN}"
+      - "--private-registry-token"
+      - "${PRIVATE_REGISTRY_TOKEN}"
+
+    volumes:
+      - ./wasm-files:/wasm-files
+    ports:
+      - ${REGISTRY_PORT}:${REGISTRY_PORT}
+  
+  simplism-spawner:
+    container_name: simplism-spawner
+    image: k33g/simplism:${SIMPLISM_VERSION}
+    entrypoint: 
+      - "/simplism"
+      - "listen"
+      - "?"
+      - "?"
+      - "--log-level"
+      - "info"
+      - "--http-port"
+      - "${SPAWNER_PORT}"
+      - "--spawn-mode"
+      - "true"
+      - "--admin-spawn-token"
+      - "${ADMIN_SPAWN_TOKEN}"
+      - "-http-port-auto"
+      - "true"
+      - "--recovery-mode"
+      - "true"
+      - "--recovery-path"
+      - "/data/recovery.yaml"
+      - "--service-discovery"
+      - "true"
+      - "--admin-discovery-token"
+      - "${ADMIN_DISCOVERY_TOKEN}"
+    volumes:
+      - ./data:/data
+      - ./tmp:/tmp
+    ports:
+      - ${SPAWNER_PORT}:${SPAWNER_PORT}
+
