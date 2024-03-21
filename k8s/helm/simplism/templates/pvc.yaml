@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-wasm-registry-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storageClass.name -}}
+  storageClassName: {{ .Values.storageClass.name }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storageSize }}

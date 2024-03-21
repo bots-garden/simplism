@@ -1,0 +1,16 @@
+{{- if not .Values.storageClass.name }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-wasm-files-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: {{ .Values.storageSize }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/wasm-files"
+{{- end }}
