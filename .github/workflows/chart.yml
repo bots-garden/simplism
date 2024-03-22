@@ -1,0 +1,32 @@
+name: Build Chart
+
+on: 
+ push:
+   paths:
+     - k8s/helm/simplism
+ pull_request:
+   paths:
+     - k8s/helm/simplism
+ 
+jobs:     
+  build-helm-chart:
+    runs-on: ubuntu-22.04 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.10.0
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1 
+      - name: Run chart-testing (lint)
+        run: ct lint --target-branch main
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.9.0
+      - name: Run chart-testing (install)
+        run: ct install --chart-dirs k8s/helm/simplism/ --charts k8s/helm/simplism/ 
+
+
