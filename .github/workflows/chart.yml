@@ -2,6 +2,8 @@ name: Build Chart
 
 on: 
  push:
+   branches:
+     - chart_ci
    paths:
      - k8s/helm/simplism
  pull_request:
