@@ -4,16 +4,12 @@ on:
  push:
    branches:
      - chart_ci
-   paths:
-     - k8s/helm/simplism
  pull_request:
    paths:
      - k8s/helm/simplism
  
 jobs:     
   build-helm-chart:
-    permissions:
-      contents: write
     runs-on: ubuntu-22.04 
     steps:
       - name: Checkout
