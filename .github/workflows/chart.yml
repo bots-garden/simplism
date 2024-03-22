@@ -23,7 +23,7 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1 
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch chart_ci
+        run: ct lint --target-branch main
       - name: Create kind cluster
         uses: helm/kind-action@v1.9.0
       - name: Run chart-testing (install)
