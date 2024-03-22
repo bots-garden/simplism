@@ -80,7 +80,7 @@ autoscaling:
 storageClass:
   name: ""
 
-volumes: []
+volumes:
  - name: wasm-registry-storage
    persistentVolumeClaim:
      claimName: task-pv-wasm-registry-claim
@@ -91,7 +91,7 @@ volumes: []
 storageSize: 5Gi
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
+volumeMounts:
  - name: wasm-registry-storage
    mountPath: "/wasm-registry-files"
    readOnly: false
